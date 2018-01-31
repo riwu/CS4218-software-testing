@@ -11,6 +11,8 @@ import sg.edu.nus.comp.cs4218.exception.AbstractApplicationException;
 import sg.edu.nus.comp.cs4218.exception.ShellException;
 import sg.edu.nus.comp.cs4218.impl.app.CatApplication;
 import sg.edu.nus.comp.cs4218.impl.app.EchoApplication;
+import sg.edu.nus.comp.cs4218.impl.app.HeadApplication;
+import sg.edu.nus.comp.cs4218.impl.app.TailApplication;
 
 /**
  * A Shell is a command interpreter and forms the backbone of the entire
@@ -61,7 +63,7 @@ public class ShellImpl implements Shell {
 		String[] resultArr = new String[argsArray.length];
 		System.arraycopy(argsArray, 0, resultArr, 0, argsArray.length);
 		String patternBQ = "`([^\\n`]*)`";
-//		Pattern patternBQp = Pattern.compile(patternBQ);
+		Pattern patternBQp = Pattern.compile(patternBQ);
 
 		for (int i = 0; i < argsArray.length; i++) {
 			Matcher matcherBQ = patternBQp.matcher(argsArray[i]);
@@ -119,7 +121,7 @@ public class ShellImpl implements Shell {
 		} else if (("echo").equals(app)) {// echo [args]...
 			absApp = new EchoApplication();
 		} else if (("head").equals(app)) {// head [OPTIONS] [FILE]
-			absApp = new HeadApplication()
+			absApp = new HeadApplication();
 		} else if (("tail").equals(app)) {// tail [OPTIONS] [FILE]
 			absApp = new TailApplication();
 		} else { // invalid command
@@ -139,7 +141,7 @@ public class ShellImpl implements Shell {
 	 * 
 	 * @throws ShellException
 	 *             If file is not found.
-	 *
+	 */
 	public static InputStream openInputRedir(String inputStreamS)
 			throws ShellException {
 		File inputFile = new File(inputStreamS);
@@ -164,7 +166,7 @@ public class ShellImpl implements Shell {
 	 * @throws ShellException
 	 *             If file destination cannot be opened or inaccessible.
 	 */
-	public static OutputStream openOutputRedir(String outputStreamS){
+	public static OutputStream openOutputRedir(String outputStreamS) throws ShellException {
 		File outputFile = new File(outputStreamS);
 		FileOutputStream fOutputStream = null;
 		try {
@@ -289,4 +291,101 @@ public class ShellImpl implements Shell {
 			}
 		}
 	}
+
+    @Override
+    public void parseAndEvaluate(String cmdline, OutputStream stdout)
+            throws AbstractApplicationException, ShellException {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public String pipeTwoCommands(String args) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public String pipeMultipleCommands(String args) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public String pipeWithException(String args) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public String globNoPaths(String args) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public String globOneFile(String args) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public String globFilesDirectories(String args) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public String globWithException(String args) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public String redirectInput(String args) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public String redirectOutput(String args) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public String redirectInputWithNoFile(String args) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public String redirectOutputWithNoFile(String args) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public String redirectInputWithException(String args) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public String redirectOutputWithException(String args) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public String performCommandSubstitution(String args) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public String performCommandSubstitutionWithException(String args) {
+        // TODO Auto-generated method stub
+        return null;
+    }
 }

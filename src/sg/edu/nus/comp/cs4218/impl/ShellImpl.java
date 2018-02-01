@@ -97,7 +97,7 @@ public class ShellImpl implements Shell {
 	 * @param app
 	 *            String containing the keyword that specifies what application
 	 *            to run.
-	 * @param args
+	 * @param argsArray
 	 *            String array containing the arguments to pass to the
 	 *            applications for running.
 	 * @param inputStream
@@ -158,7 +158,7 @@ public class ShellImpl implements Shell {
 	 * Static method to creates an outputStream based on the file name or file
 	 * path.
 	 * 
-	 * @param onputStreamS
+	 * @param outputStreamS
 	 *            String of file name or file path.
 	 * 
 	 * @return OutputStream of file opened.

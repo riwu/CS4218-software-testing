@@ -46,6 +46,8 @@ public class EchoApplication implements Application {
 				for (int i = 0; i < args.length - 1; i++) {
 					stdout.write(args[i].getBytes());
 				}
+				// TODO: Index out of bounds
+				// write test case first
 				stdout.write(args[args.length].getBytes());
 				stdout.write("\n".getBytes());
 			}

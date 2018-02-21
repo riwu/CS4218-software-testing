@@ -1,5 +1,6 @@
 package sg.edu.nus.comp.cs4218.impl.app;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -7,8 +8,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import sg.edu.nus.comp.cs4218.Application;
 import sg.edu.nus.comp.cs4218.Environment;
+import sg.edu.nus.comp.cs4218.app.Cat;
 import sg.edu.nus.comp.cs4218.exception.CatException;
 
 /**
@@ -23,7 +24,7 @@ import sg.edu.nus.comp.cs4218.exception.CatException;
  * </dl>
  * </p>
  */
-public class CatApplication implements Application {
+public class CatApplication implements Cat {
 
 	/**
 	 * Runs the cat application with the specified arguments.
@@ -91,6 +92,15 @@ public class CatApplication implements Application {
 				}
 			}
 		}
+	}
+
+	public String getContent(File file) throws CatException {
+        try {
+            byte[] byteFileContent = Files.readAllBytes(file.toPath());
+            return new String(byteFileContent);
+        } catch (IOException e) {
+            throw new CatException(e.getMessage());
+        }
 	}
 
 	/**

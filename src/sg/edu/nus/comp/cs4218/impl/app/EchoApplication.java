@@ -3,6 +3,7 @@ package sg.edu.nus.comp.cs4218.impl.app;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Arrays;
 
 import sg.edu.nus.comp.cs4218.Application;
 import sg.edu.nus.comp.cs4218.exception.EchoException;
@@ -40,20 +41,18 @@ public class EchoApplication implements Application {
 			throw new EchoException("OutputStream not provided");
 		}
 		try {
-			if (args.length == 0) {
-				stdout.write("\n\n".getBytes());
-			} else {
-				for (int i = 0; i < args.length - 1; i++) {
-					stdout.write(args[i].getBytes());
-				}
-				// TODO: Index out of bounds
-				// write test case first
-				stdout.write(args[args.length].getBytes());
-				stdout.write("\n".getBytes());
-			}
+
+            stdout.write(evaluate(args).getBytes());
+
 		} catch (IOException e) {
 			throw new EchoException("IOException");
 		}
 	}
+
+	String evaluate(String[] args){
+        return Arrays.stream(args)
+                .reduce("", (result, arg) -> result + " " + arg)
+                .trim() + "\n";
+    }
 
 }

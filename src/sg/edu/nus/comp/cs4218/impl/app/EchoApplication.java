@@ -6,6 +6,7 @@ import java.io.OutputStream;
 import java.util.Arrays;
 
 import sg.edu.nus.comp.cs4218.Application;
+import sg.edu.nus.comp.cs4218.app.Echo;
 import sg.edu.nus.comp.cs4218.exception.EchoException;
 
 /**
@@ -16,7 +17,7 @@ import sg.edu.nus.comp.cs4218.exception.EchoException;
  * <b>Command format:</b> <code>echo [ARG]...</code>
  * </p>
  */
-public class EchoApplication implements Application {
+public class EchoApplication implements Echo {
 
 	/**
 	 * Runs the echo application with the specified arguments.
@@ -49,7 +50,7 @@ public class EchoApplication implements Application {
 		}
 	}
 
-	String evaluate(String[] args){
+	public String evaluate(String[] args){
         return Arrays.stream(args)
                 .reduce("", (result, arg) -> result + " " + arg)
                 .trim() + "\n";

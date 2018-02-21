@@ -13,6 +13,7 @@ import sg.edu.nus.comp.cs4218.impl.app.CatApplication;
 import sg.edu.nus.comp.cs4218.impl.app.EchoApplication;
 import sg.edu.nus.comp.cs4218.impl.app.HeadApplication;
 import sg.edu.nus.comp.cs4218.impl.app.TailApplication;
+import sg.edu.nus.comp.cs4218.impl.cmd.CallCommand;
 
 /**
  * A Shell is a command interpreter and forms the backbone of the entire
@@ -74,7 +75,7 @@ public class ShellImpl implements Shell {
 				// System.out.println("backquote" + bqStr);
 				OutputStream bqOutputStream = new ByteArrayOutputStream();
 				ShellImpl shell = new ShellImpl();
-				//shell.parseAndEvaluate(bqStr, bqOutputStream);
+				shell.parseAndEvaluate(bqStr, bqOutputStream);
 
 				ByteArrayOutputStream outByte = (ByteArrayOutputStream) bqOutputStream;
 				byte[] byteArray = outByte.toByteArray();
@@ -285,19 +286,23 @@ public class ShellImpl implements Shell {
 				if (("").equals(readLine)) {
 					continue;
 				}
-				//shell.parseAndEvaluate(readLine, System.out);
+				shell.parseAndEvaluate(readLine, System.out);
 			} catch (Exception e) {
-				System.out.println(e.getMessage());
+			    // TODO: need to change to e.printMessage on production
+				e.printStackTrace();
 			}
 		}
 	}
 
     @Override
-    public void parseAndEvaluate(String cmdline, OutputStream stdout)
+    public void parseAndEvaluate(String cmdline, final OutputStream stdout)
             throws AbstractApplicationException, ShellException {
-        // TODO Auto-generated method stub
-        
-    }
+
+        CallCommand callCommand = new CallCommand(cmdline);
+        callCommand.parse();
+        callCommand.evaluate(System.in, stdout);
+
+	}
 
     @Override
     public String pipeTwoCommands(String args) {

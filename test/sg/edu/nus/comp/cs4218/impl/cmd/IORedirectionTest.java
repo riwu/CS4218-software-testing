@@ -4,7 +4,6 @@ import static org.junit.Assert.*;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.OutputStream;
 import java.nio.file.Files;
 import java.util.Arrays;
 
@@ -17,11 +16,11 @@ public class IORedirectionTest {
 	private File inputFile;
 	private File outputFile;
 	private File tempFile;
-	private final String INPUT_FILE_NAME = "testIO.txt";
-	private final String OUTPUT_FILE_NAME = "output.dat";
-	private final String TEMP_FILE_NAME = "output.txt";
-	private final String FILE_CONTENT = "Text" + System.lineSeparator() + "file";
-	private final String EXISTING_CONTENT = "Existing Content";
+	private static final String INPUT_FILE_NAME = "testIO.txt";
+	private static final String OUTPUT_FILE_NAME = "output.dat";
+	private static final String TEMP_FILE_NAME = "output.txt";
+	private static final String FILE_CONTENT = "Text" + System.lineSeparator() + "file";
+	private static final String EXISTING_CONTENT = "Existing Content";
 
 	@Before
 	public void setUp() throws Exception {

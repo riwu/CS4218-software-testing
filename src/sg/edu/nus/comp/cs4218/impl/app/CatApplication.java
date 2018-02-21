@@ -93,7 +93,8 @@ public class CatApplication implements Cat {
 			}
 		}
 	}
-
+  
+  @Override
 	public String getContent(File file) throws CatException {
         try {
             byte[] byteFileContent = Files.readAllBytes(file.toPath());

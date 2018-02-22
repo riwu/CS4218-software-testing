@@ -1,6 +1,8 @@
 package sg.edu.nus.comp.cs4218.impl;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -14,6 +16,7 @@ import sg.edu.nus.comp.cs4218.impl.app.EchoApplication;
 import sg.edu.nus.comp.cs4218.impl.app.HeadApplication;
 import sg.edu.nus.comp.cs4218.impl.app.TailApplication;
 import sg.edu.nus.comp.cs4218.impl.cmd.CallCommand;
+import sg.edu.nus.comp.cs4218.impl.cmd.PipeCommand;
 
 /**
  * A Shell is a command interpreter and forms the backbone of the entire
@@ -117,17 +120,23 @@ public class ShellImpl implements Shell {
 			InputStream inputStream, OutputStream outputStream)
 			throws AbstractApplicationException, ShellException {
 		Application absApp = null;
-		if (("cat").equals(app)) {// cat [FILE]...
-			absApp = new CatApplication();
-		} else if (("echo").equals(app)) {// echo [args]...
-			absApp = new EchoApplication();
-		} else if (("head").equals(app)) {// head [OPTIONS] [FILE]
-			absApp = new HeadApplication();
-		} else if (("tail").equals(app)) {// tail [OPTIONS] [FILE]
-			absApp = new TailApplication();
-		} else { // invalid command
-			throw new ShellException(app + ": " + EXP_INVALID_APP);
-		}
+
+		switch(app){
+            case "cat": // cat [FILE]...
+                absApp = new CatApplication();
+                break;
+            case "echo": // echo [args]...
+                absApp = new EchoApplication();
+                break;
+            case "head": // head [OPTIONS] [FILE]
+                absApp = new HeadApplication();
+                break;
+            case "tail": // tail [OPTIONS] [FILE]
+                absApp = new TailApplication();
+                break;
+            default: throw new ShellException(app + ": " + EXP_INVALID_APP);
+        }
+
 		absApp.run(argsArray, inputStream, outputStream);
 	}
 
@@ -286,7 +295,10 @@ public class ShellImpl implements Shell {
 				if (("").equals(readLine)) {
 					continue;
 				}
+
 				shell.parseAndEvaluate(readLine, System.out);
+				System.out.println();
+
 			} catch (Exception e) {
 			    // TODO: need to change to e.printMessage on production
 				e.printStackTrace();
@@ -298,21 +310,37 @@ public class ShellImpl implements Shell {
     public void parseAndEvaluate(String cmdline, final OutputStream stdout)
             throws AbstractApplicationException, ShellException {
 
+        InputStream inputPipe = new ByteArrayInputStream("".getBytes(StandardCharsets.UTF_8));
+        OutputStream outputPipe = new ByteArrayOutputStream();
+
+        PipeCommand pipeCommand = new PipeCommand(cmdline);
+        pipeCommand.evaluate(inputPipe, outputPipe);
+
+        writeToStdout(outputPipe, System.out);
+/*
         CallCommand callCommand = new CallCommand(cmdline);
         callCommand.parse();
-        callCommand.evaluate(System.in, stdout);
+        callCommand.evaluate(new ByteArrayInputStream(cmdline.getBytes(StandardCharsets.UTF_8)), stdout);
+*/
+
+/*
+	    System.out.println("===pipe===");
+        if (pipedCommands != null) Arrays.stream(pipedCommands).forEach(System.out::println);
+        System.out.println("==========");
+*/
+
 
 	}
 
     @Override
     public String pipeTwoCommands(String args) {
-        // TODO Auto-generated method stub
+
         return null;
     }
 
     @Override
     public String pipeMultipleCommands(String args) {
-        // TODO Auto-generated method stub
+
         return null;
     }
 

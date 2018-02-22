@@ -30,7 +30,7 @@ public class MkdirApplication implements Mkdir {
 		if (args == null || args.length == 0) {
 			throw new MkdirException("No folders specified");
 		}
-		else if (stdin == System.in && stdout == System.out) {
+		else {
 			Path folderPath;
 			String[] folderPathS = new String[args.length];
 			Path currentDir = Paths.get(Environment.currentDirectory);
@@ -39,13 +39,10 @@ public class MkdirApplication implements Mkdir {
 					folderPath = currentDir.resolve(args[i]);
 					folderPathS[i] = folderPath.toString();
 				} catch (Exception e) {
-					throw new MkdirException("Invalid characters found in folder name");
+					throw new MkdirException("Invalid characters found");
 				}
 			}
 			createFolder(folderPathS);
-		}
-		else {
-			throw new MkdirException("I/O Redirection not allowed");
 		}
 		
 	}

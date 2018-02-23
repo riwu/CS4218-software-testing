@@ -36,8 +36,14 @@ public class MkdirApplication implements Mkdir {
 			Path currentDir = Paths.get(Environment.currentDirectory);
 			for(int i = 0; i < args.length; i++) {
 				try {
-					folderPath = currentDir.resolve(args[i]);
-					folderPathS[i] = folderPath.toString();
+					folderPath = Paths.get(args[i]);
+					if(folderPath.isAbsolute()) {
+						folderPathS[i] = folderPath.toString();
+					}
+					else {
+						//ensure it follows relative path based on the changes done by cd
+						folderPathS[i] = currentDir.resolve(args[i]).toString();
+					}
 				} catch (Exception e) {
 					throw new MkdirException(e.getMessage());
 				}
@@ -49,9 +55,14 @@ public class MkdirApplication implements Mkdir {
 
 	@Override
 	public void createFolder(String... folderName) throws MkdirException {
+		boolean success;
 		for (String folder: folderName) {
 			File directory = new File(folder);
-			directory.mkdirs();
+			success = directory.mkdirs();
+			if (!directory.isDirectory() && !success) {
+				String path = folder.replace(Environment.currentDirectory + File.separatorChar, "");
+				throw new MkdirException(path + " is not a directory path");
+			}
 		}
 	}
 

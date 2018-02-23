@@ -25,7 +25,7 @@ public class MkdirApplicationTest {
 	private static final String LEVEL_TWO = "Level2";
 	private static final String MULTI_LEVEL_ONE = "Level1/Level12";
 	private static final String MULTI_LEVEL_TWO = "Level11/Level12";
-	private static final String INVALID_PATH = "Level1/Level*2";
+	private static final String INVALID_CHARACTER_PATH = "Level1/Level*2";
 	ArrayList<String> paths;
 	
 	@BeforeClass
@@ -47,21 +47,21 @@ public class MkdirApplicationTest {
 	public void Should_Ignore_When_FolderAlreadyExists() throws Exception {
 		Path folderPath = testPath.resolve(LEVEL_ONE);
 		mkdir.createFolder(folderPath.toString(), folderPath.toString());
-		assertTrue(folderPath.toFile().exists());
+		assertTrue(folderPath.toFile().isDirectory());
 	}
 	
 	@Test
 	public void Should_CreateFolder_When_SingleLevelFolderNotExists() throws Exception {
 		Path folderPath = testPath.resolve(LEVEL_ONE);
 		mkdir.createFolder(folderPath.toString());
-		assertTrue(folderPath.toFile().exists());
+		assertTrue(folderPath.toFile().isDirectory());
 	}
 	
 	@Test
 	public void Should_CreateFolders_When_MultiLevelFolderNotExists() throws Exception {
 		Path folderPath = testPath.resolve(MULTI_LEVEL_ONE);
 		mkdir.createFolder(folderPath.toString());
-		assertTrue(folderPath.toFile().exists());
+		assertTrue(folderPath.toFile().isDirectory());
 	}
 	
 	@Test
@@ -69,13 +69,28 @@ public class MkdirApplicationTest {
 		Path folderPathOne = testPath.resolve(LEVEL_ONE);
 		Path folderPathTwo = testPath.resolve(MULTI_LEVEL_TWO);
 		mkdir.createFolder(new String[] {folderPathOne.toString(), folderPathTwo.toString()});
-		assertTrue(folderPathOne.toFile().exists());
-		assertTrue(folderPathTwo.toFile().exists());
+		assertTrue(folderPathOne.toFile().isDirectory());
+		assertTrue(folderPathTwo.toFile().isDirectory());
+	}
+	
+	@Test
+	public void Should_CreateFolder_When_ValidAbsolutePath() throws Exception {
+		String path = testPath.toString() + File.separator + LEVEL_ONE;
+		mkdir.run(new String[] {path}, System.in, System.out);
+		assertTrue(new File(path).isDirectory());
 	}
 	
 	@Test(expected=MkdirException.class)
-	public void Should_ThrowException_When_InvalidArgumentExists() throws Exception {
-		mkdir.run(new String[] {INVALID_PATH}, System.in, System.out);
+	public void Should_ThrowException_When_InvalidDirectoryPath() throws Exception {
+		String path = testPath.toString() + File.separator + LEVEL_ONE;
+		File duplicate = new File(path);
+		duplicate.createNewFile();
+		mkdir.run(new String[] {path}, System.in, System.out);
+	}
+	
+	@Test(expected=MkdirException.class)
+	public void Should_ThrowException_When_InvalidCharacterExists() throws Exception {
+		mkdir.run(new String[] {INVALID_CHARACTER_PATH}, System.in, System.out);
 	}
 	
 	@Test(expected=MkdirException.class)
@@ -85,7 +100,7 @@ public class MkdirApplicationTest {
 	
 	@Test(expected=MkdirException.class)
 	public void Should_ThrowException_When_InvalidInArgsExists() throws Exception {
-		mkdir.run(new String[] {LEVEL_ONE, INVALID_PATH}, System.in, System.out);
+		mkdir.run(new String[] {LEVEL_ONE, INVALID_CHARACTER_PATH}, System.in, System.out);
 	}
 	
 	private static boolean deleteDirectory(File directory) {

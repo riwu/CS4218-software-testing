@@ -55,6 +55,22 @@ public class LsApplicationTest {
 	}
 	
 	@Test
+	public void Should_ListEachFolderContents_When_MultipleValidPaths() throws Exception {
+		String path = testPath.toString();
+		String secondPath = pathThree.toString();
+		// undertest:
+		// One\
+		// Two
+		//
+		// undertest\One\One:
+		//
+		String expected = path + ":\n" 
+						+ NAME_ONE + File.separator + "\n" + NAME_TWO + "\n\n"
+						+ secondPath + ":\n" + "\n";
+		assertEquals(expected, lsApp.listFolderContent(false, false, path, secondPath));
+	}
+	
+	@Test
 	public void Should_ListFoldersOnly_When_ValidPathDirectoryOnly() throws Exception {
 		String path = testPath.toString();
 		// undertest:

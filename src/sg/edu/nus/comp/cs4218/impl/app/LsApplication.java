@@ -85,21 +85,7 @@ public class LsApplication implements Ls {
 			for(String name: folderName) {
 				File folder = new File(name);
 				folderContents = folder.listFiles(directoryFilter);
-				strBuilder.append(folderContentString(name, folderContents));
-			}
-		}
-		return strBuilder.toString();
-	}
-	
-	private String buildString(File... folderContents) {
-		StringBuilder strBuilder = new StringBuilder();
-		for(File file: folderContents) {
-			if(!file.isHidden()) {
-				strBuilder.append(file.getName());
-				if(file.isDirectory()) {
-					strBuilder.append(File.separator);
-				}
-				strBuilder.append('\n');
+				strBuilder.append(listContents(name, folderContents));
 			}
 		}
 		return strBuilder.toString();
@@ -120,7 +106,7 @@ public class LsApplication implements Ls {
 		File folder = new File(folderName);
 		if(folder.isDirectory()) {
 			folderContents = folder.listFiles(directoryFilter);
-			strBuilder.append(folderContentString(folderName, folderContents));
+			strBuilder.append(listContents(folderName, folderContents));
 			for(File file: folderContents) {
 				String fileName = folderName + File.separator + file.getName();
 				strBuilder.append(listFolderContentRecursive(directoryFilter, fileName));
@@ -139,10 +125,18 @@ public class LsApplication implements Ls {
 	 * 		List of folder contents to display in String
 	 * @return Formatted String showing the folder and its contents
 	 */
-	private String folderContentString(String folderName, File... folderContents) {
+	private String listContents(String folderName, File... folderContents) {
 		StringBuilder strBuilder = new StringBuilder();
-		strBuilder.append(folderName).append(":\n")
-				.append(buildString(folderContents)).append('\n');
+		strBuilder.append(folderName).append(":\n");
+		
+		for(File file: folderContents) {
+			strBuilder.append(file.getName());
+			if(file.isDirectory()) {
+				strBuilder.append(File.separator);
+			}
+			strBuilder.append('\n');
+		}
+		strBuilder.append('\n');
 		
 		return strBuilder.toString();
 	}

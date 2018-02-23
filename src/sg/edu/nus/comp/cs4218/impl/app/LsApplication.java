@@ -12,14 +12,14 @@ import sg.edu.nus.comp.cs4218.exception.AbstractApplicationException;
 import sg.edu.nus.comp.cs4218.exception.LsException;
 
 /**
- * The ls command lists the contents of the given folder(s) and prints on the
- * standard output.
+ * The ls command lists the contents of the given folder(s) and prints to the
+ * output stream.
  * 
  * <p>
  * <b>Command format:</b> <code>ls [-d] [FOLDER...] [-R]</code>
  * <dl>
  * <dt>FOLDER</dt>
- * <dd>the name of the file(s). If no files are specified, use stdin.</dd>
+ * <dd>the name of the folder(s). If no folders are specified, use current directory.</dd>
  * <dt>-d</dt>
  * <dd>Option to list directories only.</dd>
  * <dt>-R</dt>

@@ -39,7 +39,7 @@ public class MkdirApplication implements Mkdir {
 					folderPath = currentDir.resolve(args[i]);
 					folderPathS[i] = folderPath.toString();
 				} catch (Exception e) {
-					throw new MkdirException("Invalid characters found");
+					throw new MkdirException(e.getMessage());
 				}
 			}
 			createFolder(folderPathS);

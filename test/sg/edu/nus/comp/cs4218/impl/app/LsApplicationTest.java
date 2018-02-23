@@ -16,27 +16,27 @@ public class LsApplicationTest {
 	
 	LsApplication lsApp = new LsApplication();
 	private static final String TEST_FOLDER = "undertest";
-	private static final String NAME_ONE = "One";
-	private static final String NAME_TWO = "Two";
+	private static final String FOLDER_NAME = "One";
+	private static final String FILE_NAME = "Two";
 	private static Path testPath; // undertest
-	private static Path pathOne; // undertest/One [folder]
-	private static Path pathTwo; // undertest/Two [file]
-	private static Path pathThree; // undertest/One/One [folder]
-	private static Path pathFour; // undertest/One/Two [file]
+	private static Path folderPath; // undertest/One [folder]
+	private static Path filePath; // undertest/Two [file]
+	private static Path folderPathNested; // undertest/One/One [folder]
+	private static Path filePathNested; // undertest/One/Two [file]
 	
 
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
 		testPath = Paths.get(TEST_FOLDER);
 		testPath.toFile().mkdir();
-		pathOne = Paths.get(TEST_FOLDER, NAME_ONE);
-		pathOne.toFile().mkdir();
-		pathTwo = Paths.get(TEST_FOLDER, NAME_TWO);
-		pathTwo.toFile().createNewFile();
-		pathThree = Paths.get(TEST_FOLDER, NAME_ONE, NAME_ONE);
-		pathThree.toFile().mkdir();
-		pathFour = Paths.get(TEST_FOLDER, NAME_ONE, NAME_TWO);
-		pathFour.toFile().createNewFile();
+		folderPath = Paths.get(TEST_FOLDER, FOLDER_NAME);
+		folderPath.toFile().mkdir();
+		filePath = Paths.get(TEST_FOLDER, FILE_NAME);
+		filePath.toFile().createNewFile();
+		folderPathNested = Paths.get(TEST_FOLDER, FOLDER_NAME, FOLDER_NAME);
+		folderPathNested.toFile().mkdir();
+		filePathNested = Paths.get(TEST_FOLDER, FOLDER_NAME, FILE_NAME);
+		filePathNested.toFile().createNewFile();
 	}
 
 	@AfterClass
@@ -50,14 +50,15 @@ public class LsApplicationTest {
 		// undertest:
 		// One\
 		// Two
-		String expected = path + ":\n" + NAME_ONE + File.separator + "\n" + NAME_TWO + "\n\n";
+		String expected = path + ":\n" 
+						+ FOLDER_NAME + File.separator + "\n" + FILE_NAME + "\n\n";
 		assertEquals(expected, lsApp.listFolderContent(false, false, path));
 	}
 	
 	@Test
 	public void Should_ListEachFolderContents_When_MultipleValidPaths() throws Exception {
 		String path = testPath.toString();
-		String secondPath = pathThree.toString();
+		String secondPath = folderPathNested.toString();
 		// undertest:
 		// One\
 		// Two
@@ -65,7 +66,7 @@ public class LsApplicationTest {
 		// undertest\One\One:
 		//
 		String expected = path + ":\n" 
-						+ NAME_ONE + File.separator + "\n" + NAME_TWO + "\n\n"
+						+ FOLDER_NAME + File.separator + "\n" + FILE_NAME + "\n\n"
 						+ secondPath + ":\n" + "\n";
 		assertEquals(expected, lsApp.listFolderContent(false, false, path, secondPath));
 	}
@@ -75,7 +76,7 @@ public class LsApplicationTest {
 		String path = testPath.toString();
 		// undertest:
 		// One\
-		String expected = path + ":\n" + NAME_ONE + File.separator + "\n\n";
+		String expected = path + ":\n" + FOLDER_NAME + File.separator + "\n\n";
 		assertEquals(expected, lsApp.listFolderContent(true, false, path));
 	}
 	
@@ -93,10 +94,10 @@ public class LsApplicationTest {
 		// undertest\One\One:
 		//
 		String expected = path + ":\n" 
-				+ NAME_ONE + File.separator + "\n" + NAME_TWO + "\n\n"
-				+ pathOne + ":\n" 
-				+ NAME_ONE + File.separator + "\n" + NAME_TWO + "\n\n"
-				+ pathThree + ":\n"+ "\n";
+				+ FOLDER_NAME + File.separator + "\n" + FILE_NAME + "\n\n"
+				+ folderPath + ":\n" 
+				+ FOLDER_NAME + File.separator + "\n" + FILE_NAME + "\n\n"
+				+ folderPathNested + ":\n"+ "\n";
 		assertEquals(expected, lsApp.listFolderContent(false, true, path));
 	}
 	
@@ -111,15 +112,17 @@ public class LsApplicationTest {
 		//
 		// undertest\One\One:
 		//
-		String expected = path + ":\n" + NAME_ONE + File.separator + "\n\n" 
-						+ pathOne + ":\n"+ NAME_ONE + File.separator + "\n\n"
-						+ pathThree + ":\n"+ "\n";
+		String expected = path + ":\n" 
+						+ FOLDER_NAME + File.separator + "\n\n" 
+						+ folderPath + ":\n"
+						+ FOLDER_NAME + File.separator + "\n\n"
+						+ folderPathNested + ":\n"+ "\n";
 		assertEquals(expected, lsApp.listFolderContent(true, true, path));
 	}
 	
 	@Test(expected=LsException.class)
 	public void Should_ThrowException_When_NotDirectoryPath() throws Exception {
-		String path = pathTwo.toString();
+		String path = filePath.toString();
 		lsApp.run(new String[] {path}, System.in, System.out);
 	}
 

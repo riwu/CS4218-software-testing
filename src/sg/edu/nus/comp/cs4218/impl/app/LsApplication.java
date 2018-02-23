@@ -11,6 +11,22 @@ import sg.edu.nus.comp.cs4218.app.Ls;
 import sg.edu.nus.comp.cs4218.exception.AbstractApplicationException;
 import sg.edu.nus.comp.cs4218.exception.LsException;
 
+/**
+ * The ls command lists the contents of the given folder(s) and prints on the
+ * standard output.
+ * 
+ * <p>
+ * <b>Command format:</b> <code>ls [-d] [FOLDER...] [-R]</code>
+ * <dl>
+ * <dt>FOLDER</dt>
+ * <dd>the name of the file(s). If no files are specified, use stdin.</dd>
+ * <dt>-d</dt>
+ * <dd>Option to list directories only.</dd>
+ * <dt>-R</dt>
+ * <dd>Option to list files and sub-folders recursively.</dd>
+ * </dl>
+ * </p>
+ */
 public class LsApplication implements Ls {
 
 	@Override
@@ -58,59 +74,87 @@ public class LsApplication implements Ls {
 	@Override
 	public String listFolderContent(Boolean isFoldersOnly, Boolean isRecursive, String... folderName) throws Exception {
 		File[] folderContents;
-		String display = "";
 		FileFilter directoryFilter = generateFileFilter(isFoldersOnly);
-		
+		StringBuilder strBuilder = new StringBuilder();
 		if (isRecursive) {
 			for(String name: folderName) {
-				display += listFolderContentRecursive(directoryFilter, name);
+				strBuilder.append(listFolderContentRecursive(directoryFilter, name));
 			}
-			return display;
 		}
-		
-		for(String name: folderName) {
-			File folder = new File(name);
-			display += folder.getName() + ":\n";
-			folderContents = folder.listFiles(directoryFilter);
-			display += buildString(folderContents);
-			display += "\n";
+		else {
+			for(String name: folderName) {
+				File folder = new File(name);
+				folderContents = folder.listFiles(directoryFilter);
+				strBuilder.append(folderContentString(name, folderContents));
+			}
 		}
-		return display;
+		return strBuilder.toString();
 	}
-
-	private String buildString(File[] folderContents) {
-		String display = "";
+	
+	private String buildString(File... folderContents) {
+		StringBuilder strBuilder = new StringBuilder();
 		for(File file: folderContents) {
 			if(!file.isHidden()) {
-				display += file.getName();
+				strBuilder.append(file.getName());
 				if(file.isDirectory()) {
-					display += File.separator;
+					strBuilder.append(File.separator);
 				}
-				display += "\n";
+				strBuilder.append('\n');
 			}
 		}
-		return display;
+		return strBuilder.toString();
 	}
 
+	/**
+	 * Method to recursively display contents of a directory and all its sub-directories
+	 * @param directoryFilter
+	 * 		FileFilter to filter only selected files
+	 * @param folderName
+	 * 		Name of folder to display contents from
+	 * @return String of contents found in the directory and all its sub-directories
+	 */
 	private String listFolderContentRecursive(FileFilter directoryFilter, String folderName) {
 		File[] folderContents;
-		String display = "";
+		StringBuilder strBuilder = new StringBuilder();
 		
 		File folder = new File(folderName);
 		if(folder.isDirectory()) {
-			display += folderName + ":\n";
 			folderContents = folder.listFiles(directoryFilter);
-			display += buildString(folderContents);
-			display += "\n";
+			strBuilder.append(folderContentString(folderName, folderContents));
 			for(File file: folderContents) {
 				String fileName = folderName + File.separator + file.getName();
-				display += listFolderContentRecursive(directoryFilter, fileName);
+				strBuilder.append(listFolderContentRecursive(directoryFilter, fileName));
 			}
 		}	
 		
-		return display;
+		return strBuilder.toString();
 	}
 
+	/**
+	 * Method to format the folder and its contents in String
+	 * 
+	 * @param folderName
+	 * 		Name of the folder
+	 * @param folderContents
+	 * 		List of folder contents to display in String
+	 * @return Formatted String showing the folder and its contents
+	 */
+	private String folderContentString(String folderName, File... folderContents) {
+		StringBuilder strBuilder = new StringBuilder();
+		strBuilder.append(folderName).append(":\n")
+				.append(buildString(folderContents)).append('\n');
+		
+		return strBuilder.toString();
+	}
+
+	/**
+	 * Method to create FileFilter to ensure hidden files are not shown and additionally
+	 * show directories only if isFolderOnly is true
+	 * 
+	 * @param isFoldersOnly
+	 * 		true if -d option is provided in args, otherwise false
+	 * @return FileFilter based on the option provided
+	 */
 	private FileFilter generateFileFilter(Boolean isFoldersOnly) {
 		return new FileFilter() {
 			@Override

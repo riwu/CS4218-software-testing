@@ -4,7 +4,7 @@ import java.io.InputStream;
 
 import sg.edu.nus.comp.cs4218.Application;
 
-public interface Diff extends Application {
+public interface DiffInterface extends Application {
 	
 	/**
 	 * Returns a string of files diff. The diff report contains a list

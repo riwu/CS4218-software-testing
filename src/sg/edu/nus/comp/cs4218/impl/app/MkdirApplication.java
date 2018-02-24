@@ -7,7 +7,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import sg.edu.nus.comp.cs4218.Environment;
-import sg.edu.nus.comp.cs4218.app.Mkdir;
+import sg.edu.nus.comp.cs4218.app.MkdirInterface;
 import sg.edu.nus.comp.cs4218.exception.AbstractApplicationException;
 import sg.edu.nus.comp.cs4218.exception.MkdirException;
 
@@ -23,7 +23,7 @@ import sg.edu.nus.comp.cs4218.exception.MkdirException;
  * </dl>
  * </p>
  */
-public class MkdirApplication implements Mkdir {
+public class MkdirApplication implements MkdirInterface {
 
 	@Override
 	public void run(String[] args, InputStream stdin, OutputStream stdout) throws AbstractApplicationException {

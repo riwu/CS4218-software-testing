@@ -3,7 +3,7 @@ package sg.edu.nus.comp.cs4218.app;
 import sg.edu.nus.comp.cs4218.Application;
 import sg.edu.nus.comp.cs4218.exception.MkdirException;
 
-public interface Mkdir extends Application {
+public interface MkdirInterface extends Application {
 
 	/**
 	 * Create folder from the given folder names. Do nothing

@@ -9,6 +9,8 @@ import sg.edu.nus.comp.cs4218.impl.ShellImpl;
 
 public class HeadApplication implements Application {
 
+    private int HEAD_READ_COUNT = 10;
+
     @Override
     public void run(String[] args, InputStream stdin, OutputStream stdout) throws AbstractApplicationException {
 
@@ -20,14 +22,20 @@ public class HeadApplication implements Application {
             boolean hasLine = line != null;
             boolean hasArgs = args.length != 0;
 
+            line += System.lineSeparator();
             if(hasArgs){ // if it has argument, ignore the piped input then evaluate the args only.
-                stdout.write(args[0].getBytes(), 0, args[0].length());
+                stdout.write(args[0].getBytes());
             }else { // no args
-                while (hasLine) { // then we check if it has any the piped inputs
+                int lineRead = 1;
+
+                while (hasLine && lineRead < HEAD_READ_COUNT) { // then we check if it has any the piped inputs
                     stdout.write(line.getBytes());
 
                     line = bufferedReader.readLine();
                     hasLine = line != null;
+                    line += System.lineSeparator();
+
+                    lineRead++;
                 }
             }
 

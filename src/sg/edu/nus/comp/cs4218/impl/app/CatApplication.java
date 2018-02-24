@@ -9,7 +9,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import sg.edu.nus.comp.cs4218.Environment;
-import sg.edu.nus.comp.cs4218.app.Cat;
+import sg.edu.nus.comp.cs4218.app.CatInterface;
 import sg.edu.nus.comp.cs4218.exception.CatException;
 
 /**
@@ -24,7 +24,7 @@ import sg.edu.nus.comp.cs4218.exception.CatException;
  * </dl>
  * </p>
  */
-public class CatApplication implements Cat {
+public class CatApplication implements CatInterface {
 
 	/**
 	 * Runs the cat application with the specified arguments.

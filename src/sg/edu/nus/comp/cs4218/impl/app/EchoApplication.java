@@ -53,7 +53,7 @@ public class EchoApplication implements Echo {
 	public String evaluate(String[] args){
         return Arrays.stream(args)
                 .reduce("", (result, arg) -> result + " " + arg)
-                .trim() + "\n";
+                .trim();
     }
 
 }

@@ -11,10 +11,7 @@ import sg.edu.nus.comp.cs4218.Environment;
 import sg.edu.nus.comp.cs4218.Shell;
 import sg.edu.nus.comp.cs4218.exception.AbstractApplicationException;
 import sg.edu.nus.comp.cs4218.exception.ShellException;
-import sg.edu.nus.comp.cs4218.impl.app.CatApplication;
-import sg.edu.nus.comp.cs4218.impl.app.EchoApplication;
-import sg.edu.nus.comp.cs4218.impl.app.HeadApplication;
-import sg.edu.nus.comp.cs4218.impl.app.TailApplication;
+import sg.edu.nus.comp.cs4218.impl.app.*;
 import sg.edu.nus.comp.cs4218.impl.cmd.CallCommand;
 import sg.edu.nus.comp.cs4218.impl.cmd.PipeCommand;
 
@@ -134,6 +131,12 @@ public class ShellImpl implements Shell {
             case "tail": // tail [OPTIONS] [FILE]
                 absApp = new TailApplication();
                 break;
+			case "ls":
+				absApp = new LsApplication();
+				break;
+			case "mkdir":
+				absApp = new MkdirApplication();
+				break;
             default: throw new ShellException(app + ": " + EXP_INVALID_APP);
         }
 

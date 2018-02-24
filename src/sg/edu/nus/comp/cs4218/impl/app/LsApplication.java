@@ -7,7 +7,7 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 
 import sg.edu.nus.comp.cs4218.Environment;
-import sg.edu.nus.comp.cs4218.app.Ls;
+import sg.edu.nus.comp.cs4218.app.LsInterface;
 import sg.edu.nus.comp.cs4218.exception.AbstractApplicationException;
 import sg.edu.nus.comp.cs4218.exception.LsException;
 
@@ -27,7 +27,7 @@ import sg.edu.nus.comp.cs4218.exception.LsException;
  * </dl>
  * </p>
  */
-public class LsApplication implements Ls {
+public class LsApplication implements LsInterface {
 
 	@Override
 	public void run(String[] args, InputStream stdin, OutputStream stdout) throws AbstractApplicationException {

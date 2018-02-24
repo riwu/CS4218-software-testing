@@ -5,7 +5,7 @@ import java.io.InputStream;
 
 import sg.edu.nus.comp.cs4218.Application;
 
-public interface Split extends Application {
+public interface SplitInterface extends Application {
 	
 	/**
 	 * Split a file into fixed size pieces with specified number of 

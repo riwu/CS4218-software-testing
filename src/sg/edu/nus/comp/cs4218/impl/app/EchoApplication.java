@@ -5,8 +5,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Arrays;
 
-import sg.edu.nus.comp.cs4218.Application;
-import sg.edu.nus.comp.cs4218.app.Echo;
+import sg.edu.nus.comp.cs4218.app.EchoInterface;
 import sg.edu.nus.comp.cs4218.exception.EchoException;
 
 /**
@@ -17,7 +16,7 @@ import sg.edu.nus.comp.cs4218.exception.EchoException;
  * <b>Command format:</b> <code>echo [ARG]...</code>
  * </p>
  */
-public class EchoApplication implements Echo {
+public class EchoApplication implements EchoInterface {
 
 	/**
 	 * Runs the echo application with the specified arguments.

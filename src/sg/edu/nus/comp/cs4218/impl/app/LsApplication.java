@@ -80,14 +80,30 @@ public class LsApplication implements LsInterface {
 			for(String name: folderName) {
 				strBuilder.append(listFolderContentRecursive(directoryFilter, name));
 			}
+			strBuilder.deleteCharAt(strBuilder.length()-1);
 		}
 		else {
+			boolean displayFolder = false;
+			boolean extraNewLine = false;
+			if(folderName.length > 1) {
+				displayFolder = true;
+				extraNewLine = true;
+			}
 			for(String name: folderName) {
 				File folder = new File(name);
 				folderContents = folder.listFiles(directoryFilter);
-				strBuilder.append(listContents(name, folderContents));
+				if(displayFolder) {
+					strBuilder.append(name).append(":\n");
+				}
+				if(folderContents.length > 0) {
+					strBuilder.append(listContents(name, folderContents));
+					if(extraNewLine) {
+						strBuilder.append('\n');
+					}
+				}
 			}
 		}
+		strBuilder.deleteCharAt(strBuilder.length()-1);
 		return strBuilder.toString();
 	}
 
@@ -105,8 +121,10 @@ public class LsApplication implements LsInterface {
 		
 		File folder = new File(folderName);
 		if(folder.isDirectory()) {
+			strBuilder.append(folderName).append(":\n");
 			folderContents = folder.listFiles(directoryFilter);
 			strBuilder.append(listContents(folderName, folderContents));
+			strBuilder.append('\n');
 			for(File file: folderContents) {
 				String fileName = folderName + File.separator + file.getName();
 				strBuilder.append(listFolderContentRecursive(directoryFilter, fileName));
@@ -127,7 +145,6 @@ public class LsApplication implements LsInterface {
 	 */
 	private String listContents(String folderName, File... folderContents) {
 		StringBuilder strBuilder = new StringBuilder();
-		strBuilder.append(folderName).append(":\n");
 		
 		for(File file: folderContents) {
 			strBuilder.append(file.getName());
@@ -136,8 +153,9 @@ public class LsApplication implements LsInterface {
 			}
 			strBuilder.append('\n');
 		}
-		strBuilder.append('\n');
-		
+/*		if(strBuilder.length() > 0) {
+			strBuilder.deleteCharAt(strBuilder.length()-1);
+		}*/
 		return strBuilder.toString();
 	}
 

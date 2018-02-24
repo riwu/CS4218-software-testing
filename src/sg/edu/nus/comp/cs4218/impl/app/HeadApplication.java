@@ -20,17 +20,15 @@ public class HeadApplication implements Application {
             boolean hasLine = line != null;
             boolean hasArgs = args.length != 0;
 
-            if(hasArgs){
-
+            if(hasArgs){ // if it has argument, ignore the piped input then evaluate the args only.
                 stdout.write(args[0].getBytes(), 0, args[0].length());
-                return;
-            }
+            }else { // no args
+                while (hasLine) { // then we check if it has any the piped inputs
+                    stdout.write(line.getBytes());
 
-            while(hasLine){
-                stdout.write(line.getBytes());
-
-                line = bufferedReader.readLine();
-                hasLine = line != null;
+                    line = bufferedReader.readLine();
+                    hasLine = line != null;
+                }
             }
 
         } catch (Exception e) {
@@ -38,5 +36,5 @@ public class HeadApplication implements Application {
         }
 
     }
-    
+
 }

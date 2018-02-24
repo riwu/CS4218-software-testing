@@ -102,8 +102,7 @@ public class CallCommand implements Command {
 	 *             redirection file path.
 	 */
 
-	// KF: Whoever wrote this program should go and kill himself
-    // KF: such horrible code
+    // such horrible code without documentation
 	public void parse() throws ShellException {
 		Vector<String> cmdVector = new Vector<String>();
 		Boolean result = true;
@@ -115,12 +114,9 @@ public class CallCommand implements Command {
 			cmdVector.add(""); // reserved for input redir
 			cmdVector.add(""); // reserved for output redir
 
-            // KF: can fucking tell this programmer comes from C/C++
-            // who the fuck pass in the vector/array to method in java within same class?
-            // they fucking share the same scope and they by default pass by ref
-
-            // also the endIndx fucking mutate after each extract*** calls
-            // make others so difficult to debug this result. Fucking shithole!
+            // the endIndx f**king mutate after each extract*** calls
+            // make others so difficult to debug this result.
+			// BAD CODE
 			endIdx = extractInputRedir(str, cmdVector, endIdx);
 			endIdx = extractOutputRedir(str, cmdVector, endIdx);
 
@@ -132,9 +128,7 @@ public class CallCommand implements Command {
 			result = false;
 		}
 
-		// KF: WTF is wrong with you? HORRIBLE CODE!!!!
-        // DOCUMENT THE SHIT LAHH WHAT DOES THE FUCKING RESULT MEAN?????
-        //
+		// Orz simply horrible.
 		if (str.substring(endIdx).trim().isEmpty()) {
 			result = true;
 		} else {

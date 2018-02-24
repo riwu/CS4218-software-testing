@@ -316,7 +316,7 @@ public class ShellImpl implements Shell {
         PipeCommand pipeCommand = new PipeCommand(cmdline);
         pipeCommand.evaluate(inputPipe, outputPipe);
 
-        writeToStdout(outputPipe, System.out);
+        writeToStdout(pipeCommand.getResultStream(), stdout);
 /*
         CallCommand callCommand = new CallCommand(cmdline);
         callCommand.parse();

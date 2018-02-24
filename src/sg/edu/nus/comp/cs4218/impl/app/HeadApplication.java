@@ -1,10 +1,9 @@
 package sg.edu.nus.comp.cs4218.impl.app;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
+import java.nio.Buffer;
 
 import sg.edu.nus.comp.cs4218.Application;
+import sg.edu.nus.comp.cs4218.Shell;
 import sg.edu.nus.comp.cs4218.exception.AbstractApplicationException;
 import sg.edu.nus.comp.cs4218.impl.ShellImpl;
 
@@ -13,19 +12,31 @@ public class HeadApplication implements Application {
     @Override
     public void run(String[] args, InputStream stdin, OutputStream stdout) throws AbstractApplicationException {
 
-        String in = convertStreamToString(stdin) + args[0];
-
         try {
-            stdout.write(in.getBytes());
+
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(stdin));
+
+            String line = bufferedReader.readLine();
+            boolean hasLine = line != null;
+            boolean hasArgs = args.length != 0;
+
+            if(hasArgs){
+
+                stdout.write(args[0].getBytes(), 0, args[0].length());
+                return;
+            }
+
+            while(hasLine){
+                stdout.write(line.getBytes());
+
+                line = bufferedReader.readLine();
+                hasLine = line != null;
+            }
+
         } catch (Exception e) {
             e.printStackTrace();
         }
 
     }
-
-    private String convertStreamToString(java.io.InputStream is) {
-        java.util.Scanner s = new java.util.Scanner(is).useDelimiter("\\A");
-        return s.hasNext() ? s.next() : "";
-    }
-
+    
 }

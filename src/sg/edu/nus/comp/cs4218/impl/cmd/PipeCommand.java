@@ -2,20 +2,19 @@ package sg.edu.nus.comp.cs4218.impl.cmd;
 
 import jdk.internal.util.xml.impl.Input;
 import sg.edu.nus.comp.cs4218.Command;
+import sg.edu.nus.comp.cs4218.Shell;
 import sg.edu.nus.comp.cs4218.exception.AbstractApplicationException;
 import sg.edu.nus.comp.cs4218.exception.ShellException;
 import sg.edu.nus.comp.cs4218.impl.ShellImpl;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 public class PipeCommand implements Command {
 
     private Queue<CallCommand> commandQ;
+    private OutputStream resultStream;
 
     public PipeCommand(String cmdline) {
         this.commandQ = new LinkedList<>();
@@ -39,16 +38,23 @@ public class PipeCommand implements Command {
     @Override
     public void evaluate(InputStream stdin, OutputStream stdout) throws AbstractApplicationException, ShellException {
 
-        InputStream inputPipe = new ByteArrayInputStream("".getBytes(StandardCharsets.UTF_8));
-        OutputStream outputPipe = new ByteArrayOutputStream();
 
-        while(!commandQ.isEmpty()){
+        while (!commandQ.isEmpty()) {
             CallCommand command = commandQ.poll();
             command.parse();
-            command.evaluate(inputPipe, outputPipe);
+            command.evaluate(stdin, stdout);
+
+            resultStream = stdout; // cache the current result of pipeline
+            stdin = ShellImpl.outputStreamToInputStream(stdout); // transfer current result to next pipe
+
+            ShellImpl.closeOutputStream(stdout); // close the current pipe
+            stdout = new ByteArrayOutputStream(); // create new output stream (so the previous result doesn't remain inside)
         }
 
-        ShellImpl.writeToStdout(outputPipe, stdout);
+    }
+
+    public OutputStream getResultStream(){
+        return resultStream;
     }
 
     @Override

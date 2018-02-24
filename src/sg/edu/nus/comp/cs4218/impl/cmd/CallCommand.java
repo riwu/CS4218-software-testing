@@ -2,8 +2,7 @@ package sg.edu.nus.comp.cs4218.impl.cmd;
 
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.Arrays;
-import java.util.Vector;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -85,6 +84,7 @@ public class CallCommand implements Command {
 		} else {
 			outputStream = ShellImpl.openOutputRedir(outputStreamS);
 		}
+
 		ShellImpl.runApp(app, argsArray, inputStream, outputStream);
 		ShellImpl.closeInputStream(inputStream);
 		ShellImpl.closeOutputStream(outputStream);
@@ -101,27 +101,42 @@ public class CallCommand implements Command {
 	 *             the input redirection file path is same as that of the output
 	 *             redirection file path.
 	 */
+
+    // such horrible code without documentation
 	public void parse() throws ShellException {
 		Vector<String> cmdVector = new Vector<String>();
 		Boolean result = true;
 		int endIdx = 0;
 		String str = " " + cmdline + " ";
+
 		try {
 			endIdx = extractArgs(str, cmdVector);
 			cmdVector.add(""); // reserved for input redir
 			cmdVector.add(""); // reserved for output redir
+
+            // the endIndx f**king mutate after each extract*** calls
+            // make others so difficult to debug this result.
+			// BAD CODE
 			endIdx = extractInputRedir(str, cmdVector, endIdx);
 			endIdx = extractOutputRedir(str, cmdVector, endIdx);
-			// System.out.println(cmdVector.toString());
+
+			//System.out.print("Parse: ");
+			//cmdVector.stream().forEach(cmd -> System.out.print( "["+cmd + "]"));
+
+			//System.out.println("ext"+cmdVector.toString());
 		} catch (ShellException e) {
 			result = false;
 		}
+
+		// Orz simply horrible.
 		if (str.substring(endIdx).trim().isEmpty()) {
 			result = true;
 		} else {
 			result = false;
 		}
+
 		if (!result) {
+			//System.out.println("err"+cmdVector.toString());
 			this.app = cmdVector.get(0);
 			error = true;
 			if (("").equals(errorMsg)) {
@@ -155,9 +170,10 @@ public class CallCommand implements Command {
 	/**
 	 * Parses the sub-command's arguments to the call command and splits it into
 	 * its different components, namely the application name and the arguments
-	 * (if any), based on rules: Unquoted: any char except for whitespace
-	 * characters, quotes, newlines, semicolons “;”, “|”, “<” and “>”. Double
-	 * quoted: any char except \n, ", ` Single quoted: any char except \n, '
+	 * (if any), based on rules:
+     * Unquoted: any char except for whitespace characters, quotes, newlines, semicolons ;, |, < and >.
+     * Double quoted: any char except \n, ", `
+     * Single quoted: any char except \n, '
 	 * Back quotes in Double Quote for command substitution: DQ rules for
 	 * outside BQ + `anything but \n` in BQ.
 	 * 
@@ -168,7 +184,7 @@ public class CallCommand implements Command {
 	 * 
 	 * @return endIdx Index of string where the parsing of arguments stopped
 	 *         (due to no more matches).
-	 * 
+	 * e
 	 * @throws ShellException
 	 *             If an error in the syntax of the command is detected while
 	 *             parsing.
@@ -178,7 +194,7 @@ public class CallCommand implements Command {
 		String patternUQ = "[\\s]+([^\\s\"'`\\n;|<>]*)[\\s]";
 		String patternDQ = "[\\s]+\"([^\\n\"`]*)\"[\\s]";
 		String patternSQ = "[\\s]+\'([^\\n']*)\'[\\s]";
-		String patternBQ = "[\\s]+(`[^\\n`]*`)[\\s]";
+		String patternBQ = "[\\s]+(`[^\\n`]*`)[\\s]"; // <space>`<not new line or backtick>`<space>
 		String patternBQinDQ = "[\\s]+\"([^\\n\"`]*`[^\\n]*`[^\\n\"`]*)\"[\\s]";
 		String[] patterns = { patternDash, patternUQ, patternDQ, patternSQ,
 				patternBQ, patternBQinDQ };
@@ -189,7 +205,8 @@ public class CallCommand implements Command {
 			smallestStartIdx = -1;
 			smallestPattIdx = -1;
 			if (substring.trim().startsWith("<")
-					|| substring.trim().startsWith(">")) {
+					|| substring.trim().startsWith(">")
+                    || substring.trim().startsWith("|")) {
 				break;
 			}
 			for (int i = 0; i < patterns.length; i++) {

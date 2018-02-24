@@ -4,7 +4,7 @@ import java.io.InputStream;
 
 import sg.edu.nus.comp.cs4218.Application;
 
-public interface Paste extends Application {
+public interface PasteInterface extends Application {
 	
 	/**
 	 * Returns string of line-wise concatenated 

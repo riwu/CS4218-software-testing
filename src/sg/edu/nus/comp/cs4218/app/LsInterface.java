@@ -2,7 +2,7 @@ package sg.edu.nus.comp.cs4218.app;
 
 import sg.edu.nus.comp.cs4218.Application;
 
-public interface Ls extends Application {
+public interface LsInterface extends Application {
 	
 	/**
 	 * Return the string listing the folder content of 

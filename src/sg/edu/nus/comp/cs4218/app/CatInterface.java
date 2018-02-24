@@ -4,7 +4,7 @@ import java.io.File;
 
 import sg.edu.nus.comp.cs4218.Application;
 
-public interface Cat extends Application {
+public interface CatInterface extends Application {
 
     /**
      * Returns the content of the given file

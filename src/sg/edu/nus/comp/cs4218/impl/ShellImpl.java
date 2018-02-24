@@ -320,18 +320,6 @@ public class ShellImpl implements Shell {
         pipeCommand.evaluate(inputPipe, outputPipe);
 
         writeToStdout(pipeCommand.getResultStream(), stdout);
-/*
-        CallCommand callCommand = new CallCommand(cmdline);
-        callCommand.parse();
-        callCommand.evaluate(new ByteArrayInputStream(cmdline.getBytes(StandardCharsets.UTF_8)), stdout);
-*/
-
-/*
-	    System.out.println("===pipe===");
-        if (pipedCommands != null) Arrays.stream(pipedCommands).forEach(System.out::println);
-        System.out.println("==========");
-*/
-
 
 	}
 

@@ -10,6 +10,7 @@ import sg.edu.nus.comp.cs4218.impl.ShellImpl;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.regex.Pattern;
 
 public class PipeCommand implements Command {
 
@@ -66,7 +67,18 @@ public class PipeCommand implements Command {
     private String[] extract(String str)
             throws ShellException {
 
+        str = str.trim();
+
+        // if there's no pipe, no need to evaluate
         if (!str.contains("|")) return null;
+
+        // if the command is of form <command> '<single_quote_content>', don't evaluate
+        Pattern singleQuote = Pattern.compile("(?:.+)\\s+'(?:.*)'");
+        if (singleQuote.matcher(str).matches()) return null;
+
+        // if the command is of form <command> "<double_quote_content>", don't evaluate
+        Pattern doubleQuote = Pattern.compile("(?:.+)\\s+\"(?:.*)\"");
+        if (doubleQuote.matcher(str).matches()) return null;
 
         List<String> commands = new ArrayList<>();
         Queue<Character> queue = new LinkedList<>();
@@ -79,6 +91,7 @@ public class PipeCommand implements Command {
             str = str.substring(1); // reduce the string by one
 
             if(c != '|' && c != '`'){
+
                 queue.offer(c);
                 count++;
                 continue;

@@ -3,6 +3,7 @@ package sg.edu.nus.comp.cs4218.impl.app;
 import static org.junit.Assert.*;
 
 import java.io.File;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -14,7 +15,8 @@ import sg.edu.nus.comp.cs4218.exception.LsException;
 
 public class LsApplicationTest {
 	
-	LsApplication lsApp = new LsApplication();
+	private static LsApplication lsApp;
+	private static final Path basePath = Paths.get(System.getProperty("user.dir"));
 	private static final String TEST_FOLDER = "undertest";
 	private static final String FOLDER_NAME = "One";
 	private static final String FILE_NAME = "Two";
@@ -23,35 +25,42 @@ public class LsApplicationTest {
 	private static Path filePath; // undertest/Two [file]
 	private static Path folderPathNested; // undertest/One/One [folder]
 	private static Path filePathNested; // undertest/One/Two [file]
+	private static String folderPathName;
+	private static String filePathName;
+	private static String folderPathNestedName;
+	private static String filePathNestedName;
 	
 
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
-		testPath = Paths.get(TEST_FOLDER);
-		testPath.toFile().mkdir();
-		folderPath = Paths.get(TEST_FOLDER, FOLDER_NAME);
-		folderPath.toFile().mkdir();
-		filePath = Paths.get(TEST_FOLDER, FILE_NAME);
-		filePath.toFile().createNewFile();
-		folderPathNested = Paths.get(TEST_FOLDER, FOLDER_NAME, FOLDER_NAME);
-		folderPathNested.toFile().mkdir();
-		filePathNested = Paths.get(TEST_FOLDER, FOLDER_NAME, FILE_NAME);
-		filePathNested.toFile().createNewFile();
+		lsApp = new LsApplication();
+		testPath = Files.createTempDirectory(basePath, TEST_FOLDER);
+		folderPath = Files.createTempDirectory(testPath, FOLDER_NAME);
+		folderPathName = folderPath.getName(folderPath.getNameCount()-1).toString();
+		filePath = Files.createTempFile(testPath, FILE_NAME, "");
+		filePathName = filePath.getName(filePath.getNameCount()-1).toString();
+		folderPathNested = Files.createTempDirectory(folderPath, FOLDER_NAME);
+		folderPathNestedName = folderPathNested.getName(folderPathNested.getNameCount()-1).toString();
+		filePathNested = Files.createTempFile(folderPath, FILE_NAME, "");
+		filePathNestedName = filePathNested.getName(filePathNested.getNameCount()-1).toString();
 	}
 
 	@AfterClass
 	public static void tearDownAfterClass() throws Exception {
-		deleteDirectory(testPath.toFile());
+		testPath.toFile().deleteOnExit();
+		folderPath.toFile().deleteOnExit();
+		filePath.toFile().deleteOnExit();
+		folderPathNested.toFile().deleteOnExit();
+		filePathNested.toFile().deleteOnExit();
 	}
 	
 	@Test
 	public void Should_ListAllContents_When_ValidPathNoOptions() throws Exception {
 		String path = testPath.toString();
-		// undertest:
 		// One\
 		// Two
-		String expected = path + ":\n" 
-						+ FOLDER_NAME + File.separator + "\n" + FILE_NAME + "\n\n";
+		String expected = folderPathName + File.separator + "\n"
+						+ filePathName;
 		assertEquals(expected, lsApp.listFolderContent(false, false, path));
 	}
 	
@@ -64,19 +73,19 @@ public class LsApplicationTest {
 		// Two
 		//
 		// undertest\One\One:
-		//
-		String expected = path + ":\n" 
-						+ FOLDER_NAME + File.separator + "\n" + FILE_NAME + "\n\n"
-						+ secondPath + ":\n" + "\n";
+		String expected = path + ":" + "\n"
+						+ folderPathName + File.separator + "\n"
+						+ filePathName + "\n"
+						+ "\n"
+						+ secondPath + ":";
 		assertEquals(expected, lsApp.listFolderContent(false, false, path, secondPath));
 	}
 	
 	@Test
 	public void Should_ListFoldersOnly_When_ValidPathDirectoryOnly() throws Exception {
 		String path = testPath.toString();
-		// undertest:
 		// One\
-		String expected = path + ":\n" + FOLDER_NAME + File.separator + "\n\n";
+		String expected = folderPathName + File.separator;
 		assertEquals(expected, lsApp.listFolderContent(true, false, path));
 	}
 	
@@ -92,12 +101,15 @@ public class LsApplicationTest {
 		// Two
 		//
 		// undertest\One\One:
-		//
-		String expected = path + ":\n" 
-				+ FOLDER_NAME + File.separator + "\n" + FILE_NAME + "\n\n"
-				+ folderPath + ":\n" 
-				+ FOLDER_NAME + File.separator + "\n" + FILE_NAME + "\n\n"
-				+ folderPathNested + ":\n"+ "\n";
+		String expected = path + ":" + "\n" 
+				+ folderPathName + File.separator + "\n"
+				+ filePathName + "\n"
+				+ "\n"
+				+ folderPath + ":" + "\n"
+				+ folderPathNestedName + File.separator + "\n"
+				+ filePathNestedName + "\n"
+				+ "\n"
+				+ folderPathNested + ":";
 		assertEquals(expected, lsApp.listFolderContent(false, true, path));
 	}
 	
@@ -111,12 +123,13 @@ public class LsApplicationTest {
 		// One\
 		//
 		// undertest\One\One:
-		//
-		String expected = path + ":\n" 
-						+ FOLDER_NAME + File.separator + "\n\n" 
-						+ folderPath + ":\n"
-						+ FOLDER_NAME + File.separator + "\n\n"
-						+ folderPathNested + ":\n"+ "\n";
+		String expected = path + ":" + "\n"
+						+ folderPathName + File.separator + "\n"
+						+ "\n"
+						+ folderPath + ":" + "\n"
+						+ folderPathNestedName + File.separator + "\n"
+						+ "\n"
+						+ folderPathNested + ":";
 		assertEquals(expected, lsApp.listFolderContent(true, true, path));
 	}
 	
@@ -129,15 +142,5 @@ public class LsApplicationTest {
 	@Test(expected=LsException.class)
 	public void Should_ThrowException_When_StdOutIsNull() throws Exception {
 		lsApp.run(new String[] {}, System.in, null);	
-	}
-	
-	private static boolean deleteDirectory(File directory) {
-		File[] children = directory.listFiles();
-		if(children != null && children.length != 0) {
-			for(File child: children) {
-				deleteDirectory(child);
-			}
-		}
-		return directory.delete();
 	}
 }

@@ -3,6 +3,7 @@ package sg.edu.nus.comp.cs4218.impl.app;
 import static org.junit.Assert.*;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -57,10 +58,7 @@ public class LsApplicationTest {
 	@Test
 	public void Should_ListAllContents_When_ValidPathNoOptions() throws Exception {
 		String path = testPath.toString();
-		// One\
-		// Two
-		String expected = folderPathName + File.separator + "\n"
-						+ filePathName;
+		String expected = getContentString(testPath, false);
 		assertEquals(expected, lsApp.listFolderContent(false, false, path));
 	}
 	
@@ -68,14 +66,8 @@ public class LsApplicationTest {
 	public void Should_ListEachFolderContents_When_MultipleValidPaths() throws Exception {
 		String path = testPath.toString();
 		String secondPath = folderPathNested.toString();
-		// undertest:
-		// One\
-		// Two
-		//
-		// undertest\One\One:
 		String expected = path + ":" + "\n"
-						+ folderPathName + File.separator + "\n"
-						+ filePathName + "\n"
+						+ getContentString(testPath, false) + "\n"
 						+ "\n"
 						+ secondPath + ":";
 		assertEquals(expected, lsApp.listFolderContent(false, false, path, secondPath));
@@ -84,30 +76,18 @@ public class LsApplicationTest {
 	@Test
 	public void Should_ListFoldersOnly_When_ValidPathDirectoryOnly() throws Exception {
 		String path = testPath.toString();
-		// One\
-		String expected = folderPathName + File.separator;
+		String expected = getContentString(testPath, true);
 		assertEquals(expected, lsApp.listFolderContent(true, false, path));
 	}
 	
 	@Test
 	public void Should_RecursiveListAllContents_When_ValidPathRecursiveOnly() throws Exception {
 		String path = testPath.toString();
-		// undertest:
-		// One\
-		// Two
-		//
-		// undertest\One:
-		// One\
-		// Two
-		//
-		// undertest\One\One:
 		String expected = path + ":" + "\n" 
-				+ folderPathName + File.separator + "\n"
-				+ filePathName + "\n"
+				+ getContentString(testPath, false) + "\n"
 				+ "\n"
 				+ folderPath + ":" + "\n"
-				+ folderPathNestedName + File.separator + "\n"
-				+ filePathNestedName + "\n"
+				+ getContentString(folderPath, false) + "\n"
 				+ "\n"
 				+ folderPathNested + ":";
 		assertEquals(expected, lsApp.listFolderContent(false, true, path));
@@ -116,18 +96,11 @@ public class LsApplicationTest {
 	@Test
 	public void Should_RecursiveListFoldersOnly_When_ValidPathBothOptions() throws Exception {
 		String path = testPath.toString();
-		// undertest:
-		// One\
-		//
-		// undertest\One:
-		// One\
-		//
-		// undertest\One\One:
 		String expected = path + ":" + "\n"
-						+ folderPathName + File.separator + "\n"
+						+ getContentString(testPath, true) + "\n"
 						+ "\n"
 						+ folderPath + ":" + "\n"
-						+ folderPathNestedName + File.separator + "\n"
+						+ getContentString(folderPath, true) + "\n"
 						+ "\n"
 						+ folderPathNested + ":";
 		assertEquals(expected, lsApp.listFolderContent(true, true, path));
@@ -142,5 +115,37 @@ public class LsApplicationTest {
 	@Test(expected=LsException.class)
 	public void Should_ThrowException_When_StdOutIsNull() throws Exception {
 		lsApp.run(new String[] {}, System.in, null);	
+	}
+	
+	private String getContentString(Path path, boolean isDirectoryOnly) {
+		FileFilter filter = generateFileFilter(isDirectoryOnly);
+		File[] contents = path.toFile().listFiles(filter);
+		String expected = "";
+		int limit = contents.length - 1;
+		for(int i=0; i<contents.length; i++) {
+			expected += contents[i].getName();
+			if(contents[i].isDirectory()) {
+				expected += File.separator;
+			}
+			if(i < limit) {
+				expected += "\n";
+			}
+		}
+		return expected;
+		
+	}
+	
+	private FileFilter generateFileFilter(Boolean isFoldersOnly) {
+		return new FileFilter() {
+			@Override
+			public boolean accept(File file) {
+				boolean accepted = true;
+				if(isFoldersOnly) {
+					accepted = file.isDirectory();
+				}
+				accepted &= !file.isHidden();
+				return accepted;
+			}
+		};
 	}
 }

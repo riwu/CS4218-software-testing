@@ -91,12 +91,12 @@ public class MkdirApplicationTest {
 	
 	@Test(expected=MkdirException.class)
 	public void Should_ThrowException_When_InvalidCharacterExists() throws Exception {
+		Assume.assumeTrue(IS_WINDOWS);
 		mkdir.run(new String[] {INVALID_CHARACTER_PATH}, System.in, System.out);
 	}
 	
 	@Test(expected=MkdirException.class)
 	public void Should_ThrowException_When_NoFoldersSpecified() throws Exception {
-		Assume.assumeTrue(IS_WINDOWS);
 		mkdir.run(new String[] {}, System.in, System.out);		
 	}
 	

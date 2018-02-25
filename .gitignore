@@ -1,6 +1,7 @@
 .gradle/
 build/
 *.iws
+target/
 
 .metadata
 bin/

@@ -38,7 +38,7 @@ public class GrepApplication implements GrepInterface {
                 false           | false    | false
                 false           | true     | true
                 true            | false    | true
-                false           | true     | false
+                true            | true     | false
 
                 We can see this is this is a XOR truth table,
                 therefore we do: hasFoundPattern XOR isInvert
@@ -93,7 +93,7 @@ public class GrepApplication implements GrepInterface {
         // if -v then PATTERN is one index more than the index of -v,
         // otherwise the PATTERN index is the 0 (first)
         String patternString = isInvert? args[invertOptionIndex + 1] : args[0];
-        String[] fileNames = isInvert? Arrays.copyOfRange(args, invertOptionIndex + 3, args.length): Arrays.copyOfRange(args, invertOptionIndex + 2, args.length);
+        String[] fileNames = isInvert? Arrays.copyOfRange(args, invertOptionIndex + 2, args.length): Arrays.copyOfRange(args, 1, args.length);
 
         try {
             if(fileNames.length == 0) {

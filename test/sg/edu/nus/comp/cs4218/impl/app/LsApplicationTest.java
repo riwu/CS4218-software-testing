@@ -26,10 +26,6 @@ public class LsApplicationTest {
 	private static Path filePath; // undertest/Two [file]
 	private static Path folderPathNested; // undertest/One/One [folder]
 	private static Path filePathNested; // undertest/One/Two [file]
-	private static String folderPathName;
-	private static String filePathName;
-	private static String folderPathNestedName;
-	private static String filePathNestedName;
 	
 
 	@BeforeClass
@@ -37,13 +33,9 @@ public class LsApplicationTest {
 		lsApp = new LsApplication();
 		testPath = Files.createTempDirectory(basePath, TEST_FOLDER);
 		folderPath = Files.createTempDirectory(testPath, FOLDER_NAME);
-		folderPathName = folderPath.getName(folderPath.getNameCount()-1).toString();
 		filePath = Files.createTempFile(testPath, FILE_NAME, "");
-		filePathName = filePath.getName(filePath.getNameCount()-1).toString();
 		folderPathNested = Files.createTempDirectory(folderPath, FOLDER_NAME);
-		folderPathNestedName = folderPathNested.getName(folderPathNested.getNameCount()-1).toString();
 		filePathNested = Files.createTempFile(folderPath, FILE_NAME, "");
-		filePathNestedName = filePathNested.getName(filePathNested.getNameCount()-1).toString();
 	}
 
 	@AfterClass

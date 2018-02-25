@@ -153,9 +153,6 @@ public class LsApplication implements LsInterface {
 			}
 			strBuilder.append('\n');
 		}
-/*		if(strBuilder.length() > 0) {
-			strBuilder.deleteCharAt(strBuilder.length()-1);
-		}*/
 		return strBuilder.toString();
 	}
 

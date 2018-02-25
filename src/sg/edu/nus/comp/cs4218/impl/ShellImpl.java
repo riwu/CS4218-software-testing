@@ -137,6 +137,9 @@ public class ShellImpl implements Shell {
 			case "mkdir":
 				absApp = new MkdirApplication();
 				break;
+			case "paste":
+				absApp = new PasteApplication();
+				break;
             default: throw new ShellException(app + ": " + EXP_INVALID_APP);
         }
 

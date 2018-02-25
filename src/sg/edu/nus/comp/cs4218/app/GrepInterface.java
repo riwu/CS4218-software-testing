@@ -4,7 +4,7 @@ import java.io.InputStream;
 
 import sg.edu.nus.comp.cs4218.Application;
 
-public interface Grep extends Application {
+public interface GrepInterface extends Application {
 
 	/**
 	 * Returns string containing lines which match the specified pattern in

@@ -4,7 +4,7 @@ import java.io.InputStream;
 
 import sg.edu.nus.comp.cs4218.Application;
 
-public interface Cmp extends Application {
+public interface CmpInterface extends Application {
 	
 	/**
 	 * Returns a string reporting differing files. The report contains whether

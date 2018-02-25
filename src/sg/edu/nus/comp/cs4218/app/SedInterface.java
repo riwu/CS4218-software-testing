@@ -4,7 +4,7 @@ import java.io.InputStream;
 
 import sg.edu.nus.comp.cs4218.Application;
 
-public interface Sed extends Application {
+public interface SedInterface extends Application {
 	
 	/**
 	 * Returns string of the file content with the matched 

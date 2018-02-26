@@ -22,8 +22,8 @@ public class SedApplicationTest {
 	boolean isImplemented = false;
 	private static SedApplication sedApp;
 	String original = "This\tis\t\nthe\ttext\n";
-	String replacedAll = "Th\t\t\nthe\ttext\n";
-	String replacedIndex = "This\t\t\nthe\ttext\n";
+	String replacedAll = "This is \nthe text\n";
+	String replacedIndex = "This\twas\t\nthe\ttext\n";
 	Path filePath;
 	Path folderPath;
 	InputStream stdin;
@@ -72,16 +72,16 @@ public class SedApplicationTest {
 	public void When_WithinReplacementIndex_Expect_ChangeAtIndexStdin() throws Exception {
 		Assume.assumeTrue(isImplemented);
 		String pattern = "is";
-		String replacement = "";
-		int replacementIndex = 1;
+		String replacement = "was";
+		int replacementIndex = 2;
 		assertEquals(replacedIndex, sedApp.replaceSubstringInStdin(pattern, replacement, replacementIndex, stdin));
 	}
 
 	@Test
 	public void Should_ReplaceAllMatches_When_IndexIsZeroStdin() throws Exception {
 		Assume.assumeTrue(isImplemented);
-		String pattern = "is";
-		String replacement = "";
+		String pattern = "\t";
+		String replacement = " ";
 		int replacementIndex = 0;
 		assertEquals(replacedAll, sedApp.replaceSubstringInStdin(pattern, replacement, replacementIndex, stdin));
 	}
@@ -127,16 +127,16 @@ public class SedApplicationTest {
 	public void When_WithinReplacementIndex_Expect_ChangeAtIndexFile() throws Exception {
 		Assume.assumeTrue(isImplemented);
 		String pattern = "is";
-		String replacement = "";
-		int replacementIndex = 1;
+		String replacement = "was";
+		int replacementIndex = 2;
 		assertEquals(replacedIndex, sedApp.replaceSubstringInFile(pattern, replacement, replacementIndex, filePath.toString()));
 	}
 
 	@Test
 	public void Should_ReplaceAllMatches_When_IndexIsZeroFile() throws Exception {
 		Assume.assumeTrue(isImplemented);
-		String pattern = "is";
-		String replacement = "";
+		String pattern = "\t";
+		String replacement = " ";
 		int replacementIndex = 0;
 		assertEquals(replacedAll, sedApp.replaceSubstringInFile(pattern, replacement, replacementIndex, filePath.toString()));
 	}

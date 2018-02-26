@@ -77,8 +77,26 @@ public class DiffApplicationTest {
     }
 
     @Test
-    public void whenValidOptionExpectNoException() throws Exception {
+    public void whenSingleValidOptionExpectNoException() throws Exception {
         String[] args = {"-s", filename1, filename2};
+        diffApplication.run(args, null, System.out);
+    }
+    
+    @Test
+    public void whenMultipleValidOptionExpectNoException() throws Exception {
+        String[] args = {"-s", "-B", filename1, filename2};
+        diffApplication.run(args, null, System.out);
+    }
+    
+    @Test
+    public void whenMultipleValidCombinedOptionExpectNoException() throws Exception {
+        String[] args = {"-s", "-qB", filename1, filename2};
+        diffApplication.run(args, null, System.out);
+    }
+    
+    @Test
+    public void whenMultipleValidRepeatedOptionExpectNoException() throws Exception {
+        String[] args = {"-sq", "-qB", filename1, filename2};
         diffApplication.run(args, null, System.out);
     }
 

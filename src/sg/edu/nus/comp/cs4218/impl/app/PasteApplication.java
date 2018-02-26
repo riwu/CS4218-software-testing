@@ -12,6 +12,18 @@ import sg.edu.nus.comp.cs4218.app.PasteInterface;
 import sg.edu.nus.comp.cs4218.exception.AbstractApplicationException;
 import sg.edu.nus.comp.cs4218.exception.PasteException;
 
+/**
+ * The paste command merges corresponding lines of files sequentially,
+ * separated by a TAB character and writes it to standard output
+ * 
+ * <p>
+ * <b>Command format:</b> <code>paste [FILE]...</code>
+ * <dl>
+ * <dt>FILE</dt>
+ * <dd>the name of the file(s). If no files are specified, use stdin</dd>
+ * </dl>
+ * </p>
+ */
 public class PasteApplication implements PasteInterface {
 
 	@Override
@@ -122,7 +134,8 @@ public class PasteApplication implements PasteInterface {
 	}
 
 	/**
-	 * Unimplemented due to project description stating use stdin only if no file specified
+	 * Unimplemented due to project description stating use stdin only
+	 * if no file is specified so this is never called
 	 */
 	@Override
 	public String mergeFileAndStdin(InputStream stdin, String... fileName) throws Exception {

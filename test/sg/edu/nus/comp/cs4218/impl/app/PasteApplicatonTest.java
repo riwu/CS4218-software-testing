@@ -2,15 +2,14 @@ package sg.edu.nus.comp.cs4218.impl.app;
 
 import static org.junit.Assert.*;
 
-import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import org.junit.After;
 import org.junit.AfterClass;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -46,40 +45,54 @@ public class PasteApplicatonTest {
 		filePathOne.toFile().deleteOnExit();
 		filePathTwo.toFile().deleteOnExit();
 	}
-
-	@Before
-	public void setUp() throws Exception {
+	
+	@Test
+	public void shouldPrintSingleLineWhenFileIsSingleLine() throws Exception {
+		assertEquals(TEXT_TWO, pasteApp.mergeFile(new String[] {filePathTwoS}));
 	}
-
-	@After
-	public void tearDown() throws Exception {
+	
+	@Test
+	public void shouldPrintMultiLineWhenFileIsMultiLine() throws Exception {
+		assertEquals(TEXT_ONE, pasteApp.mergeFile(new String[] {filePathOneS}));
+	}
+	
+	@Test
+	public void shouldPrintMultiLineWhenStdinMultiLine() throws Exception {
+		InputStream inputStream = new FileInputStream(filePathOne.toFile());
+		assertEquals(TEXT_ONE, pasteApp.mergeStdin(inputStream));
+	}
+	
+	@Test
+	public void shouldPrintSingleLineWhenStdinSingleLine() throws Exception {
+		InputStream inputStream = new FileInputStream(filePathTwo.toFile());
+		assertEquals(TEXT_TWO, pasteApp.mergeStdin(inputStream));
 	}
 
 	@Test
-	public void Should_StartLineWithTab_When_FirstFileLessLinesThanSecond() throws Exception {
+	public void shouldStartLineWithTabWhenFirstFileLessLinesThanSecond() throws Exception {
 		String expected = "SingleLine\tLine1" + System.lineSeparator() + "\tLine2";
 		assertEquals(expected, pasteApp.mergeFile(new String[] {filePathTwoS, filePathOneS}));
 	}
 	
 	@Test
-	public void Should_AddTab_When_FirstFileMoreLinesThanSecond() throws Exception {
+	public void shouldAddTabWhenFirstFileMoreLinesThanSecond() throws Exception {
 		String expected = "Line1\tSingleLine" + System.lineSeparator() + "Line2\t";
 		assertEquals(expected, pasteApp.mergeFile(new String[] {filePathOneS, filePathTwoS}));
 	}
 	
 	@Test
-	public void Should_PrintFileTwice_When_BothFilesAreSame() throws Exception {
+	public void shouldPrintFileTwiceWhenBothFilesAreSame() throws Exception {
 		String expected = "Line1\tLine1" + System.lineSeparator() + "Line2\tLine2";
 		assertEquals(expected, pasteApp.mergeFile(new String[] {filePathOneS, filePathOneS}));
 	}
 	
 	@Test(expected=PasteException.class)
-	public void Should_ThrowException_When_FileNotExist() throws Exception {	
+	public void shouldThrowExceptionWhenFileNotExist() throws Exception {	
 		pasteApp.run(new String[] {"missing.txt"}, System.in, System.out);
 	}
 	
 	@Test(expected=PasteException.class)
-	public void Should_ThrowException_When_FileIsDirectory() throws Exception {	
+	public void shouldThrowExceptionWhenFileIsDirectory() throws Exception {	
 		Path temp = Files.createTempDirectory("temporary");
 		temp.toFile().deleteOnExit();
 		String tempFolder = temp.toString();
@@ -87,7 +100,7 @@ public class PasteApplicatonTest {
 	}
 	
 	@Test(expected=PasteException.class)
-	public void Should_ThrowException_When_StdoutIsNull() throws Exception {
+	public void shouldThrowExceptionWhenStdoutIsNull() throws Exception {
 		pasteApp.run(new String[] {filePathOneS}, System.in, null);
 	}
 

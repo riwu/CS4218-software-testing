@@ -2,8 +2,6 @@ package sg.edu.nus.comp.cs4218.impl.app;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -12,7 +10,6 @@ import java.util.Scanner;
 
 import sg.edu.nus.comp.cs4218.app.PasteInterface;
 import sg.edu.nus.comp.cs4218.exception.AbstractApplicationException;
-import sg.edu.nus.comp.cs4218.exception.CatException;
 import sg.edu.nus.comp.cs4218.exception.PasteException;
 
 public class PasteApplication implements PasteInterface {
@@ -21,11 +18,12 @@ public class PasteApplication implements PasteInterface {
 	public void run(String[] args, InputStream stdin, OutputStream stdout) throws AbstractApplicationException {
 		if(args == null || args.length == 0) {
 			if(stdin == null || stdout == null) {
-				throw new CatException("Null Pointer Exception");
+				throw new PasteException("Null Pointer Exception");
 			}
 			try {
 				String contents = mergeStdin(stdin);
 				stdout.write(contents.getBytes());
+				stdout.write(System.lineSeparator().getBytes());
 			} catch (Exception e) {
 				throw new PasteException(e.getMessage());
 			}
@@ -43,6 +41,7 @@ public class PasteApplication implements PasteInterface {
 			try {
 				String contents = mergeFile(files);
 				stdout.write(contents.getBytes());
+				stdout.write(System.lineSeparator().getBytes());
 			} catch (Exception e) {
 				throw new PasteException("Unable to merge file(s)");
 			}
@@ -56,7 +55,10 @@ public class PasteApplication implements PasteInterface {
 		String line;
 		try {
 			bReader = new BufferedReader(new InputStreamReader(stdin));
+			line = bReader.readLine();
+			strBuilder.append(line);
 			while ((line = bReader.readLine()) != null) {
+				strBuilder.append(System.lineSeparator());
 				strBuilder.append(line);
 			}
 
@@ -88,7 +90,7 @@ public class PasteApplication implements PasteInterface {
 		}
 		
 		int lastFileIdx = scList.length - 1;
-		boolean hasMoreLines = true;
+		boolean hasMoreLines = false;
 		
 		for(int i = 0; i < scList.length || hasMoreLines; i++) {
 			String line = "";
@@ -113,13 +115,15 @@ public class PasteApplication implements PasteInterface {
 				}
 			}
 		}
-		
 		for(int i = 0; i < scList.length; i++) {
 			scList[i].close();
 		}
 		return strBuilder.toString();
 	}
 
+	/**
+	 * Unimplemented due to project description stating use stdin only if no file specified
+	 */
 	@Override
 	public String mergeFileAndStdin(InputStream stdin, String... fileName) throws Exception {
 		return null;

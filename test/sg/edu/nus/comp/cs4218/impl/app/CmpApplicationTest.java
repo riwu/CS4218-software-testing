@@ -2,7 +2,9 @@ package sg.edu.nus.comp.cs4218.impl.app;
 
 import static org.junit.Assert.*;
 
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.math.BigInteger;
 import java.nio.file.Files;
@@ -28,6 +30,7 @@ public class CmpApplicationTest {
 	private static final String LONG_FORMAT = "1$s 2$s 3$s"; //byte# octal1# octal2#
 	private static final String IS_FORMAT = " is 1$s 2$s";
 	private static final String CHAR_FORMAT = "1$s 2$s"; //octal# value#
+	private static final String STDIN = "-";
 	static Path testFolder;
 	static Path fileA;
 	static Path fileB;
@@ -59,8 +62,9 @@ public class CmpApplicationTest {
 		testFolder.toFile().delete();
 	}
 
+	//Files Only
 	@Test
-	public void Should_ShowFirstDiff_When_NoOptionsFilesOnly() throws Exception {
+	public void shouldShowFirstDiffWhenNoOptionsFilesOnly() throws Exception {
 		Assume.assumeTrue(isImplemented);
 		String fileNameA = fileA.toString();
 		String fileNameB = fileB.toString();
@@ -69,7 +73,7 @@ public class CmpApplicationTest {
 	}
 	
 	@Test
-	public void Should_ShowSimplified_When_SimplifyFiles() throws Exception {
+	public void shouldShowSimplifiedWhenSimplifyOnFilesOnly() throws Exception {
 		Assume.assumeTrue(isImplemented);
 		String fileNameA = fileA.toString();
 		String fileNameB = fileB.toString();
@@ -77,21 +81,17 @@ public class CmpApplicationTest {
 	}
 	
 	@Test
-	public void Should_ShowDiffChar_When_DiffCharFilesOnly() throws Exception {
+	public void shouldShowDiffCharWhenDiffCharOnFilesOnly() throws Exception {
 		Assume.assumeTrue(isImplemented);
 		String fileNameA = fileA.toString();
 		String fileNameB = fileB.toString();
 		String appendString = getIsFormatString(TEXT_A.getBytes()[2], TEXT_B.getBytes()[2]);
 		String expected = String.format(NORMAL_FORMAT, fileNameA, fileNameB, 3, 1, appendString);
-		assertEquals(SIMPLE, cmpApp.cmpTwoFiles(fileNameA, fileNameB, false, true, false));
-	}
-	
-	private String getIsFormatString(byte b, byte c) {
-		return String.format(IS_FORMAT, getOctalCharString(b), getOctalCharString(c));
+		assertEquals(expected, cmpApp.cmpTwoFiles(fileNameA, fileNameB, false, true, false));
 	}
 
 	@Test
-	public void Should_ShowLongFormat_When_LongFormatFilesOnly() throws Exception {
+	public void shouldShowLongFormatWhenLongFormatOnFilesOnly() throws Exception {
 		Assume.assumeTrue(isImplemented);
 		String fileNameA = fileA.toString();
 		String fileNameB = fileB.toString();
@@ -100,7 +100,7 @@ public class CmpApplicationTest {
 	}
 	
 	@Test
-	public void Should_ShowLongFormatCharDiff_When_LongFormatCharDiffOptionsFilesOnly() throws Exception {
+	public void shouldShowLongFormatCharDiffWhenLongFormatCharDiffOnFilesOnly() throws Exception {
 		Assume.assumeTrue(isImplemented);
 		String fileNameA = fileA.toString();
 		String fileNameB = fileB.toString();
@@ -109,7 +109,7 @@ public class CmpApplicationTest {
 	}
 	
 	@Test
-	public void Should_ReturnEmptyString_When_FileContentsAreSame() throws Exception {
+	public void shouldReturnEmptyStringWhenFileContentsAreSame() throws Exception {
 		Assume.assumeTrue(isImplemented);
 		String fileNameA = fileA.toString();
 		String fileNameC = fileC.toString();
@@ -117,14 +117,103 @@ public class CmpApplicationTest {
 	}
 	
 	@Test(expected=CmpException.class)
-	public void Should_ThrowException_When_FileNotExist() throws Exception {
+	public void shouldThrowExceptionWhenFileNotExistFilesOnly() throws Exception {
 		Assume.assumeTrue(isImplemented);
 		String fileNameB = fileB.toString();
 		cmpApp.cmpTwoFiles("missing.txt" , fileNameB, false, false, false);
 	}
 	
+	//File and Stdin
+	@Test
+	public void shouldShowFirstDiffWhenNoOptionsFileStdin() throws Exception {
+		Assume.assumeTrue(isImplemented);
+		String fileNameA = fileA.toString();
+		InputStream stdin = new FileInputStream(fileB.toFile());
+		String expected = String.format(NORMAL_FORMAT, fileNameA, STDIN, 3, 1);
+		assertEquals(expected, cmpApp.cmpFileAndStdin(fileNameA, stdin, false, false, false));
+	}
+	
+	@Test
+	public void shouldShowSimplifiedWhenSimplifyOnFileStdin() throws Exception {
+		Assume.assumeTrue(isImplemented);
+		String fileNameA = fileA.toString();
+		InputStream stdin = new FileInputStream(fileB.toFile());
+		assertEquals(SIMPLE, cmpApp.cmpFileAndStdin(fileNameA, stdin, true, true, true));
+	}
+	
+	@Test
+	public void shouldShowDiffCharWhenDiffCharOnFileStdin() throws Exception {
+		Assume.assumeTrue(isImplemented);
+		String fileNameA = fileA.toString();
+		InputStream stdin = new FileInputStream(fileB.toFile());
+		String appendString = getIsFormatString(TEXT_A.getBytes()[2], TEXT_B.getBytes()[2]);
+		String expected = String.format(NORMAL_FORMAT, fileNameA, STDIN, 3, 1, appendString);
+		assertEquals(expected, cmpApp.cmpFileAndStdin(fileNameA, stdin, false, true, false));
+	}
+
+	@Test
+	public void shouldShowLongFormatWhenLongFormatOnFileStdin() throws Exception {
+		Assume.assumeTrue(isImplemented);
+		String fileNameA = fileA.toString();
+		InputStream stdin = new FileInputStream(fileB.toFile());
+		String expected = getLongFormatString(TEXT_A, TEXT_B, false);
+		assertEquals(expected, cmpApp.cmpFileAndStdin(fileNameA, stdin, false, false, true));
+	}
+	
+	@Test
+	public void shouldShowLongFormatCharDiffWhenLongFormatCharDiffOnFileStdin() throws Exception {
+		Assume.assumeTrue(isImplemented);
+		String fileNameA = fileA.toString();
+		InputStream stdin = new FileInputStream(fileB.toFile());
+		String expected = getLongFormatString(TEXT_A, TEXT_B, true);
+		assertEquals(expected, cmpApp.cmpFileAndStdin(fileNameA, stdin, false, false, true));
+	}
+	
+	@Test
+	public void shouldReturnEmptyStringWhenFileStdinContentAreSame() throws Exception {
+		Assume.assumeTrue(isImplemented);
+		String fileNameA = fileA.toString();
+		InputStream stdin = new FileInputStream(fileC.toFile());
+		assertEquals("", cmpApp.cmpFileAndStdin(fileNameA, stdin, false, false, false));
+	}
+	
+	@Test(expected=CmpException.class)
+	public void shouldThrowExceptionWhenStdinNotExistFileStdin() throws Exception {
+		Assume.assumeTrue(isImplemented);
+		String fileNameB = fileB.toString();
+		cmpApp.cmpFileAndStdin(fileNameB, null, false, false, false);
+	}
+	
+	@Test(expected=CmpException.class)
+	public void shouldThrowExceptionWhenStdinNotExistRun() throws Exception {
+		Assume.assumeTrue(isImplemented);
+		String fileNameB = fileB.toString();
+		cmpApp.run(new String[] {fileNameB, STDIN}, null, System.out);
+	}
+	
+	@Test(expected=CmpException.class)
+	public void shouldThrowExceptionWhenStdoutNotExist() throws Exception {
+		Assume.assumeTrue(isImplemented);
+		String fileNameB = fileB.toString();
+		InputStream stdin = new FileInputStream(fileC.toFile());
+		cmpApp.run(new String[] {fileNameB, STDIN}, stdin, null);
+	}
+	
+	@Test(expected=CmpException.class)
+	public void shouldThrowExceptionWhenOneArgOnly() throws Exception {
+		Assume.assumeTrue(isImplemented);
+		String fileNameB = fileB.toString();
+		InputStream stdin = new FileInputStream(fileC.toFile());
+		cmpApp.run(new String[] {fileNameB}, stdin, System.out);
+	}
+	
 	
 	//Utility methods
+	
+	private String getIsFormatString(byte first, byte second) {
+		return String.format(IS_FORMAT, getOctalCharString(first), getOctalCharString(second));
+	}
+	
 	private String getOctalCharString(byte single) {
 		return String.format(CHAR_FORMAT, toOctal(single), Byte.toString(single));
 	}

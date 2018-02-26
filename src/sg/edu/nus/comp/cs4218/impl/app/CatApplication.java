@@ -1,6 +1,9 @@
 package sg.edu.nus.comp.cs4218.impl.app;
 
-import java.io.File;
+import sg.edu.nus.comp.cs4218.Environment;
+import sg.edu.nus.comp.cs4218.app.CatInterface;
+import sg.edu.nus.comp.cs4218.exception.CatException;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -14,6 +17,7 @@ import sg.edu.nus.comp.cs4218.Environment;
 import sg.edu.nus.comp.cs4218.app.CatInterface;
 import sg.edu.nus.comp.cs4218.exception.CatException;
 import sg.edu.nus.comp.cs4218.impl.ShellImpl;
+
 
 /**
  * The cat command concatenates the content of given files and prints on the
@@ -78,7 +82,7 @@ public class CatApplication implements CatInterface {
 				if (Files.isDirectory(path)) return;
 
 				try {
-
+        
 					Files.lines(path).forEachOrdered( line -> {
 						result.append(line);
 						result.append(System.lineSeparator());
@@ -97,11 +101,10 @@ public class CatApplication implements CatInterface {
 		}
 	}
   
-  @Override
-	public String getContent(File file) throws CatException {
+  	@Override
+	public byte[] getContent(Path file) throws CatException {
         try {
-            byte[] byteFileContent = Files.readAllBytes(file.toPath());
-            return new String(byteFileContent);
+        	return Files.readAllBytes(file);
         } catch (IOException e) {
             throw new CatException(e.getMessage());
         }

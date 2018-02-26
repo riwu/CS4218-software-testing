@@ -48,20 +48,24 @@ public class MkdirApplication implements MkdirInterface {
 					throw new MkdirException(e.getMessage());
 				}
 			}
-			createFolder(folderPathS);
+			try {
+				createFolder(folderPathS);
+			} catch (Exception e) {
+				throw new MkdirException(e.getMessage());
+			}
 		}
 		
 	}
 
 	@Override
-	public void createFolder(String... folderName) throws MkdirException {
+	public void createFolder(String... folderName) throws Exception {
 		boolean success;
 		for (String folder: folderName) {
 			File directory = new File(folder);
 			success = directory.mkdirs();
 			if (!directory.isDirectory() && !success) {
 				String path = folder.replace(Environment.currentDirectory + File.separatorChar, "");
-				throw new MkdirException(path + " is not a directory path");
+				throw new Exception(path + " is not a directory path");
 			}
 		}
 	}

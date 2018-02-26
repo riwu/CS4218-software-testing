@@ -29,7 +29,7 @@ public class CatApplicationTest {
     private static String FILE_1_CONTENT = "FILE_1-1" + System.lineSeparator() + "FILE_1-2";
     private static String FILE_2_CONTENT = "FILE_2-1" + System.lineSeparator();
     private static String FILE_WITH_SPACE_CONTENT = "FILE_WITH_SPACE-1" + System.lineSeparator() + "FILE_WITH_SPACE-2" + System.lineSeparator();
-    ;
+
     private OutputStream outputStream;
 
     private void writeToFile(Path file, String content) throws Exception {

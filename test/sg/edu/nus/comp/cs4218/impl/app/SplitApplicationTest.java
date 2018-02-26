@@ -242,6 +242,7 @@ public class SplitApplicationTest {
         }
         assertTrue(thrownCdException);
 
+
         thrownCdException = false;
         String[] args3 = {"-b", "0m", filename};
         try {
@@ -254,6 +255,21 @@ public class SplitApplicationTest {
 
 
 
+
+    @Test
+    public void Should_ThrowSplitException_When_ZeroLineOption() throws AbstractApplicationException {
+        boolean thrownCdException = false;
+        String[] args = {"-l", "0", filename};
+
+        try {
+            splitApplication.run(args, null, System.out);
+        } catch (SplitException e) {
+            thrownCdException = true;
+        }
+        assertTrue(thrownCdException);
+    }
+
+    
     @Test
     public void Should_SplitInto1Files_When_InputLineLessThan1001() throws Exception {
         String inputString = generateString(1);

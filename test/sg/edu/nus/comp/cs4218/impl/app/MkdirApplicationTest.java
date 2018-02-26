@@ -24,7 +24,7 @@ public class MkdirApplicationTest {
 	private static final String MULTI_LEVEL_ONE = "Level1" + File.separator + "Level12";
 	private static final String MULTI_LEVEL_TWO = "Level11" + File.separator + "Level12";
 	private static final String INVALID_PATH = "Level1" + File.separator + "Level*2";
-	private static final boolean IS_WINDOWS = System.getProperty("os.name").contains("window");
+	private static final boolean IS_WINDOWS = System.getProperty("os.name").contains("Wind");
 	
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {

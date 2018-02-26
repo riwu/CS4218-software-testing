@@ -85,12 +85,12 @@ public class CatApplicationTest {
     @Test
     public void Should_ReturnFileContents_When_GivenFileNames() throws CatException {
         catApplication.run(new String[]{file1.toString(), file2.toString(), file3.toString()}, System.in, outputStream);
-        assertEquals(String.join("", new String[]{file1Content, file2Content, file3Content}), outputStream.toString());
+        assertEquals(file1Content + file2Content + file3Content, outputStream.toString());
     }
 
     @Test
     public void Should_ReturnFileContentsInCorrectOrder_When_GivenFileNames() throws CatException {
         catApplication.run(new String[]{file3.toString(), file2.toString()}, System.in, outputStream);
-        assertEquals(String.join("", new String[]{file3Content, file2Content}), outputStream.toString());
+        assertEquals(file3Content + file2Content, outputStream.toString());
     }
 }

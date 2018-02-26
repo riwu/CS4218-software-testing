@@ -24,6 +24,8 @@ public class SedApplicationTest {
 	String original = "This\tis\t\nthe\ttext\n";
 	String replacedAll = "This is \nthe text\n";
 	String replacedIndex = "This\twas\t\nthe\ttext\n";
+	private static final String MISSING_S = "/\t/ /";
+	private static final String INVALID_INDEX = "s/is/was/-2";
 	Path filePath;
 	Path folderPath;
 	InputStream stdin;
@@ -51,7 +53,7 @@ public class SedApplicationTest {
 	}
 
 	@Test
-	public void When_NothingToReplace_Expect_NoChangeToContentStdin() throws Exception {
+	public void whenNothingToReplaceExpectNoChangeToContentStdin() throws Exception {
 		Assume.assumeTrue(isImplemented);
 		String pattern = ">";
 		String replacement = "";
@@ -60,7 +62,7 @@ public class SedApplicationTest {
 	}
 	
 	@Test
-	public void When_OutOfReplacementIndex_Expect_NoChangeToContentStdin() throws Exception {
+	public void whenNeverReachReplacementIndexExpectNoChangeToContentStdin() throws Exception {
 		Assume.assumeTrue(isImplemented);
 		String pattern = "is";
 		String replacement = "";
@@ -69,7 +71,7 @@ public class SedApplicationTest {
 	}
 	
 	@Test
-	public void When_WithinReplacementIndex_Expect_ChangeAtIndexStdin() throws Exception {
+	public void whenReachReplacementIndexExpectChangeAtIndexStdin() throws Exception {
 		Assume.assumeTrue(isImplemented);
 		String pattern = "is";
 		String replacement = "was";
@@ -78,7 +80,7 @@ public class SedApplicationTest {
 	}
 
 	@Test
-	public void Should_ReplaceAllMatches_When_IndexIsZeroStdin() throws Exception {
+	public void shouldReplaceAllMatchesWhenIndexIsZeroStdin() throws Exception {
 		Assume.assumeTrue(isImplemented);
 		String pattern = "\t";
 		String replacement = " ";
@@ -87,7 +89,7 @@ public class SedApplicationTest {
 	}
 	
 	@Test(expected=SedException.class)
-	public void Should_ThrowException_When_IndexLessThanZeroStdin() throws Exception {
+	public void shouldThrowExceptionWhenIndexLessThanZeroStdin() throws Exception {
 		Assume.assumeTrue(isImplemented);
 		String pattern = "is";
 		String replacement = "";
@@ -96,7 +98,7 @@ public class SedApplicationTest {
 	}
 	
 	@Test(expected=SedException.class)
-	public void Should_ThrowException_When_StdinIsDirectory() throws Exception {
+	public void shouldThrowExceptionWhenStdinIsDirectory() throws Exception {
 		Assume.assumeTrue(isImplemented);
 		String pattern = "is";
 		String replacement = "";
@@ -106,7 +108,7 @@ public class SedApplicationTest {
 	}
 	
 	@Test
-	public void When_NothingToReplace_Expect_NoChangeToContentFile() throws Exception {
+	public void whenNothingToReplaceExpectNoChangeToContentFile() throws Exception {
 		Assume.assumeTrue(isImplemented);
 		String pattern = ">";
 		String replacement = "";
@@ -115,7 +117,7 @@ public class SedApplicationTest {
 	}
 	
 	@Test
-	public void When_OutOfReplacementIndex_Expect_NoChangeToContentFile() throws Exception {
+	public void whenNeverReachReplacementIndexExpectNoChangeToContentFile() throws Exception {
 		Assume.assumeTrue(isImplemented);
 		String pattern = "is";
 		String replacement = "";
@@ -124,7 +126,7 @@ public class SedApplicationTest {
 	}
 	
 	@Test
-	public void When_WithinReplacementIndex_Expect_ChangeAtIndexFile() throws Exception {
+	public void whenReachReplacementIndexExpectChangeAtIndexFile() throws Exception {
 		Assume.assumeTrue(isImplemented);
 		String pattern = "is";
 		String replacement = "was";
@@ -133,7 +135,7 @@ public class SedApplicationTest {
 	}
 
 	@Test
-	public void Should_ReplaceAllMatches_When_IndexIsZeroFile() throws Exception {
+	public void shouldReplaceAllMatchesWhenIndexIsZeroFile() throws Exception {
 		Assume.assumeTrue(isImplemented);
 		String pattern = "\t";
 		String replacement = " ";
@@ -142,7 +144,7 @@ public class SedApplicationTest {
 	}
 	
 	@Test(expected=SedException.class)
-	public void Should_ThrowException_When_IndexLessThanZeroFile() throws Exception {
+	public void shouldThrowExceptionWhenIndexLessThanZeroFile() throws Exception {
 		Assume.assumeTrue(isImplemented);
 		String pattern = "is";
 		String replacement = "";
@@ -151,7 +153,7 @@ public class SedApplicationTest {
 	}
 	
 	@Test(expected=SedException.class)
-	public void Should_ThrowException_When_FileNotExists() throws Exception {
+	public void shouldThrowExceptionWhenFileNotExists() throws Exception {
 		Assume.assumeTrue(isImplemented);
 		String pattern = "is";
 		String replacement = "";
@@ -160,11 +162,32 @@ public class SedApplicationTest {
 	}
 	
 	@Test(expected=SedException.class)
-	public void Should_ThrowException_When_FileIsDirectory() throws Exception {
+	public void shouldThrowExceptionWhenFileIsDirectory() throws Exception {
 		Assume.assumeTrue(isImplemented);
 		String pattern = "is";
 		String replacement = "";
 		int replacementIndex = 0;
 		sedApp.replaceSubstringInFile(pattern, replacement, replacementIndex, folderPath.toString());
+	}
+	
+	@Test(expected=SedException.class)
+	public void shouldThrowExceptionWhenReplacementRuleMissing() throws Exception {
+		Assume.assumeTrue(isImplemented);
+		String path = filePath.toString();
+		sedApp.run(new String[] {path}, System.in, System.out);
+	}
+	
+	@Test(expected=SedException.class)
+	public void shouldThrowExceptionWhenReplacementRuleMissingS() throws Exception {
+		Assume.assumeTrue(isImplemented);
+		String path = filePath.toString();
+		sedApp.run(new String[] {path, MISSING_S}, System.in, System.out);
+	}
+	
+	@Test(expected=SedException.class)
+	public void shouldThrowExceptionWhenReplacementRuleNegativeIndex() throws Exception {
+		Assume.assumeTrue(isImplemented);
+		String path = filePath.toString();
+		sedApp.run(new String[] {path, INVALID_INDEX}, System.in, System.out);
 	}
 }

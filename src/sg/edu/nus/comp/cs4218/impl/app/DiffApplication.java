@@ -141,11 +141,10 @@ public class DiffApplication implements DiffInterface {
             }
         }
 
-        if (isShowSame && onlySet2.isEmpty()) {
+        set1.removeAll(set2);
+        if (isShowSame && onlySet2.isEmpty() && set1.isEmpty()) {
             return parseOutput(fileNameA, fileNameB, "are identical", false);
         }
-        set1.removeAll(set2);
-
         if (isSimple && set1.size() > 0) {
             return parseOutput(fileNameA, fileNameB, "differ", false);
         }

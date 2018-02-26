@@ -7,10 +7,13 @@ import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.stream.Stream;
 
 import sg.edu.nus.comp.cs4218.Environment;
 import sg.edu.nus.comp.cs4218.app.CatInterface;
 import sg.edu.nus.comp.cs4218.exception.CatException;
+import sg.edu.nus.comp.cs4218.impl.ShellImpl;
 
 /**
  * The cat command concatenates the content of given files and prints on the
@@ -60,36 +63,36 @@ public class CatApplication implements CatInterface {
 			}
 		} else {
 
-			int numOfFiles = args.length;
+			//Arrays.stream(String.join(" ", args).split("\\s+")).forEach(System.out::println);
 
-			if (numOfFiles > 0) {
-				Path filePath;
-				Path[] filePathArray = new Path[numOfFiles];
-				Path currentDir = Paths.get(Environment.currentDirectory);
-				boolean isFileReadable = false;
+			// transform each filenames into Stream of Path
+			final Stream<Path> paths = Arrays.stream(args)
+					  						 .map(fileName -> Paths.get(fileName));
 
-				for (int i = 0; i < numOfFiles; i++) {
-					filePath = currentDir.resolve(args[i]);
-					isFileReadable = checkIfFileIsReadable(filePath);
-					if (isFileReadable) {
-						filePathArray[i] = filePath;
-					}
+			final StringBuilder result = new StringBuilder();
+
+			// by default Stream runs in parallel. We want serial in this case.
+			paths.forEachOrdered(path -> {
+				// skip if the path is a directory
+				// maybe throw exception?
+				if (Files.isDirectory(path)) return;
+
+				try {
+
+					Files.lines(path).forEachOrdered( line -> {
+						result.append(line);
+						result.append(System.lineSeparator());
+					});
+
+				}catch (Exception ex){
+					ex.printStackTrace();
 				}
+			});
 
-				// file could be read. perform cat command
-				if (filePathArray.length != 0) {
-					for (int j = 0; j < filePathArray.length - 1; j++) {
-						try {
-							byte[] byteFileArray = Files
-									.readAllBytes(filePathArray[j]);
-							stdout.write(byteFileArray);
-						} catch (IOException e) {
-							throw new CatException(
-									"Could not write to output stream");
-						}
-					}
-
-				}
+			try {
+				stdout.write(result.toString().getBytes());
+			} catch (IOException e) {
+				e.printStackTrace();
 			}
 		}
 	}

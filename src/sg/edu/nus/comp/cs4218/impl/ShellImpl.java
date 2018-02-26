@@ -126,6 +126,9 @@ public class ShellImpl implements Shell {
             case "grep":
                 absApp = new GrepApplication();
                 break;
+            case "paste":
+            	absApp = new PasteApplication();
+            	break;
             default:
                 throw new ShellException(app + ": " + EXP_INVALID_APP);
         }

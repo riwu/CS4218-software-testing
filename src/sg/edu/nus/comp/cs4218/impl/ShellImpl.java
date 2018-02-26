@@ -129,6 +129,8 @@ public class ShellImpl implements Shell {
             case "paste":
             	absApp = new PasteApplication();
             	break;
+            case "exit":
+            	absApp = new ExitApplication();
             default:
                 throw new ShellException(app + ": " + EXP_INVALID_APP);
         }

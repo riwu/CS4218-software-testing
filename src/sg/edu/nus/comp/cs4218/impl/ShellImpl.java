@@ -131,6 +131,7 @@ public class ShellImpl implements Shell {
             	break;
             case "exit":
             	absApp = new ExitApplication();
+            	break;
             default:
                 throw new ShellException(app + ": " + EXP_INVALID_APP);
         }

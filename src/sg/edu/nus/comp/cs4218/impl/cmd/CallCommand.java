@@ -391,9 +391,19 @@ public class CallCommand implements Command {
 		if (doubleQuote.matcher(args).matches()) return new String[]{args};
 
 		// separate the base dir and glob
-		String[] argsArray = args.split("(?=\\*)", 2);
-		String baseDirectory = argsArray.length == 1? ".": argsArray[0];
-		String glob = argsArray.length == 1? argsArray[0] : argsArray[1];
+        String[] argsArray;
+        String baseDirectory;
+        String glob;
+        if (args.startsWith(".") || args.startsWith("/")) {
+
+            argsArray = args.split("(?=\\*)", 2);
+            baseDirectory = argsArray.length == 1 ? "." : argsArray[0];
+            glob = argsArray.length == 1 ? argsArray[0] : argsArray[1];
+        }else{
+            // assume current directory
+            baseDirectory = ".";
+            glob = args;
+        }
 
 		// resolve ambiguity and combine to single path
 		Path globPath = Paths.get(baseDirectory, glob);

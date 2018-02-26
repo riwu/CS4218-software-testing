@@ -27,6 +27,7 @@ public class CallCommandTest {
     private static Path file_3;
     private static Path file_4;
     private static Path file_5;
+    private static Path file_6;
 
     /*
     testFolder
@@ -41,6 +42,7 @@ public class CallCommandTest {
             - b_2
                - file_4
             - file_5
+        - file_6
 
      */
 
@@ -58,6 +60,7 @@ public class CallCommandTest {
         file_3 = Files.createTempDirectory(a_2, "file_3");
         file_4 = Files.createTempDirectory(b_2, "file_4");
         file_5 = Files.createTempDirectory(b, "file_5");
+        file_6 = Files.createTempDirectory(testFolder, "file_6");
 
     }
 
@@ -75,6 +78,7 @@ public class CallCommandTest {
         file_3.toFile().deleteOnExit();
         file_4.toFile().deleteOnExit();
         file_5.toFile().deleteOnExit();
+        file_6.toFile().deleteOnExit();
     }
 
     @Test
@@ -85,6 +89,7 @@ public class CallCommandTest {
         Set<String> expected = new HashSet<>();
         expected.add(a.toAbsolutePath().toString());
         expected.add(b.toAbsolutePath().toString());
+        expected.add(file_6.toAbsolutePath().toString());
 
         Set<String> actual = new HashSet<>();
         actual.addAll(Arrays.asList(globbed));
@@ -113,6 +118,7 @@ public class CallCommandTest {
         expected.add(file_3.toAbsolutePath().toString());
         expected.add(file_4.toAbsolutePath().toString());
         expected.add(file_5.toAbsolutePath().toString());
+        expected.add(file_6.toAbsolutePath().toString());
 
         Set<String> actual = new HashSet<>();
         actual.addAll(Arrays.asList(globbed));

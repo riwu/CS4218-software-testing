@@ -16,24 +16,19 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public class SplitApplicationTest {
-
     private SplitApplication splitApplication = new SplitApplication();
-    private static String initial_dir;
+    private static String CURRENT_DIR;
+    private static String RESOURCE_FOLDER = "testresource";
+    private static String FILENAME = CURRENT_DIR + File.separator + RESOURCE_FOLDER + File.separator + "newfile";
     private File testDir = null;
     private File file = null;
-    private String currentDir = "";
-    private String testDirName = "testCdDir";
-    private String filename = "";
 
     @Before
     public void setUp() throws Exception {
-        initial_dir = Environment.currentDirectory;
-        currentDir = initial_dir;
-        testDir = new File(currentDir + File.separator + testDirName);
+        CURRENT_DIR = Environment.currentDirectory;
+        testDir = new File(CURRENT_DIR + File.separator + RESOURCE_FOLDER);
         testDir.mkdir();
-
-        filename = currentDir + File.separator + testDirName + File.separator + "newfile";
-        file = new File(filename);
+        file = new File(FILENAME);
     }
 
     @After
@@ -64,270 +59,125 @@ public class SplitApplicationTest {
         return sb.toString();
     }
 
-
-    @Test
-    public void Should_ThrowSplitException_When_NoStdout() throws AbstractApplicationException {
-        boolean thrownCdException = false;
-        String[] args = {filename};
-
-        try {
-            splitApplication.run(args, null, null);
-        } catch (SplitException e) {
-            thrownCdException = true;
-        } catch (NullPointerException e) {
-            thrownCdException = false;
-        }
-        assertTrue(thrownCdException);
+    @Test(expected = SplitException.class)
+    public void shouldThrowSplitExceptionWhenNoStdout() throws Exception {
+        String[] args = {FILENAME};
+        splitApplication.run(args, null, null);
     }
 
-
-    @Test
-    public void Should_ThrowSplitException_When_NoInput() throws AbstractApplicationException {
-        boolean thrownCdException = false;
-
-        try {
-            splitApplication.run(null, null, null);
-        } catch (SplitException e) {
-            thrownCdException = true;
-        } catch (NullPointerException e) {
-            thrownCdException = false;
-        }
-        assertTrue(thrownCdException);
+    @Test(expected = SplitException.class)
+    public void shouldThrowSplitExceptionWhenNoInput() throws Exception {
+        splitApplication.run(null, null, null);
     }
 
-
-    @Test
-    public void Should_ThrowSplitException_When_InputDir() throws AbstractApplicationException {
-        boolean thrownCdException = false;
-        String[] args = {testDirName};
-
-        try {
-            splitApplication.run(args, null, System.out);
-        } catch (SplitException e) {
-            thrownCdException = true;
-        } catch (Exception e) {
-            thrownCdException = false;
-        }
-        assertTrue(thrownCdException);
+    @Test(expected = SplitException.class)
+    public void Should_ThrowSplitException_When_InputDir() throws Exception {
+        String[] args = {RESOURCE_FOLDER};
+        splitApplication.run(args, null, System.out);
     }
 
-
-    @Test
-    public void Should_ThrowSplitException_When_InvalidOption() throws AbstractApplicationException {
-        boolean thrownCdException = false;
-        String[] args = {"-L", filename};
-
-        try {
-            splitApplication.run(args, null, System.out);
-        } catch (SplitException e) {
-            thrownCdException = true;
-        }
-        assertTrue(thrownCdException);
-
-        thrownCdException = false;
-        String[] args1 = {"-B", filename};
-        try {
-            splitApplication.run(args1, null, System.out);
-        } catch (SplitException e) {
-            thrownCdException = true;
-        }
-        assertTrue(thrownCdException);
-
-        thrownCdException = false;
-        String[] args2 = {"-lb", filename};
-        try {
-            splitApplication.run(args2, null, System.out);
-        } catch (SplitException e) {
-            thrownCdException = true;
-        }
-        assertTrue(thrownCdException);
+    @Test(expected = SplitException.class)
+    public void shouldThrowSplitExceptionWhenCapitalLOption() throws Exception {
+        String[] args = {"-L", "1", FILENAME};
+        splitApplication.run(args, null, System.out);
     }
 
-
-
-    @Test
-    public void Should_ThrowSplitException_When_InvalidOptionArgument() throws AbstractApplicationException {
-        boolean thrownCdException = false;
-        String[] args = {"-l", filename};
-
-        try {
-            splitApplication.run(args, null, System.out);
-        } catch (SplitException e) {
-            thrownCdException = true;
-        }
-        assertTrue(thrownCdException);
-
-
-        thrownCdException = false;
-        String[] args1 = {"-b", filename};
-        try {
-            splitApplication.run(args1, null, System.out);
-        } catch (SplitException e) {
-            thrownCdException = true;
-        }
-        assertTrue(thrownCdException);
-
-
-        thrownCdException = false;
-        String[] args2 = {"-l", "x", filename};
-        try {
-            splitApplication.run(args2, null, System.out);
-        } catch (SplitException e) {
-            thrownCdException = true;
-        }
-        assertTrue(thrownCdException);
-
-
-        thrownCdException = false;
-        String[] args3 = {"-l", "x", filename};
-        try {
-            splitApplication.run(args3, null, System.out);
-        } catch (SplitException e) {
-            thrownCdException = true;
-        }
-        assertTrue(thrownCdException);
-
-
-        thrownCdException = false;
-        String[] args4 = {"-b", "1g", filename};
-        try {
-            splitApplication.run(args4, null, System.out);
-        } catch (SplitException e) {
-            thrownCdException = true;
-        }
-        assertTrue(thrownCdException);
-
-
-        thrownCdException = false;
-        String[] args5 = {"-b", "1M", filename};
-        try {
-            splitApplication.run(args5, null, System.out);
-        } catch (SplitException e) {
-            thrownCdException = true;
-        }
-        assertTrue(thrownCdException);
+    @Test(expected = SplitException.class)
+    public void shouldThrowSplitExceptionWhenCapitalBOption() throws Exception {
+        String[] args = {"-B", "1", FILENAME};
+        splitApplication.run(args, null, System.out);
     }
 
-
-
-    @Test
-    public void Should_ThrowSplitException_When_ZeroByteOption() throws AbstractApplicationException {
-        boolean thrownCdException = false;
-        String[] args = {"-b", "0", filename};
-
-        try {
-            splitApplication.run(args, null, System.out);
-        } catch (SplitException e) {
-            thrownCdException = true;
-        }
-        assertTrue(thrownCdException);
-
-
-        thrownCdException = false;
-        String[] args1 = {"-b", "0b", filename};
-        try {
-            splitApplication.run(args1, null, System.out);
-        } catch (SplitException e) {
-            thrownCdException = true;
-        }
-        assertTrue(thrownCdException);
-
-
-        thrownCdException = false;
-        String[] args2 = {"-b", "0k", filename};
-        try {
-            splitApplication.run(args2, null, System.out);
-        } catch (SplitException e) {
-            thrownCdException = true;
-        }
-        assertTrue(thrownCdException);
-
-
-        thrownCdException = false;
-        String[] args3 = {"-b", "0m", filename};
-        try {
-            splitApplication.run(args3, null, System.out);
-        } catch (SplitException e) {
-            thrownCdException = true;
-        }
-        assertTrue(thrownCdException);
+    @Test(expected = SplitException.class)
+    public void shouldThrowSplitExceptionWhenlbOption() throws Exception {
+        String[] args = {"-b", "1", "-l", "1", FILENAME};
+        splitApplication.run(args, null, System.out);
     }
 
-
-
-
-    @Test
-    public void Should_ThrowSplitException_When_ZeroLineOption() throws AbstractApplicationException {
-        boolean thrownCdException = false;
-        String[] args = {"-l", "0", filename};
-
-        try {
-            splitApplication.run(args, null, System.out);
-        } catch (SplitException e) {
-            thrownCdException = true;
-        }
-        assertTrue(thrownCdException);
+    @Test(expected = SplitException.class)
+    public void shouldThrowSplitExceptionWhenEmptyLOption() throws Exception {
+        String[] args = {"-l", FILENAME};
+        splitApplication.run(args, null, System.out);
     }
 
+    @Test(expected = SplitException.class)
+    public void shouldThrowSplitExceptionWhenEmptyBOption() throws Exception {
+        String[] args1 = {"-b", FILENAME};
+        splitApplication.run(args1, null, System.out);
+    }
+
+    @Test(expected = SplitException.class)
+    public void shouldThrowSplitExceptionWhenInvalidLOption() throws Exception {
+        String[] args2 = {"-l", "x", FILENAME};
+        splitApplication.run(args2, null, System.out);
+    }
+
+    @Test(expected = SplitException.class)
+    public void shouldThrowSplitExceptionWhenInvalidBOption() throws Exception {
+        String[] args3 = {"-b", "1g", FILENAME};
+        splitApplication.run(args3, null, System.out);
+    }
+
+    @Test(expected = SplitException.class)
+    public void shouldThrowSplitExceptionWhenZeroByteOption() throws Exception {
+        String[] args = {"-b", "0", FILENAME};
+        splitApplication.run(args, null, System.out);
+    }
+
+    @Test(expected = SplitException.class)
+    public void shouldThrowSplitExceptionWhenZeroLineOption() throws Exception {
+        String[] args = {"-l", "0", FILENAME};
+        splitApplication.run(args, null, System.out);
+    }
+
+    @Test(expected = SplitException.class)
+    public void shouldThrowSplitExceptionWhenNegativeByteOption() throws Exception {
+        String[] args = {"-b", "-5", FILENAME};
+        splitApplication.run(args, null, System.out);
+    }
+
+    @Test(expected = SplitException.class)
+    public void shouldThrowSplitExceptionWhenNegativeLineOption() throws Exception {
+        String[] args = {"-l", "-5", FILENAME};
+        splitApplication.run(args, null, System.out);
+    }
     
     @Test
-    public void Should_SplitInto1Files_When_InputLineLessThan1001() throws Exception {
+    public void shouldSplitInto1FilesWhenInputLineLessThan1001() throws Exception {
         String inputString = generateString(1);
-        try {
-            Files.write(file.toPath(), inputString.getBytes());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        Files.write(file.toPath(), inputString.getBytes());
 
-        String[] args = {filename};
-        try {
-            splitApplication.run(args, null, System.out);
-        } catch (SplitException e) {
-            throw e;
-        }
-        File firstFile = new File(currentDir + File.separator + testDirName + File.separator + "xaa");
-        File nonExistantFile = new File(currentDir + File.separator + testDirName + File.separator + "xab");
+        String[] args = {FILENAME};
+        splitApplication.run(args, null, System.out);
+
+        File firstFile = new File(CURRENT_DIR + File.separator + RESOURCE_FOLDER + File.separator + "xaa");
+        File nonExistantFile = new File(CURRENT_DIR + File.separator + RESOURCE_FOLDER + File.separator + "xab");
         assertTrue(firstFile.exists());
         assertFalse(nonExistantFile.exists());
         firstFile.delete();
 
 
         inputString = generateString(1000);
-        try {
-            Files.write(file.toPath(), inputString.getBytes());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        String[] args1 = {filename};
-        try {
-            splitApplication.run(args1, null, System.out);
-        } catch (SplitException e) {
-            throw e;
-        }
+        Files.write(file.toPath(), inputString.getBytes());
+        String[] args1 = {FILENAME};
+        splitApplication.run(args1, null, System.out);
+
         assertTrue(firstFile.exists());
         assertFalse(nonExistantFile.exists());
         firstFile.delete();
     }
 
-
     @Test
-    public void Should_SplitInto2Files_When_InputLineMoreThan1000LessThan2001() throws Exception {
+    public void shouldSplitInto2FilesWhenInputLineBetween1kAnd2k() throws Exception {
         String inputString = generateString(1001);
-        try {
-            Files.write(file.toPath(), inputString.getBytes());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        Files.write(file.toPath(), inputString.getBytes());
 
-        String[] args = {filename};
-        try {
-            splitApplication.run(args, null, System.out);
-        } catch (SplitException e) {
-            throw e;
-        }
-        File firstFile = new File(currentDir + File.separator + testDirName + File.separator + "xaa");
-        File secondFile = new File(currentDir + File.separator + testDirName + File.separator + "xab");
-        File thirdFile = new File(currentDir + File.separator + testDirName + File.separator + "xac");
+        String[] args = {FILENAME};
+        splitApplication.run(args, null, System.out);
+
+        File firstFile = new File(CURRENT_DIR + File.separator + RESOURCE_FOLDER + File.separator + "xaa");
+        File secondFile = new File(CURRENT_DIR + File.separator + RESOURCE_FOLDER + File.separator + "xab");
+        File thirdFile = new File(CURRENT_DIR + File.separator + RESOURCE_FOLDER + File.separator + "xac");
         assertTrue(firstFile.exists());
         assertTrue(secondFile.exists());
         assertFalse(thirdFile.exists());
@@ -336,17 +186,10 @@ public class SplitApplicationTest {
 
 
         inputString = generateString(2000);
-        try {
-            Files.write(file.toPath(), inputString.getBytes());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        String[] args1 = {filename};
-        try {
-            splitApplication.run(args1, null, System.out);
-        } catch (SplitException e) {
-            throw e;
-        }
+        Files.write(file.toPath(), inputString.getBytes());
+        String[] args1 = {FILENAME};
+        splitApplication.run(args1, null, System.out);
+
         assertTrue(firstFile.exists());
         assertTrue(secondFile.exists());
         assertFalse(thirdFile.exists());
@@ -354,85 +197,54 @@ public class SplitApplicationTest {
 
 
     @Test
-    public void Should_SplitIntoMultipleFiles_When_CorrectLineInput() throws Exception {
+    public void shouldSplitIntoMultipleFilesWhenCorrectLineInput() throws Exception {
         String inputString = generateString(10);
-        try {
-            Files.write(file.toPath(), inputString.getBytes());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        Files.write(file.toPath(), inputString.getBytes());
 
-        String[] args = {"-l", "2", filename};
-        try {
-            splitApplication.run(args, null, System.out);
-        } catch (SplitException e) {
-            throw e;
-        }
-        File firstFile = new File(currentDir + File.separator + testDirName + File.separator + "xaa");
-        File lastFile = new File(currentDir + File.separator + testDirName + File.separator + "xae");
-        File nonExistantFile = new File(currentDir + File.separator + testDirName + File.separator + "xaf");
+        String[] args = {"-l", "2", FILENAME};
+        splitApplication.run(args, null, System.out);
+
+        File firstFile = new File(CURRENT_DIR + File.separator + RESOURCE_FOLDER + File.separator + "xaa");
+        File lastFile = new File(CURRENT_DIR + File.separator + RESOURCE_FOLDER + File.separator + "xae");
+        File nonExistantFile = new File(CURRENT_DIR + File.separator + RESOURCE_FOLDER + File.separator + "xaf");
         assertTrue(firstFile.exists());
         assertTrue(lastFile.exists());
         assertFalse(nonExistantFile.exists());
         firstFile.delete();
         lastFile.delete();
-
 
         inputString = generateString(10);
-        try {
-            Files.write(file.toPath(), inputString.getBytes());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        String[] args1 = {"-l", "3", filename};
-        try {
-            splitApplication.run(args1, null, System.out);
-        } catch (SplitException e) {
-            throw e;
-        }
-        lastFile = new File(currentDir + File.separator + testDirName + File.separator + "xad");
-        nonExistantFile = new File(currentDir + File.separator + testDirName + File.separator + "xae");
+        Files.write(file.toPath(), inputString.getBytes());
+        String[] args1 = {"-l", "3", FILENAME};
+        splitApplication.run(args1, null, System.out);
+
+        lastFile = new File(CURRENT_DIR + File.separator + RESOURCE_FOLDER + File.separator + "xad");
+        nonExistantFile = new File(CURRENT_DIR + File.separator + RESOURCE_FOLDER + File.separator + "xae");
         assertTrue(firstFile.exists());
         assertTrue(lastFile.exists());
         assertFalse(nonExistantFile.exists());
         firstFile.delete();
         lastFile.delete();
-
 
         inputString = generateString(27);
-        try {
-            Files.write(file.toPath(), inputString.getBytes());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        String[] args2 = {"-l", "1", filename};
-        try {
-            splitApplication.run(args2, null, System.out);
-        } catch (SplitException e) {
-            throw e;
-        }
-        lastFile = new File(currentDir + File.separator + testDirName + File.separator + "xba");
-        nonExistantFile = new File(currentDir + File.separator + testDirName + File.separator + "xbb");
+        Files.write(file.toPath(), inputString.getBytes());
+        String[] args2 = {"-l", "1", FILENAME};
+        splitApplication.run(args2, null, System.out);
+
+        lastFile = new File(CURRENT_DIR + File.separator + RESOURCE_FOLDER + File.separator + "xba");
+        nonExistantFile = new File(CURRENT_DIR + File.separator + RESOURCE_FOLDER + File.separator + "xbb");
         assertTrue(firstFile.exists());
         assertTrue(lastFile.exists());
         assertFalse(nonExistantFile.exists());
         firstFile.delete();
         lastFile.delete();
-
 
         inputString = generateString(677);
-        try {
-            Files.write(file.toPath(), inputString.getBytes());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        try {
-            splitApplication.run(args2, null, System.out);
-        } catch (SplitException e) {
-            throw e;
-        }
-        lastFile = new File(currentDir + File.separator + testDirName + File.separator + "zaa");
-        nonExistantFile = new File(currentDir + File.separator + testDirName + File.separator + "zab");
+        Files.write(file.toPath(), inputString.getBytes());
+        splitApplication.run(args2, null, System.out);
+
+        lastFile = new File(CURRENT_DIR + File.separator + RESOURCE_FOLDER + File.separator + "zaa");
+        nonExistantFile = new File(CURRENT_DIR + File.separator + RESOURCE_FOLDER + File.separator + "zab");
         assertTrue(firstFile.exists());
         assertTrue(lastFile.exists());
         assertFalse(nonExistantFile.exists());
@@ -440,88 +252,55 @@ public class SplitApplicationTest {
         lastFile.delete();
     }
 
-
-
     @Test
-    public void Should_SplitIntoMultipleFiles_When_CorrectByteInput() throws Exception {
+    public void shouldSplitIntoMultipleFilesWhenCorrectByteInput() throws Exception {
         String inputString = generateStringByte(10);
-        try {
-            Files.write(file.toPath(), inputString.getBytes());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        Files.write(file.toPath(), inputString.getBytes());
 
-        String[] args = {"-b", "5", filename};
-        try {
-            splitApplication.run(args, null, System.out);
-        } catch (SplitException e) {
-            throw e;
-        }
-        File firstFile = new File(currentDir + File.separator + testDirName + File.separator + "xaa");
-        File lastFile = new File(currentDir + File.separator + testDirName + File.separator + "xab");
-        File nonExistantFile = new File(currentDir + File.separator + testDirName + File.separator + "xac");
+        String[] args = {"-b", "5", FILENAME};
+        splitApplication.run(args, null, System.out);
+
+        File firstFile = new File(CURRENT_DIR + File.separator + RESOURCE_FOLDER + File.separator + "xaa");
+        File lastFile = new File(CURRENT_DIR + File.separator + RESOURCE_FOLDER + File.separator + "xab");
+        File nonExistantFile = new File(CURRENT_DIR + File.separator + RESOURCE_FOLDER + File.separator + "xac");
         assertTrue(firstFile.exists());
         assertTrue(lastFile.exists());
         assertFalse(nonExistantFile.exists());
         firstFile.delete();
         lastFile.delete();
-
 
         inputString = generateStringByte(10);
-        try {
-            Files.write(file.toPath(), inputString.getBytes());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        String[] args1 = {"-l", "3", filename};
-        try {
-            splitApplication.run(args1, null, System.out);
-        } catch (SplitException e) {
-            throw e;
-        }
-        lastFile = new File(currentDir + File.separator + testDirName + File.separator + "xad");
-        nonExistantFile = new File(currentDir + File.separator + testDirName + File.separator + "xae");
+        Files.write(file.toPath(), inputString.getBytes());
+        String[] args1 = {"-l", "3", FILENAME};
+        splitApplication.run(args1, null, System.out);
+
+        lastFile = new File(CURRENT_DIR + File.separator + RESOURCE_FOLDER + File.separator + "xad");
+        nonExistantFile = new File(CURRENT_DIR + File.separator + RESOURCE_FOLDER + File.separator + "xae");
         assertTrue(firstFile.exists());
         assertTrue(lastFile.exists());
         assertFalse(nonExistantFile.exists());
         firstFile.delete();
         lastFile.delete();
-
 
         inputString = generateStringByte(27);
-        try {
-            Files.write(file.toPath(), inputString.getBytes());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        String[] args2 = {"-l", "1", filename};
-        try {
-            splitApplication.run(args2, null, System.out);
-        } catch (SplitException e) {
-            throw e;
-        }
-        lastFile = new File(currentDir + File.separator + testDirName + File.separator + "xba");
-        nonExistantFile = new File(currentDir + File.separator + testDirName + File.separator + "xbb");
+        Files.write(file.toPath(), inputString.getBytes());
+        String[] args2 = {"-l", "1", FILENAME};
+        splitApplication.run(args2, null, System.out);
+
+        lastFile = new File(CURRENT_DIR + File.separator + RESOURCE_FOLDER + File.separator + "xba");
+        nonExistantFile = new File(CURRENT_DIR + File.separator + RESOURCE_FOLDER + File.separator + "xbb");
         assertTrue(firstFile.exists());
         assertTrue(lastFile.exists());
         assertFalse(nonExistantFile.exists());
         firstFile.delete();
         lastFile.delete();
 
-
         inputString = generateStringByte(677);
-        try {
-            Files.write(file.toPath(), inputString.getBytes());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        try {
-            splitApplication.run(args2, null, System.out);
-        } catch (SplitException e) {
-            throw e;
-        }
-        lastFile = new File(currentDir + File.separator + testDirName + File.separator + "zaa");
-        nonExistantFile = new File(currentDir + File.separator + testDirName + File.separator + "zab");
+        Files.write(file.toPath(), inputString.getBytes());
+        splitApplication.run(args2, null, System.out);
+
+        lastFile = new File(CURRENT_DIR + File.separator + RESOURCE_FOLDER + File.separator + "zaa");
+        nonExistantFile = new File(CURRENT_DIR + File.separator + RESOURCE_FOLDER + File.separator + "zab");
         assertTrue(firstFile.exists());
         assertTrue(lastFile.exists());
         assertFalse(nonExistantFile.exists());
@@ -529,121 +308,71 @@ public class SplitApplicationTest {
         lastFile.delete();
     }
 
-
-
     @Test
-    public void Should_SplitIntoMultipleFiles_When_CorrectByteTypeInput() throws Exception {
+    public void shouldSplitIntoMultipleFilesWhenCorrectByteTypeInput() throws Exception {
         String inputString = generateStringByte(1024);
-        try {
-            Files.write(file.toPath(), inputString.getBytes());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        Files.write(file.toPath(), inputString.getBytes());
+        String[] args = {"-b", "1b", FILENAME};
+        splitApplication.run(args, null, System.out);
 
-        String[] args = {"-b", "1b", filename};
-        try {
-            splitApplication.run(args, null, System.out);
-        } catch (SplitException e) {
-            throw e;
-        }
-        File firstFile = new File(currentDir + File.separator + testDirName + File.separator + "xaa");
-        File lastFile = new File(currentDir + File.separator + testDirName + File.separator + "xab");
-        File nonExistantFile = new File(currentDir + File.separator + testDirName + File.separator + "xac");
+        File firstFile = new File(CURRENT_DIR + File.separator + RESOURCE_FOLDER + File.separator + "xaa");
+        File lastFile = new File(CURRENT_DIR + File.separator + RESOURCE_FOLDER + File.separator + "xab");
+        File nonExistantFile = new File(CURRENT_DIR + File.separator + RESOURCE_FOLDER + File.separator + "xac");
         assertTrue(firstFile.exists());
         assertTrue(lastFile.exists());
         assertFalse(nonExistantFile.exists());
         firstFile.delete();
         lastFile.delete();
-
 
         inputString = generateStringByte(513);
-        try {
-            Files.write(file.toPath(), inputString.getBytes());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        String[] args1 = {"-l", "1b", filename};
-        try {
-            splitApplication.run(args1, null, System.out);
-        } catch (SplitException e) {
-            throw e;
-        }
+        Files.write(file.toPath(), inputString.getBytes());
+        String[] args1 = {"-l", "1b", FILENAME};
+        splitApplication.run(args1, null, System.out);
+
         assertTrue(firstFile.exists());
         assertTrue(lastFile.exists());
         assertFalse(nonExistantFile.exists());
         firstFile.delete();
         lastFile.delete();
-
 
         inputString = generateStringByte(2048);
-        try {
-            Files.write(file.toPath(), inputString.getBytes());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        String[] args2 = {"-l", "1k", filename};
-        try {
-            splitApplication.run(args2, null, System.out);
-        } catch (SplitException e) {
-            throw e;
-        }
+        Files.write(file.toPath(), inputString.getBytes());
+        String[] args2 = {"-l", "1k", FILENAME};
+        splitApplication.run(args2, null, System.out);
+
         assertTrue(firstFile.exists());
         assertTrue(lastFile.exists());
         assertFalse(nonExistantFile.exists());
         firstFile.delete();
         lastFile.delete();
-
 
         inputString = generateStringByte(1025);
-        try {
-            Files.write(file.toPath(), inputString.getBytes());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        String[] args3 = {"-l", "1k", filename};
-        try {
-            splitApplication.run(args3, null, System.out);
-        } catch (SplitException e) {
-            throw e;
-        }
+        Files.write(file.toPath(), inputString.getBytes());
+        String[] args3 = {"-l", "1k", FILENAME};
+        splitApplication.run(args3, null, System.out);
+
         assertTrue(firstFile.exists());
         assertTrue(lastFile.exists());
         assertFalse(nonExistantFile.exists());
         firstFile.delete();
         lastFile.delete();
-
 
         inputString = generateStringByte(2097152);
-        try {
-            Files.write(file.toPath(), inputString.getBytes());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        String[] args4 = {"-l", "1m", filename};
-        try {
-            splitApplication.run(args4, null, System.out);
-        } catch (SplitException e) {
-            throw e;
-        }
+        Files.write(file.toPath(), inputString.getBytes());
+        String[] args4 = {"-l", "1m", FILENAME};
+        splitApplication.run(args4, null, System.out);
+
         assertTrue(firstFile.exists());
         assertTrue(lastFile.exists());
         assertFalse(nonExistantFile.exists());
         firstFile.delete();
         lastFile.delete();
 
-
         inputString = generateStringByte(1048577);
-        try {
-            Files.write(file.toPath(), inputString.getBytes());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        String[] args5 = {"-l", "1m", filename};
-        try {
-            splitApplication.run(args5, null, System.out);
-        } catch (SplitException e) {
-            throw e;
-        }
+        Files.write(file.toPath(), inputString.getBytes());
+        String[] args5 = {"-l", "1m", FILENAME};
+        splitApplication.run(args5, null, System.out);
+
         assertTrue(firstFile.exists());
         assertTrue(lastFile.exists());
         assertFalse(nonExistantFile.exists());

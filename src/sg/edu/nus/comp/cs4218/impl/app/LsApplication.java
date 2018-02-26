@@ -40,11 +40,11 @@ public class LsApplication implements LsInterface {
 		ArrayList<String> folders = new ArrayList<String>();
 		
 		for(String arg: args) {
-			if(arg.equals("-d")) {
+			if("-d".equals(arg)) {
 				isFoldersOnly = true;
 				optionCount++;
 			}
-			else if(arg.equals("-R")) {
+			else if("-R".equals(arg)) {
 				isRecursive = true;
 				optionCount++;
 			}
@@ -81,7 +81,6 @@ public class LsApplication implements LsInterface {
 			for(String name: folderName) {
 				strBuilder.append(listFolderContentRecursive(directoryFilter, name));
 			}
-			strBuilder.deleteCharAt(strBuilder.length()-1);
 		}
 		else {
 			boolean displayFolder = false;
@@ -94,17 +93,16 @@ public class LsApplication implements LsInterface {
 				File folder = new File(name);
 				folderContents = folder.listFiles(directoryFilter);
 				if(displayFolder) {
-					strBuilder.append(name).append(":\n");
+					strBuilder.append(name).append(':').append(System.lineSeparator());
 				}
 				if(folderContents.length > 0) {
-					strBuilder.append(listContents(name, folderContents));
+					strBuilder.append(listContents(folderContents));
 					if(extraNewLine) {
-						strBuilder.append('\n');
+						strBuilder.append(System.lineSeparator());
 					}
 				}
 			}
 		}
-		strBuilder.deleteCharAt(strBuilder.length()-1);
 		return strBuilder.toString();
 	}
 
@@ -122,15 +120,17 @@ public class LsApplication implements LsInterface {
 		
 		File folder = new File(folderName);
 		if(folder.isDirectory()) {
-			strBuilder.append(folderName).append(":\n");
+			strBuilder.append(folderName).append(':').append(System.lineSeparator());
 			folderContents = folder.listFiles(directoryFilter);
-			strBuilder.append(listContents(folderName, folderContents));
-			strBuilder.append('\n');
+			if(folderContents.length > 0) {
+				strBuilder.append(listContents(folderContents));
+				strBuilder.append(System.lineSeparator());
+			}
 			for(File file: folderContents) {
 				String fileName = folderName + File.separator + file.getName();
 				strBuilder.append(listFolderContentRecursive(directoryFilter, fileName));
 			}
-		}	
+		}
 		
 		return strBuilder.toString();
 	}
@@ -138,13 +138,11 @@ public class LsApplication implements LsInterface {
 	/**
 	 * Method to format the folder and its contents in String
 	 * 
-	 * @param folderName
-	 * 		Name of the folder
 	 * @param folderContents
 	 * 		List of folder contents to display in String
 	 * @return Formatted String showing the folder and its contents
 	 */
-	private String listContents(String folderName, File... folderContents) {
+	private String listContents(File... folderContents) {
 		StringBuilder strBuilder = new StringBuilder();
 		
 		for(File file: folderContents) {
@@ -152,7 +150,7 @@ public class LsApplication implements LsInterface {
 			if(file.isDirectory()) {
 				strBuilder.append(File.separator);
 			}
-			strBuilder.append('\n');
+			strBuilder.append(System.lineSeparator());
 		}
 		return strBuilder.toString();
 	}

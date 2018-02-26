@@ -8,7 +8,6 @@ import sg.edu.nus.comp.cs4218.exception.AbstractApplicationException;
 import sg.edu.nus.comp.cs4218.exception.CdException;
 
 import java.io.File;
-import java.io.IOException;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -16,16 +15,16 @@ import static org.junit.Assert.assertTrue;
 public class CdApplicationTest {
 
     private CdApplication cdApplication = new CdApplication();
-    private static String initial_dir;
+    private static String INITIAL_DIR;
+    private static String RESOURCE_FOLDER = "testCdDir";
     private File testDir = null;
     private String currentDir = "";
-    private String testDirName = "testCdDir";
 
     @Before
     public void setUp() throws Exception {
-        initial_dir = Environment.currentDirectory;
-        currentDir = initial_dir;
-        testDir = new File(currentDir + File.separator + testDirName);
+        INITIAL_DIR = Environment.currentDirectory;
+        currentDir = INITIAL_DIR;
+        testDir = new File(currentDir + File.separator + RESOURCE_FOLDER);
         testDir.mkdir();
     }
 
@@ -34,95 +33,52 @@ public class CdApplicationTest {
         testDir.delete();
     }
 
-    @Test
-    public void Should_ThrowCdException_When_NoPath() throws AbstractApplicationException {
-        boolean thrownCdException = false;
-
-        try {
-            cdApplication.run(null, null, System.out);
-        } catch (CdException e) {
-            thrownCdException = true;
-        } catch (NullPointerException e) {
-            thrownCdException = false;
-        }
-        assertTrue(thrownCdException);
+    @Test(expected = CdException.class)
+    public void shouldThrowCdExceptionWhenNoPath() throws AbstractApplicationException {
+        cdApplication.run(null, null, System.out);
     }
 
-    @Test
-    public void Should_ThrowCdException_When_NoOutputSteam() throws AbstractApplicationException {
-        boolean thrownCdException = false;
-
-        String[] args = {testDirName};
-
-        try {
-            cdApplication.run(args, null, null);
-        } catch (CdException e) {
-            thrownCdException = true;
-        }
-
-        assertTrue(thrownCdException);
+    @Test(expected = CdException.class)
+    public void shouldThrowCdExceptionWhenNoOutputSteam() throws AbstractApplicationException {
+        String[] args = {RESOURCE_FOLDER};
+        cdApplication.run(args, null, null);
     }
 
-    @Test
-    public void Should_ThrowCdException_When_MultipleInputPath() throws AbstractApplicationException {
-        boolean thrownCdException = false;
-        String[] args = {testDirName, "extraPath"};
-
-        try {
-            cdApplication.run(args, null, System.out);
-        } catch (CdException e) {
-            thrownCdException = true;
-        }
-        assertTrue(thrownCdException);
+    @Test(expected = CdException.class)
+    public void shouldThrowCdExceptionWhenMultipleInputPath() throws AbstractApplicationException {
+        String[] args = {RESOURCE_FOLDER, "extraPath"};
+        cdApplication.run(args, null, System.out);
     }
 
-    @Test
-    public void Should_ThrowCdException_When_InvalidPath() throws AbstractApplicationException {
-        boolean thrownCdException = false;
+    @Test(expected = CdException.class)
+    public void shouldThrowCdExceptionWhenInvalidPath() throws Exception {
         String[] args = {"InvalidCdPath"};
-
-        try {
-            cdApplication.run(args, null, System.out);
-        } catch (CdException e) {
-            thrownCdException = true;
-        }
-        assertTrue(thrownCdException);
+        cdApplication.run(args, null, System.out);
     }
 
-
-    @Test
-    public void Should_ThrowCdException_When_FilePath() throws AbstractApplicationException {
-        boolean thrownCdException = false;
-        File f = new File(currentDir + File.separator + testDirName + File.separator + "newfile");
-        try {
-            f.createNewFile();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        String[] args = {testDirName + File.separator + "newfile"};
+    @Test(expected = CdException.class)
+    public void shouldThrowCdExceptionWhenFilePath() throws Exception {
+        File f = new File(currentDir + File.separator + RESOURCE_FOLDER + File.separator + "newfile");
+        f.createNewFile();
+        String[] args = {RESOURCE_FOLDER + File.separator + "newfile"};
         try {
             cdApplication.run(args, null, System.out);
         } catch (CdException e) {
             f.delete();
-            thrownCdException = true;
         }
         if (f.exists()) {
             f.delete();
         }
-        assertTrue(thrownCdException);
     }
 
     @Test
-    public void When_ValidPath_Expect_ChangeOfDirectory() throws AbstractApplicationException {
-        String expectedDir = initial_dir + File.pathSeparator + testDirName;
-        String[] args = {testDirName};
+    public void whenValidPathExpectChangeOfDirectory() throws Exception {
+        String expectedDir = INITIAL_DIR + File.pathSeparator + RESOURCE_FOLDER;
+        String[] args = {RESOURCE_FOLDER};
 
-        try {
-            cdApplication.run(args, null, System.out);
-        } catch (CdException e) {
-            throw e;
-        }
+        cdApplication.run(args, null, System.out);
         currentDir = Environment.currentDirectory;
+
         assertEquals(expectedDir, currentDir);
     }
 }

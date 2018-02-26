@@ -9,6 +9,7 @@ import java.util.ArrayList;
 
 import org.junit.After;
 import org.junit.AfterClass;
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -26,7 +27,7 @@ public class MkdirApplicationTest {
 	private static final String MULTI_LEVEL_ONE = "Level1/Level12";
 	private static final String MULTI_LEVEL_TWO = "Level11/Level12";
 	private static final String INVALID_CHARACTER_PATH = "Level1/Level*2";
-	ArrayList<String> paths;
+	private static final boolean IS_WINDOWS = System.getProperty("os.name").contains("window");
 	
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
@@ -90,6 +91,7 @@ public class MkdirApplicationTest {
 	
 	@Test(expected=MkdirException.class)
 	public void Should_ThrowException_When_InvalidCharacterExists() throws Exception {
+		Assume.assumeTrue(IS_WINDOWS);
 		mkdir.run(new String[] {INVALID_CHARACTER_PATH}, System.in, System.out);
 	}
 	
@@ -100,6 +102,7 @@ public class MkdirApplicationTest {
 	
 	@Test(expected=MkdirException.class)
 	public void Should_ThrowException_When_InvalidInArgsExists() throws Exception {
+		Assume.assumeTrue(IS_WINDOWS);
 		mkdir.run(new String[] {LEVEL_ONE, INVALID_CHARACTER_PATH}, System.in, System.out);
 	}
 	

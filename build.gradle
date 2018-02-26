@@ -1,0 +1,29 @@
+apply plugin: 'idea'
+//and standard one
+apply plugin: 'java'
+
+apply plugin: 'jacoco'
+
+apply plugin: 'pmd'
+
+
+sourceSets {
+    main {
+        java {
+            srcDir 'src/'
+        }
+    }
+    test {
+        java {
+            srcDir 'test/'
+        }
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testCompile 'junit:junit:4.10'
+}

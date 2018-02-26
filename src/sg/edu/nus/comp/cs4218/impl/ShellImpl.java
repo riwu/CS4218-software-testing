@@ -1,22 +1,17 @@
 package sg.edu.nus.comp.cs4218.impl;
 
-import java.io.*;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.*;
-import java.nio.file.attribute.BasicFileAttributes;
-import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Stream;
-
 import sg.edu.nus.comp.cs4218.Application;
 import sg.edu.nus.comp.cs4218.Environment;
 import sg.edu.nus.comp.cs4218.Shell;
 import sg.edu.nus.comp.cs4218.exception.AbstractApplicationException;
 import sg.edu.nus.comp.cs4218.exception.ShellException;
 import sg.edu.nus.comp.cs4218.impl.app.*;
-import sg.edu.nus.comp.cs4218.impl.cmd.CallCommand;
 import sg.edu.nus.comp.cs4218.impl.cmd.PipeCommand;
+
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * A Shell is a command interpreter and forms the backbone of the entire
@@ -290,10 +285,16 @@ public class ShellImpl implements Shell {
         InputStream inputPipe = new ByteArrayInputStream("".getBytes(StandardCharsets.UTF_8));
         OutputStream outputPipe = new ByteArrayOutputStream();
 
-        PipeCommand pipeCommand = new PipeCommand(cmdline);
-        pipeCommand.parse();
-        pipeCommand.evaluate(inputPipe, outputPipe);
-
+        PipeCommand pipeCommand = null;
+		for (String command : cmdline.split(";")) {
+			pipeCommand = new PipeCommand(command);
+            pipeCommand.parse();
+			try {
+                pipeCommand.evaluate(inputPipe, outputPipe);
+            } catch (Exception e) {
+			    e.printStackTrace();
+            }
+        }
         writeToStdout(pipeCommand.getResultStream(), stdout);
 
     }

@@ -101,7 +101,7 @@ public class MkdirApplicationTest {
 	}
 	
 	@Test(expected=MkdirException.class)
-	public void Should_ThrowException_When_InvalidCharacterExists() throws Exception {
+	public void shouldThrowExceptionWhenInvalidCharacterExists() throws Exception {
 		Assume.assumeTrue(IS_WINDOWS);
 		mkdir.run(new String[] {INVALID_PATH}, System.in, System.out);
 	}
@@ -112,7 +112,7 @@ public class MkdirApplicationTest {
 	}
 	
 	@Test(expected=MkdirException.class)
-	public void Should_ThrowException_When_InvalidInArgsExists() throws Exception {
+	public void shouldThrowExceptionWhenInvalidInArgsExists() throws Exception {
 		Assume.assumeTrue(IS_WINDOWS);
 		mkdir.run(new String[] {LEVEL_ONE, INVALID_PATH}, System.in, System.out);
 	}

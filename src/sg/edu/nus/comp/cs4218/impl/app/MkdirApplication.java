@@ -59,11 +59,10 @@ public class MkdirApplication implements MkdirInterface {
 
 	@Override
 	public void createFolder(String... folderName) throws Exception {
-		boolean success;
 		for (String folder: folderName) {
 			File directory = new File(folder);
-			success = directory.mkdirs();
-			if (!directory.isDirectory() && !success) {
+			directory.mkdirs();
+			if (!directory.isDirectory()) {
 				String path = folder.replace(Environment.currentDirectory + File.separatorChar, "");
 				throw new Exception(path + " is not a directory path");
 			}

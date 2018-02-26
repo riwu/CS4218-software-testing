@@ -273,7 +273,6 @@ public class ShellImpl implements Shell {
                 }
 
                 shell.parseAndEvaluate(readLine, System.out);
-                System.out.println();
 
             } catch (Exception e) {
                 // TODO: need to change to e.printMessage on production

@@ -43,7 +43,7 @@ public class SemicolonTest {
         String fileContent = "echoToFileContent";
         shell.parseAndEvaluate("echo " + fileContent + " > " + FILE.toString() + ";cat " + FILE.toString(),
                 outputStream);
-        assertEquals(fileContent, outputStream.toString());
+        assertEquals(fileContent + System.lineSeparator(), outputStream.toString());
     }
 
     @Test
@@ -53,7 +53,7 @@ public class SemicolonTest {
         String fileContent = "echoToFileContent";
         shell.parseAndEvaluate("echo " + fileContent + " > " + FILE.toString() + " ; cat " + FILE.toString(),
                 outputStream);
-        assertEquals(fileContent, outputStream.toString());
+        assertEquals(fileContent + System.lineSeparator(), outputStream.toString());
     }
 
     @Test

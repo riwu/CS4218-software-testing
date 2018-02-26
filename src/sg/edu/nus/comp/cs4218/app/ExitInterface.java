@@ -8,7 +8,6 @@ public interface ExitInterface extends Application {
 	 * Terminate shell.
 	 * @throws Exception
 	 */
-	public void terminateExecution() 
-			throws Exception;
+	public void terminateExecution();
 	
 }

@@ -15,14 +15,14 @@ public class EchoApplicationTest {
     }
 
     @Test
-    public void Should_PrintEmptyString_When_NoArgGiven() throws EchoException{
+    public void Should_PrintNewline_When_NoArgGiven() throws EchoException{
         String result = echoApplication.evaluate(new String[]{});
 
-        assertTrue(result.equals(""));
+        assertTrue(result.equals(System.lineSeparator()));
     }
 
     @Test
-    public void When_PrintString_Expect_NoTrailingNewlineCharacter() throws EchoException{
+    public void When_PrintString_Expect_NewlineCharacter() throws EchoException{
         String singleArg = echoApplication.evaluate(new String[]{"test1"});
         String multipleArgs = echoApplication.evaluate(new String[]{"test1", "test2", "test3"});
 
@@ -34,21 +34,21 @@ public class EchoApplicationTest {
     public void Should_PrintString_When_EvaluatingOneArg() throws EchoException {
         String result = echoApplication.evaluate(new String[]{"test1"});
 
-        assertTrue(result.equals("test1"));
+        assertTrue(result.equals("test1" + System.lineSeparator()));
     }
 
     @Test
     public void Should_PrintStringWithSpaceBetween_When_EvaluatingMultipleArgs() throws  EchoException {
         String result = echoApplication.evaluate(new String[]{"test1", "test2", "test3"});
 
-        assertTrue(result.equals("test1 test2 test3"));
+        assertTrue(result.equals("test1 test2 test3" + System.lineSeparator()));
     }
 
     @Test
     public void Should_PrintUnicode_When_EvaluatingUnicodeCharacter() throws EchoException {
         String result = echoApplication.evaluate(new String[]{"☺"});
 
-        assertTrue(result.equals("☺"));
+        assertTrue(result.equals("☺" + System.lineSeparator()));
     }
 
 }

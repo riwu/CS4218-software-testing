@@ -7,6 +7,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import org.junit.After;
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -15,7 +16,7 @@ import sg.edu.nus.comp.cs4218.exception.MkdirException;
 
 public class MkdirApplicationTest {
 	
-	MkdirApplication mkdir = new MkdirApplication();
+	static MkdirApplication mkdir;
 	private static final Path BASE_PATH = Paths.get(System.getProperty("user.dir"));
 	private static final String TEST_FOLDER = "undertest";
 	private static Path testPath;
@@ -23,10 +24,12 @@ public class MkdirApplicationTest {
 	private static final String MULTI_LEVEL_ONE = "Level1" + File.separator + "Level12";
 	private static final String MULTI_LEVEL_TWO = "Level11" + File.separator + "Level12";
 	private static final String INVALID_PATH = "Level1" + File.separator + "Level*2";
+	private static final boolean IS_WINDOWS = System.getProperty("os.name").contains("window");
 	
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
 		testPath = BASE_PATH.resolve(TEST_FOLDER);
+		mkdir = new MkdirApplication();
 	}
 
 	@Before
@@ -98,7 +101,8 @@ public class MkdirApplicationTest {
 	}
 	
 	@Test(expected=MkdirException.class)
-	public void shouldThrowExceptionWhenInvalidCharacterExists() throws Exception {
+	public void Should_ThrowException_When_InvalidCharacterExists() throws Exception {
+		Assume.assumeTrue(IS_WINDOWS);
 		mkdir.run(new String[] {INVALID_PATH}, System.in, System.out);
 	}
 	
@@ -108,7 +112,8 @@ public class MkdirApplicationTest {
 	}
 	
 	@Test(expected=MkdirException.class)
-	public void shouldThrowExceptionWhenInvalidInArgsExists() throws Exception {
+	public void Should_ThrowException_When_InvalidInArgsExists() throws Exception {
+		Assume.assumeTrue(IS_WINDOWS);
 		mkdir.run(new String[] {LEVEL_ONE, INVALID_PATH}, System.in, System.out);
 	}
 }

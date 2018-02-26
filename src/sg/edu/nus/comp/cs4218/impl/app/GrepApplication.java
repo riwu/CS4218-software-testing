@@ -52,7 +52,7 @@ public class GrepApplication implements GrepInterface {
 
         }while (hasLine);
 
-        return result.toString().trim();
+        return result.toString().trim() + System.lineSeparator();
     }
 
     @Override
@@ -80,7 +80,7 @@ public class GrepApplication implements GrepInterface {
             }
         });
 
-        return result.toString().trim();
+        return result.toString().trim() + System.lineSeparator();
     }
 
     @Override

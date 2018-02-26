@@ -39,19 +39,19 @@ public class GrepApplicationTest {
         pipeCommand.parse();
         pipeCommand.evaluate(inputStream, outputStream);
 
-        String expected = "The departure point of the paper is the skip-gram model";
+        String expected = "The departure point of the paper is the skip-gram model" + System.lineSeparator();
         String evaluated = pipeCommand.getResultStream().toString();
 
         assertEquals(expected, evaluated);
     }
 
     @Test
-    public void Should_PrintNothing_When_NoMatches() throws Exception {
+    public void Should_PrintNewline_When_NoMatches() throws Exception {
         PipeCommand pipeCommand = new PipeCommand("grep nomatches " + SENTENCES1_PATH);
         pipeCommand.parse();
         pipeCommand.evaluate(inputStream, outputStream);
 
-        String expected = "";
+        String expected =  System.lineSeparator();
         String evaluated = pipeCommand.getResultStream().toString();
 
         assertEquals(expected, evaluated);
@@ -63,7 +63,7 @@ public class GrepApplicationTest {
         pipeCommand.parse();
         pipeCommand.evaluate(inputStream, outputStream);
 
-        String expected = "Recently introduced continuous Skip-gram model is an efficient method for learning high-quality distributed vector representations that capture a large number of precise syntactic and semantic word relationships";
+        String expected = "Recently introduced continuous Skip-gram model is an efficient method for learning high-quality distributed vector representations that capture a large number of precise syntactic and semantic word relationships" + System.lineSeparator();
         String evaluated = pipeCommand.getResultStream().toString();
 
         assertEquals(expected, evaluated);
@@ -76,7 +76,7 @@ public class GrepApplicationTest {
         pipeCommand.evaluate(inputStream, outputStream);
 
         // matches: state-of-the-art
-        String expected = "The word2vec software of Tomas Mikolov and colleagues has gained a lot of traction lately and provides state-of-the-art word embeddings";
+        String expected = "The word2vec software of Tomas Mikolov and colleagues has gained a lot of traction lately and provides state-of-the-art word embeddings"  + System.lineSeparator();
         String evaluated = pipeCommand.getResultStream().toString();
 
         assertEquals(expected, evaluated);
@@ -90,7 +90,7 @@ public class GrepApplicationTest {
         pipeCommand.evaluate(inputStream, outputStream);
 
         // matches: state-of-the-art
-        String expected = "The departure point of the paper is the skip-gram model";
+        String expected = "The departure point of the paper is the skip-gram model"  + System.lineSeparator();
         String evaluated = pipeCommand.getResultStream().toString();
 
         assertEquals(expected, evaluated);
@@ -102,8 +102,8 @@ public class GrepApplicationTest {
         pipeCommand.parse();
         pipeCommand.evaluate(inputStream, outputStream);
 
-        String expected = "In this model we are given a corpus of words w and their contexts c\n" +
-                          "We introduce a new dataset with human judgments on pairs of words in sentential context and evaluate our model on it showing that our model outperforms competitive baselines and other neural language models";
+        String expected = "In this model we are given a corpus of words w and their contexts c"  + System.lineSeparator() +
+                          "We introduce a new dataset with human judgments on pairs of words in sentential context and evaluate our model on it showing that our model outperforms competitive baselines and other neural language models" + System.lineSeparator();
 
         String evaluated = pipeCommand.getResultStream().toString();
 
@@ -116,7 +116,7 @@ public class GrepApplicationTest {
         pipeCommand.parse();
         pipeCommand.evaluate(inputStream, outputStream);
 
-        String expected = "The departure point of the paper is the skip-gram model";
+        String expected = "The departure point of the paper is the skip-gram model"  + System.lineSeparator();
         String evaluated = pipeCommand.getResultStream().toString();
 
         assertEquals(expected, evaluated);
@@ -128,7 +128,7 @@ public class GrepApplicationTest {
         pipeCommand.parse();
         pipeCommand.evaluate(inputStream, outputStream);
 
-        String expected = "The departure point of the paper is the skip-gram model";
+        String expected = "The departure point of the paper is the skip-gram model"  + System.lineSeparator();
         String evaluated = pipeCommand.getResultStream().toString();
 
         assertEquals(expected, evaluated);
@@ -140,7 +140,7 @@ public class GrepApplicationTest {
         pipeCommand.parse();
         pipeCommand.evaluate(inputStream, outputStream);
 
-        String expected = "The departure point of the paper is the skip-gram model";
+        String expected = "The departure point of the paper is the skip-gram model"  + System.lineSeparator();
         String evaluated = pipeCommand.getResultStream().toString();
 
         assertEquals(expected, evaluated);

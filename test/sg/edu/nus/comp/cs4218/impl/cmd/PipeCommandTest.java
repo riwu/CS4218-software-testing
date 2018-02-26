@@ -32,7 +32,7 @@ public class PipeCommandTest {
         pipeCommand.parse();
         pipeCommand.evaluate(inputStream, outputStream);
 
-        String expected = "string_with_pipe";
+        String expected = "string_with_pipe"  + System.lineSeparator();
         String evaluated = pipeCommand.getResultStream().toString();
 
         assertEquals(expected, evaluated);
@@ -51,7 +51,7 @@ public class PipeCommandTest {
         pipeCommand.parse();
         pipeCommand.evaluate(inputStream, outputStream);
 
-        String expected = "string_with_pipe";
+        String expected = "string_with_pipe"  + System.lineSeparator();
         String evaluated = pipeCommand.getResultStream().toString();
 
         assertEquals(expected, evaluated);
@@ -63,7 +63,7 @@ public class PipeCommandTest {
         pipeCommand.parse();
         pipeCommand.evaluate(inputStream, outputStream);
 
-        String expected = "string_with_pipe";
+        String expected = "string_with_pipe" + System.lineSeparator();
         String evaluated = pipeCommand.getResultStream().toString();
 
         assertEquals(expected, evaluated);
@@ -75,7 +75,7 @@ public class PipeCommandTest {
         pipeCommand.parse();
         pipeCommand.evaluate(inputStream, outputStream);
 
-        String expected = "string_with_single_quote";
+        String expected = "string_with_single_quote" + System.lineSeparator();
         String evaluated = pipeCommand.getResultStream().toString();
 
         assertEquals(expected, evaluated);
@@ -87,7 +87,7 @@ public class PipeCommandTest {
         pipeCommand.parse();
         pipeCommand.evaluate(inputStream, outputStream);
 
-        String expected = "string_with_double_quote";
+        String expected = "string_with_double_quote" + System.lineSeparator();
         String evaluated = pipeCommand.getResultStream().toString();
 
         assertEquals(expected, evaluated);
@@ -99,7 +99,7 @@ public class PipeCommandTest {
         pipeCommand.parse();
         pipeCommand.evaluate(inputStream, outputStream);
 
-        String expected = "string_with_backtick";
+        String expected = "string_with_backtick" + System.lineSeparator();
         String evaluated = pipeCommand.getResultStream().toString();
 
         assertEquals(expected, evaluated);
@@ -111,7 +111,7 @@ public class PipeCommandTest {
         pipeCommand.parse();
         pipeCommand.evaluate(inputStream, outputStream);
 
-        String expected = "string_pass_through_multipipes";
+        String expected = "string_pass_through_multipipes" + System.lineSeparator();
         String evaluated = pipeCommand.getResultStream().toString();
 
         assertEquals(expected, evaluated);
@@ -123,7 +123,7 @@ public class PipeCommandTest {
         pipeCommand.parse();
         pipeCommand.evaluate(inputStream, outputStream);
 
-        String expected = "the_string";
+        String expected = "the_string" + System.lineSeparator();
         String evaluated = pipeCommand.getResultStream().toString();
 
         assertEquals(expected, evaluated);
@@ -135,7 +135,7 @@ public class PipeCommandTest {
         pipeCommand.parse();
         pipeCommand.evaluate(inputStream, outputStream);
 
-        String expected = "echo the_string | cat";
+        String expected = "echo the_string | cat" + System.lineSeparator();
         String evaluated = pipeCommand.getResultStream().toString();
 
         assertEquals(expected, evaluated);
@@ -147,7 +147,7 @@ public class PipeCommandTest {
         pipeCommand.parse();
         pipeCommand.evaluate(inputStream, outputStream);
 
-        String expected = "echo the_string | cat";
+        String expected = "echo the_string | cat" + System.lineSeparator();
         String evaluated = pipeCommand.getResultStream().toString();
 
         assertEquals(expected, evaluated);
@@ -159,7 +159,7 @@ public class PipeCommandTest {
         pipeCommand.parse();
         pipeCommand.evaluate(inputStream, outputStream);
 
-        String expected = "echo the_string's | cat";
+        String expected = "echo the_string's | cat" + System.lineSeparator();
         String evaluated = pipeCommand.getResultStream().toString();
 
         assertEquals(expected, evaluated);
@@ -171,7 +171,7 @@ public class PipeCommandTest {
         pipeCommand.parse();
         pipeCommand.evaluate(inputStream, outputStream);
 
-        String expected = "string1 string2 string3";
+        String expected = "string1 string2 string3" + System.lineSeparator();
         String evaluated = pipeCommand.getResultStream().toString();
 
         assertEquals(expected, evaluated);

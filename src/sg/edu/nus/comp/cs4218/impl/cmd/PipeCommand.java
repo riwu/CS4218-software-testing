@@ -15,29 +15,33 @@ public class PipeCommand implements Command {
 
     private Queue<CallCommand> commandQ;
     private OutputStream resultStream;
+    private String cmdline;
+    public String[] pipedCommands;
 
     public PipeCommand(String cmdline) {
         this.commandQ = new LinkedList<>();
+        this.cmdline = cmdline;
+    }
 
+    public void parse(){
         try {
-            String[] pipedCommands = extract(cmdline);
-
-            if ( pipedCommands == null) {
-                commandQ.offer(new CallCommand(cmdline));
-            }else{
-                //Arrays.stream(pipedCommands).forEach(System.out::println);
-                Arrays.stream(pipedCommands).forEach(command -> commandQ.offer(new CallCommand(command)));
-            }
+            pipedCommands = extract(cmdline);
 
         } catch (ShellException e) {
             e.printStackTrace();
         }
-
     }
 
     @Override
     public void evaluate(InputStream stdin, OutputStream stdout) throws AbstractApplicationException, ShellException {
 
+        if ( pipedCommands == null) {
+            commandQ.offer(new CallCommand(cmdline));
+        }else{
+            //Arrays.stream(pipedCommands).forEach(System.out::println);
+            Arrays.stream(pipedCommands)
+                    .forEach(command -> commandQ.offer(new CallCommand(command)));
+        }
 
         while (!commandQ.isEmpty()) {
             CallCommand command = commandQ.poll();

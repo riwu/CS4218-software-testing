@@ -1,16 +1,15 @@
 package sg.edu.nus.comp.cs4218.impl.app;
 
-import java.io.File;
+import sg.edu.nus.comp.cs4218.Environment;
+import sg.edu.nus.comp.cs4218.app.CatInterface;
+import sg.edu.nus.comp.cs4218.exception.CatException;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-
-import sg.edu.nus.comp.cs4218.Environment;
-import sg.edu.nus.comp.cs4218.app.CatInterface;
-import sg.edu.nus.comp.cs4218.exception.CatException;
 
 /**
  * The cat command concatenates the content of given files and prints on the
@@ -80,9 +79,8 @@ public class CatApplication implements CatInterface {
 				if (filePathArray.length != 0) {
 					for (int j = 0; j < filePathArray.length - 1; j++) {
 						try {
-							byte[] byteFileArray = Files
-									.readAllBytes(filePathArray[j]);
-							stdout.write(byteFileArray);
+                            byte[] byteFileArray = getContent(filePathArray[j]);
+                            stdout.write(byteFileArray);
 						} catch (IOException e) {
 							throw new CatException(
 									"Could not write to output stream");
@@ -94,11 +92,10 @@ public class CatApplication implements CatInterface {
 		}
 	}
   
-  @Override
-	public String getContent(File file) throws CatException {
+  	@Override
+	public byte[] getContent(Path file) throws CatException {
         try {
-            byte[] byteFileContent = Files.readAllBytes(file.toPath());
-            return new String(byteFileContent);
+        	return Files.readAllBytes(file);
         } catch (IOException e) {
             throw new CatException(e.getMessage());
         }

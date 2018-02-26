@@ -36,6 +36,7 @@ public class GrepApplicationTest {
     @Test
     public void Should_PrintMatchedSentences_When_PatternMatches() throws Exception{
         PipeCommand pipeCommand = new PipeCommand("grep departure " + SENTENCES1_PATH);
+        pipeCommand.parse();
         pipeCommand.evaluate(inputStream, outputStream);
 
         String expected = "The departure point of the paper is the skip-gram model";
@@ -47,6 +48,7 @@ public class GrepApplicationTest {
     @Test
     public void Should_PrintNothing_When_NoMatches() throws Exception {
         PipeCommand pipeCommand = new PipeCommand("grep nomatches " + SENTENCES1_PATH);
+        pipeCommand.parse();
         pipeCommand.evaluate(inputStream, outputStream);
 
         String expected = "";
@@ -58,6 +60,7 @@ public class GrepApplicationTest {
     @Test
     public void Should_PrintInverselyMatchedSentences_When_PatternInverselyMatches() throws Exception{
         PipeCommand pipeCommand = new PipeCommand("grep -v the " + SENTENCES1_PATH);
+        pipeCommand.parse();
         pipeCommand.evaluate(inputStream, outputStream);
 
         String expected = "Recently introduced continuous Skip-gram model is an efficient method for learning high-quality distributed vector representations that capture a large number of precise syntactic and semantic word relationships";
@@ -69,6 +72,7 @@ public class GrepApplicationTest {
     @Test
     public void Should_PrintMatchesSentences_When_EvaluatingRegex() throws Exception{
         PipeCommand pipeCommand = new PipeCommand("grep \\w+-\\w+-\\w+-\\w+ " + SENTENCES1_PATH);
+        pipeCommand.parse();
         pipeCommand.evaluate(inputStream, outputStream);
 
         // matches: state-of-the-art
@@ -80,7 +84,9 @@ public class GrepApplicationTest {
 
     @Test
     public void Should_PrintMatchesSentences_When_EvaluatingInputFromPipe() throws Exception{
-        PipeCommand pipeCommand = new PipeCommand("cat < " + SENTENCES1_PATH + " | grep departure ");
+        PipeCommand pipeCommand = new PipeCommand("cat " + SENTENCES1_PATH + " | grep departure");
+        System.out.println("cat " + SENTENCES1_PATH + " | grep departure");
+        pipeCommand.parse();
         pipeCommand.evaluate(inputStream, outputStream);
 
         // matches: state-of-the-art
@@ -93,6 +99,7 @@ public class GrepApplicationTest {
     @Test
     public void Should_PrintMatchesSentences_When_EvaluatingMultipleFiles() throws Exception{
         PipeCommand pipeCommand = new PipeCommand( "grep context "+SENTENCES1_PATH + " "+ SENTENCES2_PATH);
+        pipeCommand.parse();
         pipeCommand.evaluate(inputStream, outputStream);
 
         String expected = "In this model we are given a corpus of words w and their contexts c\n" +
@@ -106,6 +113,7 @@ public class GrepApplicationTest {
     @Test
     public void Should_PrintMatchesSentences_When_EvaluatingSingleQuotes() throws Exception{
         PipeCommand pipeCommand = new PipeCommand("grep 'departure point' " + SENTENCES1_PATH);
+        pipeCommand.parse();
         pipeCommand.evaluate(inputStream, outputStream);
 
         String expected = "The departure point of the paper is the skip-gram model";
@@ -117,6 +125,7 @@ public class GrepApplicationTest {
     @Test
     public void Should_PrintMatchesSentences_When_EvaluatingDoubleQuotes() throws Exception{
         PipeCommand pipeCommand = new PipeCommand("grep \"departure point\" " + SENTENCES1_PATH);
+        pipeCommand.parse();
         pipeCommand.evaluate(inputStream, outputStream);
 
         String expected = "The departure point of the paper is the skip-gram model";
@@ -128,6 +137,7 @@ public class GrepApplicationTest {
     @Test
     public void Should_PrintMatchesSentences_When_EvaluatingBacktick() throws Exception{
         PipeCommand pipeCommand = new PipeCommand("grep `echo departure point` " + SENTENCES1_PATH);
+        pipeCommand.parse();
         pipeCommand.evaluate(inputStream, outputStream);
 
         String expected = "The departure point of the paper is the skip-gram model";

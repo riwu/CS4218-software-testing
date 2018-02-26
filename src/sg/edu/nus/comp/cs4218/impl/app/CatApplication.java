@@ -82,11 +82,8 @@ public class CatApplication implements CatInterface {
 				if (Files.isDirectory(path)) return;
 
 				try {
-        
-					Files.lines(path).forEachOrdered( line -> {
-						result.append(line);
-						result.append(System.lineSeparator());
-					});
+
+					result.append(new String(getContent(path)));
 
 				}catch (Exception ex){
 					ex.printStackTrace();

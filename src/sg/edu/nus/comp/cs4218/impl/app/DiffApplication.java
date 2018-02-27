@@ -114,19 +114,19 @@ public class DiffApplication implements DiffInterface {
                 }
                 set1.add(line);
             }
-			br1.close();
             while ((line = br2.readLine()) != null) {
                 if (isNoBlank && line.trim().equals("")) {
                     continue;
                 }
                 else if (isSimple && !set1.contains(line)) {
+					br1.close(); br2.close();
                     return parseOutput(fileNameA, fileNameB, "differ", false);
                 } else if (!set1.contains(line)) {
                     onlySet2.add(line);
                 }
                 set2.add(line);
             }
-			br2.close();
+			br1.close(); br2.close();
         } else {
             int val1;
             int val2;
@@ -139,6 +139,7 @@ public class DiffApplication implements DiffInterface {
                 }
             }
             if (isShowSame) {
+				br1.close(); br2.close();
                 return parseOutput(fileNameA, fileNameB, "are identical", true);
             }
         }
@@ -370,9 +371,7 @@ public class DiffApplication implements DiffInterface {
         } else {
 	        sb.append(' ');
         }
-        sb.append(fileB)
-                .append(' ')
-                .append(output);
+        sb.append(fileB).append(' ').append(output);
 
 	    return sb.toString();
     }
@@ -381,9 +380,7 @@ public class DiffApplication implements DiffInterface {
 	    StringBuilder sb = new StringBuilder();
 
         for (String s: set1) {
-            sb.append("< ")
-                    .append(s)
-                    .append(System.lineSeparator());
+            sb.append("< ").append(s).append(System.lineSeparator());
         }
 
         for (String s: set2) {
@@ -396,23 +393,17 @@ public class DiffApplication implements DiffInterface {
 
     private String parseDiretoryOutput(String preSentence, String folderA, String folderB, String file, String postSentence, boolean includeAnd) {
 	    StringBuilder sb = new StringBuilder();
-	    sb.append(preSentence)
-                .append(' ')
-                .append(folderA)
-                .append(File.separator)
-                .append(file);
+	    sb.append(preSentence).append(' ').append(folderA)
+                .append(File.separator).append(file);
 
 	    if (includeAnd) {
 	        sb.append(" and ");
         } else {
             sb.append(' ');
         }
-        sb.append(folderB)
-                .append(File.separator)
-                .append(file);
+        sb.append(folderB).append(File.separator).append(file);
 	    if (!postSentence.equals("")) {
-	        sb.append(' ')
-                    .append(postSentence);
+	        sb.append(' ').append(postSentence);
         }
 
         sb.append(System.lineSeparator());

@@ -5,7 +5,7 @@ import org.junit.Before;
 import org.junit.Test;
 import sg.edu.nus.comp.cs4218.exception.CatException;
 import sg.edu.nus.comp.cs4218.exception.ShellException;
-import sg.edu.nus.comp.cs4218.impl.cmd.PipeCommand;
+import sg.edu.nus.comp.cs4218.impl.CommandTestUtil;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -96,65 +96,44 @@ public class CatApplicationTest {
 
     @Test
     public void shouldReturnFileContentWhenRedirectedInput() throws Exception {
-        PipeCommand pipeCommand = new PipeCommand("cat < " + FILE_2.toString());
-        pipeCommand.parse();
-        pipeCommand.evaluate(System.in, new ByteArrayOutputStream());
-        assertEquals(FILE_2_CONTENT, pipeCommand.getResultStream().toString());
+        CommandTestUtil.testCommand(FILE_2_CONTENT, "cat < " + FILE_2.toString());
     }
 
     @Test(expected = ShellException.class)
     public void shouldThrowExceptionWhenInputFileDoesNotExist() throws Exception {
-        PipeCommand pipeCommand = new PipeCommand("cat " + " < " + NON_EXISTENT_FILE.toString());
-        pipeCommand.parse();
-        pipeCommand.evaluate(System.in, new ByteArrayOutputStream());
+        CommandTestUtil.getCommandOutput("cat " + " < " + NON_EXISTENT_FILE.toString());
     }
 
     @Test
     public void shouldOutputToFileWhenRedirectedOutput() throws Exception {
-        PipeCommand pipeCommand = new PipeCommand("cat " + FILE_2.toString() + " > " + FILE_1.toString());
-        pipeCommand.parse();
-        pipeCommand.evaluate(System.in, new ByteArrayOutputStream());
+        CommandTestUtil.getCommandOutput("cat " + FILE_2.toString() + " > " + FILE_1.toString());
         assertEquals(FILE_2_CONTENT, new String(catApplication.getContent(FILE_1)));
     }
 
     @Test
     public void shouldCreateAndOutputToFileWhenRedirectedOutputDoesNotExist() throws Exception {
-        PipeCommand pipeCommand = new PipeCommand("cat " + FILE_2.toString() + " > " + NON_EXISTENT_FILE.toString());
-        pipeCommand.parse();
-        pipeCommand.evaluate(System.in, new ByteArrayOutputStream());
+        CommandTestUtil.getCommandOutput("cat " + FILE_2.toString() + " > " + NON_EXISTENT_FILE.toString());
         assertEquals(FILE_2_CONTENT, new String(catApplication.getContent(NON_EXISTENT_FILE)));
         Files.delete(NON_EXISTENT_FILE);
     }
 
     @Test
     public void shouldReturnEmptyResultWhenSpaceInFileName() throws Exception {
-        PipeCommand pipeCommand = new PipeCommand("cat " + FILE_1.toString());
-        pipeCommand.parse();
-        pipeCommand.evaluate(System.in, new ByteArrayOutputStream());
-        assertEquals("", pipeCommand.getResultStream().toString());
+        CommandTestUtil.testCommand("", "cat " + FILE_1.toString());
     }
 
     @Test
     public void shouldReturnFileContentWhenDoubleQuotedFileNameWithSpace() throws Exception {
-        PipeCommand pipeCommand = new PipeCommand("cat \"" + FILE_WITH_SPACE.toString() + "\"");
-        pipeCommand.parse();
-        pipeCommand.evaluate(System.in, new ByteArrayOutputStream());
-        assertEquals(CONTENT_SPACED, pipeCommand.getResultStream().toString());
+        CommandTestUtil.testCommand(FILE_WITH_SPACE_CONTENT, "cat \"" + FILE_WITH_SPACE.toString() + "\"");
     }
 
     @Test
     public void shouldReturnFileContentWhenSingleQuotedFileNameWithSpace() throws Exception {
-        PipeCommand pipeCommand = new PipeCommand("cat '" + FILE_WITH_SPACE.toString() + "'");
-        pipeCommand.parse();
-        pipeCommand.evaluate(System.in, new ByteArrayOutputStream());
-        assertEquals(CONTENT_SPACED, pipeCommand.getResultStream().toString());
+        CommandTestUtil.testCommand(FILE_WITH_SPACE_CONTENT, "cat '" + FILE_WITH_SPACE.toString() + "'");
     }
 
     @Test
     public void shouldReturnFileContentWhenCommandSubstituted() throws Exception {
-        PipeCommand pipeCommand = new PipeCommand("cat `echo " + FILE_1.toString() + "`");
-        pipeCommand.parse();
-        pipeCommand.evaluate(System.in, new ByteArrayOutputStream());
-        assertEquals(FILE_1_CONTENT, pipeCommand.getResultStream().toString());
+        CommandTestUtil.testCommand(FILE_1_CONTENT, "cat `echo " + FILE_1.toString() + "`");
     }
 }

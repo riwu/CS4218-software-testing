@@ -14,8 +14,9 @@ import static org.junit.Assert.*;
 
 public class GrepApplicationTest {
 
-    private String SENTENCES1_PATH = "testresource/sentences1.txt";
-    private String SENTENCES2_PATH = "testresource/sentences2.txt";
+    private static final String TEST_TEXT = "The departure point of the paper is the skip-gram model";
+	private static final String SENTENCES1_PATH = "testresource/sentences1.txt";
+    private static final String SENTENCES2_PATH = "testresource/sentences2.txt";
 
     private InputStream inputStream;
     private OutputStream outputStream;
@@ -34,19 +35,19 @@ public class GrepApplicationTest {
 
 
     @Test
-    public void Should_PrintMatchedSentences_When_PatternMatches() throws Exception{
+    public void shouldPrintMatchedSentencesWhenPatternMatches() throws Exception{
         PipeCommand pipeCommand = new PipeCommand("grep departure " + SENTENCES1_PATH);
         pipeCommand.parse();
         pipeCommand.evaluate(inputStream, outputStream);
 
-        String expected = "The departure point of the paper is the skip-gram model" + System.lineSeparator();
+        String expected = TEST_TEXT + System.lineSeparator();
         String evaluated = pipeCommand.getResultStream().toString();
 
         assertEquals(expected, evaluated);
     }
 
     @Test
-    public void Should_PrintNewline_When_NoMatches() throws Exception {
+    public void shouldPrintNewlineWhenNoMatches() throws Exception {
         PipeCommand pipeCommand = new PipeCommand("grep nomatches " + SENTENCES1_PATH);
         pipeCommand.parse();
         pipeCommand.evaluate(inputStream, outputStream);
@@ -58,7 +59,7 @@ public class GrepApplicationTest {
     }
 
     @Test
-    public void Should_PrintInverselyMatchedSentences_When_PatternInverselyMatches() throws Exception{
+    public void shouldPrintInverselyMatchedSentencesWhenPatternInverselyMatches() throws Exception{
         PipeCommand pipeCommand = new PipeCommand("grep -v the " + SENTENCES1_PATH);
         pipeCommand.parse();
         pipeCommand.evaluate(inputStream, outputStream);
@@ -70,7 +71,7 @@ public class GrepApplicationTest {
     }
 
     @Test
-    public void Should_PrintMatchesSentences_When_EvaluatingRegex() throws Exception{
+    public void shouldPrintMatchesSentencesWhenEvaluatingRegex() throws Exception{
         PipeCommand pipeCommand = new PipeCommand("grep \\w+-\\w+-\\w+-\\w+ " + SENTENCES1_PATH);
         pipeCommand.parse();
         pipeCommand.evaluate(inputStream, outputStream);
@@ -83,21 +84,21 @@ public class GrepApplicationTest {
     }
 
     @Test
-    public void Should_PrintMatchesSentences_When_EvaluatingInputFromPipe() throws Exception{
+    public void shouldPrintMatchesSentencesWhenEvaluatingInputFromPipe() throws Exception{
         PipeCommand pipeCommand = new PipeCommand("cat " + SENTENCES1_PATH + " | grep departure");
         System.out.println("cat " + SENTENCES1_PATH + " | grep departure");
         pipeCommand.parse();
         pipeCommand.evaluate(inputStream, outputStream);
 
         // matches: state-of-the-art
-        String expected = "The departure point of the paper is the skip-gram model"  + System.lineSeparator();
+        String expected = TEST_TEXT  + System.lineSeparator();
         String evaluated = pipeCommand.getResultStream().toString();
 
         assertEquals(expected, evaluated);
     }
 
     @Test
-    public void Should_PrintMatchesSentences_When_EvaluatingMultipleFiles() throws Exception{
+    public void shouldPrintMatchesSentencesWhenEvaluatingMultipleFiles() throws Exception{
         PipeCommand pipeCommand = new PipeCommand( "grep context "+SENTENCES1_PATH + " "+ SENTENCES2_PATH);
         pipeCommand.parse();
         pipeCommand.evaluate(inputStream, outputStream);
@@ -111,36 +112,36 @@ public class GrepApplicationTest {
     }
 
     @Test
-    public void Should_PrintMatchesSentences_When_EvaluatingSingleQuotes() throws Exception{
+    public void shouldPrintMatchesSentencesWhenEvaluatingSingleQuotes() throws Exception{
         PipeCommand pipeCommand = new PipeCommand("grep 'departure point' " + SENTENCES1_PATH);
         pipeCommand.parse();
         pipeCommand.evaluate(inputStream, outputStream);
 
-        String expected = "The departure point of the paper is the skip-gram model"  + System.lineSeparator();
+        String expected = TEST_TEXT  + System.lineSeparator();
         String evaluated = pipeCommand.getResultStream().toString();
 
         assertEquals(expected, evaluated);
     }
 
     @Test
-    public void Should_PrintMatchesSentences_When_EvaluatingDoubleQuotes() throws Exception{
+    public void shouldPrintMatchesSentencesWhenEvaluatingDoubleQuotes() throws Exception{
         PipeCommand pipeCommand = new PipeCommand("grep \"departure point\" " + SENTENCES1_PATH);
         pipeCommand.parse();
         pipeCommand.evaluate(inputStream, outputStream);
 
-        String expected = "The departure point of the paper is the skip-gram model"  + System.lineSeparator();
+        String expected = TEST_TEXT  + System.lineSeparator();
         String evaluated = pipeCommand.getResultStream().toString();
 
         assertEquals(expected, evaluated);
     }
 
     @Test
-    public void Should_PrintMatchesSentences_When_EvaluatingBacktick() throws Exception{
+    public void shouldPrintMatchesSentencesWhenEvaluatingBacktick() throws Exception{
         PipeCommand pipeCommand = new PipeCommand("grep `echo departure point` " + SENTENCES1_PATH);
         pipeCommand.parse();
         pipeCommand.evaluate(inputStream, outputStream);
 
-        String expected = "The departure point of the paper is the skip-gram model"  + System.lineSeparator();
+        String expected = TEST_TEXT  + System.lineSeparator();
         String evaluated = pipeCommand.getResultStream().toString();
 
         assertEquals(expected, evaluated);

@@ -14,7 +14,8 @@ import static org.junit.Assert.*;
 
 public class CallCommandTest {
 
-    private static final Path basePath = Paths.get(System.getProperty("user.dir"));
+    private static final Path BASE_PATH = Paths.get(System.getProperty("user.dir"));
+    private static final boolean IS_WINDOWS = System.getProperty("os.name").contains("Wind");
     private static Path testFolder;
     private static Path a;
     private static Path b;
@@ -48,7 +49,7 @@ public class CallCommandTest {
 
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {
-        testFolder = Files.createTempDirectory(basePath, "CallCommandTest");
+        testFolder = Files.createTempDirectory(BASE_PATH, "CallCommandTest");
         a = Files.createTempDirectory(testFolder, "a");
         b = Files.createTempDirectory(testFolder, "b");
         a_1 = Files.createTempDirectory(a, "a_1");
@@ -83,6 +84,7 @@ public class CallCommandTest {
 
     @Test
     public void Should_ExpandGlob_When_EvaluatingSingleLevel() throws Exception{
+    	Assume.assumeTrue(!IS_WINDOWS);
         CallCommand command = new CallCommand();
         String[] globbed = command.globFilesDirectories(testFolder.toAbsolutePath() + "/*");
 
@@ -102,6 +104,7 @@ public class CallCommandTest {
 
     @Test
     public void Should_ExpandGlobRecursively_When_EvaluatingMultilevel() throws Exception{
+    	Assume.assumeTrue(!IS_WINDOWS);
         CallCommand command = new CallCommand();
         String[] globbed = command.globFilesDirectories(testFolder.toAbsolutePath() + "/**");
 
@@ -131,6 +134,7 @@ public class CallCommandTest {
 
     @Test
     public void Should_ExpandGlobForFiles_When_EvaluatingFileGlob() throws Exception{
+    	Assume.assumeTrue(!IS_WINDOWS);
         CallCommand command = new CallCommand();
         String[] globbed = command.globFilesDirectories(testFolder.toAbsolutePath() + "/**/file_*");
 

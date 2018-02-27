@@ -15,16 +15,15 @@ import static org.junit.Assert.assertTrue;
 
 public class SplitApplicationTest {
     private SplitApplication splitApplication = new SplitApplication();
-    private static String CURRENT_DIR;
-    private static String RESOURCE_FOLDER = "testresource";
+    private static final String CURRENT_DIR = Environment.currentDirectory;
+    private static final String RESOURCE_FOLDER = "testresource";
     private static String FILENAME = CURRENT_DIR + File.separator + RESOURCE_FOLDER + File.separator + "newfile";
-    private File testDir = null;
-    private File file = null;
+    private File testDir;
+    private File file;
     boolean isImplemented = false;
 
     @Before
     public void setUp() throws Exception {
-        CURRENT_DIR = Environment.currentDirectory;
         testDir = new File(CURRENT_DIR + File.separator + RESOURCE_FOLDER);
         testDir.mkdir();
         file = new File(FILENAME);
@@ -32,7 +31,12 @@ public class SplitApplicationTest {
 
     @After
     public void tearDown() throws Exception {
+<<<<<<< HEAD
        file.delete();
+=======
+        //deleteDirectory(testDir);
+    	file.delete();
+>>>>>>> 39d621e520bda9a0b2e81b50b9e6e15985f7ee5d
     }
 
     private void deleteDirectory(File directoryToBeDeleted) {
@@ -83,7 +87,7 @@ public class SplitApplicationTest {
     }
 
     @Test(expected = SplitException.class)
-    public void Should_ThrowSplitException_When_InputDir() throws Exception {
+    public void shouldThrowSplitExceptionWhenInputDir() throws Exception {
         Assume.assumeTrue(isImplemented);
         String[] args = {RESOURCE_FOLDER};
         splitApplication.run(args, null, System.out);

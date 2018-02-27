@@ -31,12 +31,7 @@ public class SplitApplicationTest {
 
     @After
     public void tearDown() throws Exception {
-<<<<<<< HEAD
        file.delete();
-=======
-        //deleteDirectory(testDir);
-    	file.delete();
->>>>>>> 39d621e520bda9a0b2e81b50b9e6e15985f7ee5d
     }
 
     private void deleteDirectory(File directoryToBeDeleted) {

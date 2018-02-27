@@ -124,12 +124,12 @@ public class CatApplicationTest {
 
     @Test
     public void shouldReturnFileContentWhenDoubleQuotedFileNameWithSpace() throws Exception {
-        CommandTestUtil.testCommand(FILE_WITH_SPACE_CONTENT, "cat \"" + FILE_WITH_SPACE.toString() + "\"");
+        CommandTestUtil.testCommand(CONTENT_SPACED, "cat \"" + FILE_WITH_SPACE.toString() + "\"");
     }
 
     @Test
     public void shouldReturnFileContentWhenSingleQuotedFileNameWithSpace() throws Exception {
-        CommandTestUtil.testCommand(FILE_WITH_SPACE_CONTENT, "cat '" + FILE_WITH_SPACE.toString() + "'");
+        CommandTestUtil.testCommand(CONTENT_SPACED, "cat '" + FILE_WITH_SPACE.toString() + "'");
     }
 
     @Test

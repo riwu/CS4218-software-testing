@@ -385,10 +385,12 @@ public class CallCommand implements Command {
 		// if the command is of form <command> '<single_quote_content>', don't evaluate
 		Pattern singleQuote = Pattern.compile("(?:.+)\\s+'(?:.*)'");
 		if (singleQuote.matcher(args).matches()) return new String[]{args};
+		if (singleQuote.matcher(cmdline).matches()) return new String[] {args};
 
 		// if the command is of form <command> "<double_quote_content>", don't evaluate
 		Pattern doubleQuote = Pattern.compile("(?:.+)\\s+\"(?:.*)\"");
 		if (doubleQuote.matcher(args).matches()) return new String[]{args};
+		if (doubleQuote.matcher(cmdline).matches()) return new String[] {args};
 
 		// separate the base dir and glob
         String[] argsArray;

@@ -32,7 +32,7 @@ public class SplitApplicationTest {
 
     @After
     public void tearDown() throws Exception {
-        deleteDirectory(testDir);
+       file.delete();
     }
 
     private void deleteDirectory(File directoryToBeDeleted) {

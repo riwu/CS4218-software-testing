@@ -84,7 +84,7 @@ public class CallCommandTest {
 
     @Test
     public void Should_ExpandGlob_When_EvaluatingSingleLevel() throws Exception{
-    	Assume.assumeFalse(IS_WINDOWS);
+    	Assume.assumeTrue(!IS_WINDOWS);
         CallCommand command = new CallCommand();
         String[] globbed = command.globFilesDirectories(testFolder.toAbsolutePath() + "/*");
 
@@ -104,7 +104,7 @@ public class CallCommandTest {
 
     @Test
     public void Should_ExpandGlobRecursively_When_EvaluatingMultilevel() throws Exception{
-    	Assume.assumeFalse(IS_WINDOWS);
+    	Assume.assumeTrue(!IS_WINDOWS);
         CallCommand command = new CallCommand();
         String[] globbed = command.globFilesDirectories(testFolder.toAbsolutePath() + "/**");
 
@@ -134,7 +134,7 @@ public class CallCommandTest {
 
     @Test
     public void Should_ExpandGlobForFiles_When_EvaluatingFileGlob() throws Exception{
-    	Assume.assumeFalse(IS_WINDOWS);
+    	Assume.assumeTrue(!IS_WINDOWS);
         CallCommand command = new CallCommand();
         String[] globbed = command.globFilesDirectories(testFolder.toAbsolutePath() + "/**/file_*");
 

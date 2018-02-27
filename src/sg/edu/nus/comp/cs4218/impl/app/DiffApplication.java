@@ -114,7 +114,7 @@ public class DiffApplication implements DiffInterface {
                 }
                 set1.add(line);
             }
-
+			br1.close();
             while ((line = br2.readLine()) != null) {
                 if (isNoBlank && line.trim().equals("")) {
                     continue;
@@ -126,6 +126,7 @@ public class DiffApplication implements DiffInterface {
                 }
                 set2.add(line);
             }
+			br2.close();
         } else {
             int val1;
             int val2;
@@ -133,6 +134,7 @@ public class DiffApplication implements DiffInterface {
             while ((val1 = br1.read()) > 0) {
                 val2 = br2.read();
                 if (val1 != val2) {
+					br1.close(); br2.close();
                     return parseOutput(fileNameA, fileNameB, "differ", true);
                 }
             }

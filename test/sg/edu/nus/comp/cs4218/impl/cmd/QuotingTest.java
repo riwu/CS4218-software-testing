@@ -5,6 +5,9 @@ import org.junit.Test;
 import sg.edu.nus.comp.cs4218.exception.ShellException;
 
 import java.io.ByteArrayOutputStream;
+
+import sg.edu.nus.comp.cs4218.impl.CommandTestUtil;
+
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -12,15 +15,9 @@ import java.nio.file.Paths;
 import static org.junit.Assert.assertEquals;
 
 public class QuotingTest {
-    private String getCommandOutput(String command) throws Exception {
-        PipeCommand pipeCommand = new PipeCommand(command);
-        pipeCommand.parse();
-        pipeCommand.evaluate(System.in, new ByteArrayOutputStream());
-        return pipeCommand.getResultStream().toString();
-    }
 
     private void testEchoCommand(String mark, String text, String expected) throws Exception {
-        assertEquals(expected + System.lineSeparator(), getCommandOutput("echo " + mark + text + mark));
+        CommandTestUtil.testCommand(expected + System.lineSeparator(), "echo " + mark + text + mark);
     }
 
     private void testEchoCommand(String mark, String text) throws Exception {
@@ -70,6 +67,7 @@ public class QuotingTest {
     @Test
     public void shouldOutputTabWhenDoubleQuote() throws Exception {
         testEchoCommand("\"", "\\t", "\\t");
+
     }
 
     @Test
@@ -155,7 +153,8 @@ public class QuotingTest {
             e.printStackTrace();
         }
         Files.write(file, content.getBytes());
-        assertEquals(content, getCommandOutput("cat " + mark + file.toString() + mark));
+
+        CommandTestUtil.testCommand(content, "cat " + mark + file.toString() + mark);
         Files.delete(file);
     }
 

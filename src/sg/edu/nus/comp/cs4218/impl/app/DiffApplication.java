@@ -159,7 +159,7 @@ public class DiffApplication implements DiffInterface {
 	public String diffTwoDir(String folderA, String folderB, Boolean isShowSame, Boolean isNoBlank, Boolean isSimple) throws Exception {
         Set<String> set1 = getFileInDir(folderA);
         Set<String> set2 = getFileInDir(folderB);
-        StringBuilder sb = new StringBuilder();
+        StringBuilder strBuilder = new StringBuilder();
         String outputString = "";
 
         for (String filename : set1) {
@@ -168,7 +168,7 @@ public class DiffApplication implements DiffInterface {
                 if (file.isDirectory()) {
                     outputString = parseDiretoryOutput("Common subdirectories:",
                             folderA, folderB, file.getName(), "", true);
-                    sb.append(outputString);
+                    strBuilder.append(outputString);
                 } else {
                     String fileA = folderA + File.separator + file.getName();
                     String fileB = folderB + File.separator + file.getName();
@@ -181,12 +181,12 @@ public class DiffApplication implements DiffInterface {
                     if (c == '>' || c == '<') {
                         outputString = parseDiretoryOutput("diff",
                                 folderA, folderB, file.getName(), "", false);
-                        sb.append(outputString);
+                        strBuilder.append(outputString);
                     }
-                    sb.append(result).append(System.lineSeparator());;
+                    strBuilder.append(result).append(System.lineSeparator());;
                 }
             } else {
-                sb.append("Only in ")
+                strBuilder.append("Only in ")
                         .append(folderA).append(": ")
                         .append(filename).append(System.lineSeparator());
             }
@@ -194,12 +194,12 @@ public class DiffApplication implements DiffInterface {
 
         for (String filename: set2) {
             if (!set1.contains(filename)) {
-                sb.append(("Only in "))
+                strBuilder.append(("Only in "))
                         .append(folderB).append(": ")
 						.append(filename) .append(System.lineSeparator());
             }
         }
-        return sb.toString().trim();
+        return strBuilder.toString().trim();
 	}
 
 	@Override
@@ -359,54 +359,54 @@ public class DiffApplication implements DiffInterface {
     }
 
     private String parseOutput(String fileA, String fileB, String output, boolean isBinary) {
-        StringBuilder sb = new StringBuilder();
+        StringBuilder strBuilder = new StringBuilder();
 	    if (isBinary) {
-	        sb.append("Binary files ");
+	        strBuilder.append("Binary files ");
         } else {
-	        sb.append("Files ");
+	        strBuilder.append("Files ");
         }
-	    sb.append(fileA);
+	    strBuilder.append(fileA);
 	    if (isBinary) {
-	        sb.append(" and ");
+	        strBuilder.append(" and ");
         } else {
-	        sb.append(' ');
+	        strBuilder.append(' ');
         }
-        sb.append(fileB).append(' ').append(output);
+        strBuilder.append(fileB).append(' ').append(output);
 
-	    return sb.toString();
+	    return strBuilder.toString();
     }
 
     private String parseDiffFormatOutput(Set<String> set1, Set<String> set2) {
-	    StringBuilder sb = new StringBuilder();
+	    StringBuilder strBuilder = new StringBuilder();
 
         for (String s: set1) {
-            sb.append("< ").append(s).append(System.lineSeparator());
+            strBuilder.append("< ").append(s).append(System.lineSeparator());
         }
 
         for (String s: set2) {
-	        sb.append("> ")
+	        strBuilder.append("> ")
                     .append(s)
                     .append(System.lineSeparator());
         }
-	    return sb.toString().trim();
+	    return strBuilder.toString().trim();
     }
 
     private String parseDiretoryOutput(String preSentence, String folderA, String folderB, String file, String postSentence, boolean includeAnd) {
-	    StringBuilder sb = new StringBuilder();
-	    sb.append(preSentence).append(' ').append(folderA)
+	    StringBuilder strBuilder = new StringBuilder();
+	    strBuilder.append(preSentence).append(' ').append(folderA)
                 .append(File.separator).append(file);
 
 	    if (includeAnd) {
-	        sb.append(" and ");
+	        strBuilder.append(" and ");
         } else {
-            sb.append(' ');
+            strBuilder.append(' ');
         }
-        sb.append(folderB).append(File.separator).append(file);
+        strBuilder.append(folderB).append(File.separator).append(file);
 	    if (!postSentence.equals("")) {
-	        sb.append(' ').append(postSentence);
+	        strBuilder.append(' ').append(postSentence);
         }
 
-        sb.append(System.lineSeparator());
-	    return sb.toString();
+        strBuilder.append(System.lineSeparator());
+	    return strBuilder.toString();
     }
 }

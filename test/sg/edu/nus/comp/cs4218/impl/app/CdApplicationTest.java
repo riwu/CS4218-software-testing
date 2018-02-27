@@ -86,7 +86,11 @@ public class CdApplicationTest {
 
         cdApplication.run(args, null, System.out);
         currentDir = Environment.currentDirectory;
-
         assertEquals(expectedDir, currentDir);
+        
+        cdApplication.changeToDirectory(INITIAL_DIR);
+        currentDir = Environment.currentDirectory;
+        assertEquals(INITIAL_DIR, currentDir);
+
     }
 }

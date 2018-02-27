@@ -36,7 +36,7 @@ public class CdApplication implements CdInterface {
     }
 
     @Override
-    public void changeToDirectory(String path, Environment env) throws Exception {
+    public void changeToDirectory(String path) throws Exception {
 
     }
 

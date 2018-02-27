@@ -282,9 +282,7 @@ public class DiffApplication implements DiffInterface {
             inputStream.close();
             s = new String(data, "ISO-8859-1");
             s2 = s.replaceAll(
-                    "[a-zA-Z0-9ßöäü\\.\\*!\"§\\$\\%&/()=\\?@~'#:,;\\"+
-                            "+><\\|\\[\\]\\{\\}\\^°²³\\\\ \\n\\r\\t_\\-`´âêîô"+
-                            "ÂÊÔÎáéíóàèìòÁÉÍÓÀÈÌÒ©‰¢£¥€±¿»«¼½¾™ª]", "");
+                    "", "");
             // will delete all text signs
         } catch (IOException e) {
             throw new DiffException(e.getMessage());

@@ -73,7 +73,9 @@ public class CatApplication implements CatInterface {
 			paths.forEachOrdered(path -> {
 				// skip if the path is a directory
 				// maybe throw exception?
-				if (Files.isDirectory(path)) return;
+				if (Files.isDirectory(path)) {
+					return;
+				}
 
 				try {
 

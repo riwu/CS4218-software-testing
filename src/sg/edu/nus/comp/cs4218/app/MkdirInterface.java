@@ -15,6 +15,6 @@ public interface MkdirInterface extends Application {
 	 * @throws Exception
 	 */
 	public void createFolder(String... folderName) 
-			throws MkdirException;
+			throws Exception;
 	
 }

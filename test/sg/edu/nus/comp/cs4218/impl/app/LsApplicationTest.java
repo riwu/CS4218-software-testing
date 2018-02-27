@@ -50,7 +50,7 @@ public class LsApplicationTest {
 	@Test
 	public void Should_ListAllContents_When_ValidPathNoOptions() throws Exception {
 		String path = testPath.toString();
-		String expected = getContentString(testPath, false);
+		String expected = getContentString(testPath, false) + System.lineSeparator();
 		assertEquals(expected, lsApp.listFolderContent(false, false, path));
 	}
 	
@@ -58,43 +58,43 @@ public class LsApplicationTest {
 	public void Should_ListEachFolderContents_When_MultipleValidPaths() throws Exception {
 		String path = testPath.toString();
 		String secondPath = folderPathNested.toString();
-		String expected = path + ":" + "\n"
-						+ getContentString(testPath, false) + "\n"
-						+ "\n"
-						+ secondPath + ":";
+		String expected = path + ":" + System.lineSeparator()
+						+ getContentString(testPath, false) + System.lineSeparator()
+						+ System.lineSeparator()
+						+ secondPath + ":" + System.lineSeparator();
 		assertEquals(expected, lsApp.listFolderContent(false, false, path, secondPath));
 	}
 	
 	@Test
 	public void Should_ListFoldersOnly_When_ValidPathDirectoryOnly() throws Exception {
 		String path = testPath.toString();
-		String expected = getContentString(testPath, true);
+		String expected = getContentString(testPath, true) + System.lineSeparator();;
 		assertEquals(expected, lsApp.listFolderContent(true, false, path));
 	}
 	
 	@Test
 	public void Should_RecursiveListAllContents_When_ValidPathRecursiveOnly() throws Exception {
 		String path = testPath.toString();
-		String expected = path + ":" + "\n" 
-				+ getContentString(testPath, false) + "\n"
-				+ "\n"
-				+ folderPath + ":" + "\n"
-				+ getContentString(folderPath, false) + "\n"
-				+ "\n"
-				+ folderPathNested + ":";
+		String expected = path + ":" + System.lineSeparator() 
+				+ getContentString(testPath, false) + System.lineSeparator()
+				+ System.lineSeparator()
+				+ folderPath + ":" + System.lineSeparator()
+				+ getContentString(folderPath, false) + System.lineSeparator()
+				+ System.lineSeparator()
+				+ folderPathNested + ":" + System.lineSeparator();
 		assertEquals(expected, lsApp.listFolderContent(false, true, path));
 	}
 	
 	@Test
 	public void Should_RecursiveListFoldersOnly_When_ValidPathBothOptions() throws Exception {
 		String path = testPath.toString();
-		String expected = path + ":" + "\n"
-						+ getContentString(testPath, true) + "\n"
-						+ "\n"
-						+ folderPath + ":" + "\n"
-						+ getContentString(folderPath, true) + "\n"
-						+ "\n"
-						+ folderPathNested + ":";
+		String expected = path + ":" + System.lineSeparator()
+						+ getContentString(testPath, true) + System.lineSeparator()
+						+ System.lineSeparator()
+						+ folderPath + ":" + System.lineSeparator()
+						+ getContentString(folderPath, true) + System.lineSeparator()
+						+ System.lineSeparator()
+						+ folderPathNested + ":" + System.lineSeparator();
 		assertEquals(expected, lsApp.listFolderContent(true, true, path));
 	}
 	
@@ -120,7 +120,7 @@ public class LsApplicationTest {
 				expected += File.separator;
 			}
 			if(i < limit) {
-				expected += "\n";
+				expected += System.lineSeparator();
 			}
 		}
 		return expected;

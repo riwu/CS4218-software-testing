@@ -52,7 +52,7 @@ public class EchoApplication implements EchoInterface {
 	public String evaluate(String[] args){
         return Arrays.stream(args)
                 .reduce("", (result, arg) -> result + " " + arg)
-                .trim();
+                .trim() + System.lineSeparator();
     }
 
 }

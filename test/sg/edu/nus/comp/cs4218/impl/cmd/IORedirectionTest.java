@@ -21,6 +21,8 @@ public class IORedirectionTest {
 	private static final String TEMP_FILE_NAME = "output.txt";
 	private static final String FILE_CONTENT = "Text" + System.lineSeparator() + "file";
 	private static final String EXISTING_CONTENT = "Existing Content";
+	private static final String CAT_IN = "cat < ";
+	private static final String REDIRECT_OUT = " > ";
 
 	@Before
 	public void setUp() throws Exception {
@@ -38,8 +40,8 @@ public class IORedirectionTest {
 	}
 
 	@Test
-	public void Should_Pass_When_InputFileExists() throws Exception {
-		CallCommand callCommand = new CallCommand("cat < " + INPUT_FILE_NAME);
+	public void shouldPassWhenInputFileExists() throws Exception {
+		CallCommand callCommand = new CallCommand(CAT_IN + INPUT_FILE_NAME);
 		callCommand.parse();
 		//redirect output to file to check if contents match
 		callCommand.evaluate(System.in, new FileOutputStream(outputFile));
@@ -47,8 +49,8 @@ public class IORedirectionTest {
 	}
 	
 	@Test
-	public void Should_Pass_When_InputOutputFilesExist() throws Exception {
-		CallCommand callCommand = new CallCommand("cat < " + INPUT_FILE_NAME + " > " + OUTPUT_FILE_NAME);
+	public void shouldPassWhenInputOutputFilesExist() throws Exception {
+		CallCommand callCommand = new CallCommand(CAT_IN + INPUT_FILE_NAME + REDIRECT_OUT + OUTPUT_FILE_NAME);
 		callCommand.parse();
 		Files.write(outputFile.toPath(), EXISTING_CONTENT.getBytes());
 		callCommand.evaluate(System.in, System.out);
@@ -56,33 +58,40 @@ public class IORedirectionTest {
 	}
 	
 	@Test(expected = ShellException.class)
-	public void Should_ThrowException_When_NoOutputFileSpecified() throws Exception {
-		CallCommand callCommand = new CallCommand("cat " + INPUT_FILE_NAME + " > ");
+	public void shouldThrowExceptionWhenNoOutputFileSpecified() throws Exception {
+		CallCommand callCommand = new CallCommand(CAT_IN + INPUT_FILE_NAME + REDIRECT_OUT);
 		callCommand.parse();
 	}
 	
 	@Test(expected = ShellException.class)
-	public void Should_ThrowException_When_NoInputFileSpecified() throws Exception {
-		CallCommand callCommand = new CallCommand("cat < ");
+	public void shouldThrowExceptionWhenNoInputFileSpecified() throws Exception {
+		CallCommand callCommand = new CallCommand(CAT_IN);
 		callCommand.parse();
 	}
 	
 	@Test(expected = ShellException.class)
-	public void Should_ThrowException_When_MultipleFilesSpecified() throws Exception {
-		CallCommand callCommand = new CallCommand("cat < " + INPUT_FILE_NAME + " > " + OUTPUT_FILE_NAME + " > " + TEMP_FILE_NAME);
+	public void shouldThrowExceptionWhenMultipleFilesSpecified() throws Exception {
+		CallCommand callCommand = new CallCommand(CAT_IN + INPUT_FILE_NAME + REDIRECT_OUT + OUTPUT_FILE_NAME + " > " + TEMP_FILE_NAME);
 		callCommand.parse();
 	}
 	
 	@Test(expected = ShellException.class)
-	public void Should_ThrowException_When_InputFileNotExist() throws Exception {
+	public void shouldThrowExceptionWhenInputFileNotExist() throws Exception {
 		CallCommand callCommand = new CallCommand("cat < test");
 		callCommand.parse();
 		callCommand.evaluate(System.in, System.out);
 	}
 	
+	@Test(expected = ShellException.class)
+	public void shouldThrowExceptionWhenInputOutputSameFile() throws Exception {
+		CallCommand callCommand = new CallCommand(CAT_IN + INPUT_FILE_NAME + REDIRECT_OUT + INPUT_FILE_NAME);
+		callCommand.parse();
+		callCommand.evaluate(System.in, System.out);
+	}
+	
 	@Test
-	public void Should_CreateFile_When_OutputFileNotExist() throws Exception {
-		CallCommand callCommand = new CallCommand("cat " + INPUT_FILE_NAME + " > " + OUTPUT_FILE_NAME);
+	public void shouldCreateFileWhenOutputFileNotExist() throws Exception {
+		CallCommand callCommand = new CallCommand("cat " + INPUT_FILE_NAME + REDIRECT_OUT + OUTPUT_FILE_NAME);
 		callCommand.parse();
 		assertFalse(outputFile.exists());
 		callCommand.evaluate(System.in, System.out);

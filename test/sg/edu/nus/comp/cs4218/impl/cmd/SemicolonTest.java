@@ -16,9 +16,9 @@ import static org.junit.Assert.assertEquals;
 
 public class SemicolonTest {
 
-    private static String FILE_CONTENT = "file1content";
-    private static Path FILE = Paths.get("file1");
-    private static Path NON_EXISTENT_FILE = Paths.get("non-existent");
+    private static final String FILE_CONTENT = "file1content";
+    private static final Path FILE = Paths.get("file1");
+    private static final Path NON_EXISTENT_FILE = Paths.get("non-existent");
 
     private void writeToFile(Path file, String content) throws Exception {
         Files.createFile(file);
@@ -37,7 +37,7 @@ public class SemicolonTest {
 
 
     @Test
-    public void Should_ExecuteCommands_When_NoSpacesNearSemicolon() throws Exception {
+    public void shouldExecuteCommandsWhenNoSpacesNearSemicolon() throws Exception {
         Shell shell = new ShellImpl();
         OutputStream outputStream = new ByteArrayOutputStream();
         String fileContent = "echoToFileContent";
@@ -47,7 +47,7 @@ public class SemicolonTest {
     }
 
     @Test
-    public void Should_ExecuteCommands_When_SpacesNearSemicolon() throws Exception {
+    public void shouldExecuteCommandsWhenSpacesNearSemicolon() throws Exception {
         Shell shell = new ShellImpl();
         OutputStream outputStream = new ByteArrayOutputStream();
         String fileContent = "echoToFileContent";
@@ -57,7 +57,7 @@ public class SemicolonTest {
     }
 
     @Test
-    public void Should_ExecuteSecondCommand_When_FirstCommandFailed() throws Exception {
+    public void shouldExecuteSecondCommandWhenFirstCommandFailed() throws Exception {
         Shell shell = new ShellImpl();
         OutputStream outputStream = new ByteArrayOutputStream();
         shell.parseAndEvaluate("cat " + NON_EXISTENT_FILE.toString() + ";cat " + FILE.toString(),

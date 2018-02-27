@@ -11,20 +11,18 @@ import sg.edu.nus.comp.cs4218.exception.CdException;
 import java.io.File;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 public class CdApplicationTest {
 
     private CdApplication cdApplication = new CdApplication();
-    private static String INITIAL_DIR;
-    private static String RESOURCE_FOLDER = "testCdDir";
+    private static final String INITIAL_DIR = Environment.currentDirectory;
+    private static final String RESOURCE_FOLDER = "testCdDir";
     private File testDir = null;
     private String currentDir = "";
     boolean isImplemented = false;
 
     @Before
     public void setUp() throws Exception {
-        INITIAL_DIR = Environment.currentDirectory;
         currentDir = INITIAL_DIR;
         testDir = new File(currentDir + File.separator + RESOURCE_FOLDER);
         testDir.mkdir();
@@ -65,16 +63,16 @@ public class CdApplicationTest {
     @Test(expected = CdException.class)
     public void shouldThrowCdExceptionWhenFilePath() throws Exception {
         Assume.assumeTrue(isImplemented);
-        File f = new File(currentDir + File.separator + RESOURCE_FOLDER + File.separator + "newfile");
-        f.createNewFile();
+        File file = new File(currentDir + File.separator + RESOURCE_FOLDER + File.separator + "newfile");
+        file.createNewFile();
         String[] args = {RESOURCE_FOLDER + File.separator + "newfile"};
         try {
             cdApplication.run(args, null, System.out);
         } catch (CdException e) {
-            f.delete();
+            file.delete();
         }
-        if (f.exists()) {
-            f.delete();
+        if (file.exists()) {
+            file.delete();
         }
     }
 

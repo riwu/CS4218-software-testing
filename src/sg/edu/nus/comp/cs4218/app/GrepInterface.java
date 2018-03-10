@@ -15,8 +15,7 @@ public interface GrepInterface extends Application {
 	 * @param stdin InputStream containing arguments from Stdin
 	 * @throws Exception
 	 */
-	public String grepFromStdin(String pattern, Boolean isInvert, InputStream stdin) 
-			throws Exception;
+	public String grepFromStdin(String pattern, Boolean isInvert, InputStream stdin) throws Exception;
 
 	/**
 	 * Returns string containing lines which match the specified pattern in the
@@ -27,7 +26,6 @@ public interface GrepInterface extends Application {
 	 * @param fileNames Array of file names
 	 * @throws Exception
 	 */
-	public String grepFromMultipleFiles(String pattern, Boolean isInvert, String... fileNames) 
-			throws Exception;
+	public String grepFromMultipleFiles(String pattern, Boolean isInvert, String... fileNames) throws Exception;
 	
 }

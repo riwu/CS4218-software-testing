@@ -61,22 +61,4 @@ public interface DiffInterface extends Application {
 	 */
 	public String diffFileAndStdin(String fileName, InputStream stdin, Boolean isShowSame, Boolean isNoBlank, Boolean isSimple) 
 			throws Exception;
-	
-	/**
-	 * Returns a string of Stdin args diff. The diff report contains a 
-	 * list of lines unique to the first Stdin arg and lines unique to 
-	 * the second Stdin arg. Begin the former with '<' for each line. 
-	 * Begin the latter with '>' for each line. Returns and empty string 
-	 * if there are no difference.
-	 * @param stdin InputStream of Stdin args to diff
-	 * @param isShowSame Boolean option to print 'Inputs identical' 
-	 * if the files are identical
-	 * @param isNoBlank Boolean option to ignore changes with blank lines
-	 * @param isSimple Boolean option to only print 'Inputs differ' if 
-	 * the files are different
-	 * @throws Exception
-	 */
-	public String diffFileAndStdin(InputStream stdin, Boolean isShowSame, Boolean isNoBlank, Boolean isSimple) 
-			throws Exception;
-		
 }

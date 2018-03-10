@@ -1,10 +1,14 @@
 package sg.edu.nus.comp.cs4218.impl.cmd;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.*;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 import sg.edu.nus.comp.cs4218.Command;
 import sg.edu.nus.comp.cs4218.exception.AbstractApplicationException;
@@ -111,6 +115,8 @@ public class CallCommand implements Command {
 
 		try {
 			endIdx = extractArgs(str, cmdVector);
+
+			cmdVector = parseGlob(cmdVector);
 			cmdVector.add(""); // reserved for input redir
 			cmdVector.add(""); // reserved for output redir
 
@@ -123,7 +129,7 @@ public class CallCommand implements Command {
 			//System.out.print("Parse: ");
 			//cmdVector.stream().forEach(cmd -> System.out.print( "["+cmd + "]"));
 
-			//System.out.println("ext"+cmdVector.toString());
+			//System.out.println("cli: "+cmdVector.toString());
 		} catch (ShellException e) {
 			result = false;
 		}
@@ -355,7 +361,94 @@ public class CallCommand implements Command {
 	@Override
 	public void terminate() {
 		// TODO Auto-generated method stub
+	}
 
+	public Vector<String> parseGlob(Vector<String> cmdVector){
+		Vector<String> parsedVector = new Vector<>();
+
+		cmdVector.forEach( cmd -> {
+			String[] parsedCmd = globFilesDirectories(cmd);
+
+            parsedVector.addAll(Arrays.asList(parsedCmd));
+
+		});
+
+		return parsedVector;
+	}
+
+	public String[] globFilesDirectories(String args) {
+
+		if (args == null) return null;
+
+		if (!args.contains("*")) return new String[] {args};
+
+		// if the command is of form <command> '<single_quote_content>', don't evaluate
+		Pattern singleQuote = Pattern.compile("(?:.+)\\s+'(?:.*)'");
+		if (singleQuote.matcher(args).matches()) return new String[]{args};
+		if (singleQuote.matcher(cmdline).matches()) return new String[] {args};
+
+		// if the command is of form <command> "<double_quote_content>", don't evaluate
+		Pattern doubleQuote = Pattern.compile("(?:.+)\\s+\"(?:.*)\"");
+		if (doubleQuote.matcher(args).matches()) return new String[]{args};
+		if (doubleQuote.matcher(cmdline).matches()) return new String[] {args};
+
+		// separate the base dir and glob
+        String[] argsArray;
+        String baseDirectory;
+        String glob;
+        if (args.startsWith(".") || args.startsWith("/")) {
+
+            argsArray = args.split("(?=\\*)", 2);
+            baseDirectory = argsArray.length == 1 ? "." : argsArray[0];
+            glob = argsArray.length == 1 ? argsArray[0] : argsArray[1];
+        }else{
+            // assume current directory
+            baseDirectory = ".";
+            glob = args;
+        }
+
+		// resolve ambiguity and combine to single path
+		Path globPath = Paths.get(baseDirectory, glob);
+
+		//System.out.println("basedir: "+baseDirectory);
+		//System.out.println("glob: "+glob);
+
+		FileSystem fileSystem = FileSystems.getDefault();
+		PathMatcher pathMatcher = fileSystem.getPathMatcher("glob:" + globPath);
+
+		List<String> filesAndDirectory = new ArrayList<>();
+
+		try {
+			// define the operation when the file visitor traverse file tree
+			Files.walkFileTree(Paths.get(baseDirectory), new SimpleFileVisitor<Path>() {
+				@Override
+				public FileVisitResult postVisitDirectory(Path directory, IOException exc) throws IOException {
+
+
+					if (pathMatcher.matches(directory)){
+						filesAndDirectory.add(directory.toString());
+					}
+
+					return FileVisitResult.CONTINUE;
+				}
+
+				@Override
+				public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+
+					if (pathMatcher.matches(file)) {
+						filesAndDirectory.add(file.toString());
+					}
+
+					return FileVisitResult.CONTINUE;
+				}
+
+
+			});
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		return filesAndDirectory.toArray(new String[]{});
 	}
 
 }

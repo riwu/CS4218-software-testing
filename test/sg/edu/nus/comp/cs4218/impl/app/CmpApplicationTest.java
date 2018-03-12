@@ -4,14 +4,15 @@ import static org.junit.Assert.*;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.math.BigInteger;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import org.junit.After;
 import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -33,11 +34,16 @@ public class CmpApplicationTest {
 	static Path fileA;
 	static Path fileB;
 	static Path fileC;
+	private FileInputStream stdin;
 
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
 		cmpApp = new CmpApplication();
 		testFolder = Files.createTempDirectory(BASE_PATH, TEST_FOLDER);
+	}
+	
+	@Before
+	public void setUp() throws Exception {
 		fileA = Files.createTempFile(testFolder, "fileA", null);
 		fileB = Files.createTempFile(testFolder, "fileB", null);
 		fileC = Files.createTempFile(testFolder, "fileC", null);
@@ -51,13 +57,21 @@ public class CmpApplicationTest {
 		outStream.write(TEXT_A.getBytes());
 		outStream.close();
 	}
-
-	@AfterClass
-	public static void tearDownAfterClass() throws Exception {
+	
+	@After
+	public void tearDown() throws Exception {
+		if(stdin != null) {
+			stdin.close();
+			stdin = null;
+		}
 		fileA.toFile().delete();
 		fileB.toFile().delete();
 		fileC.toFile().delete();
-		testFolder.toFile().delete();
+	}
+	
+	@AfterClass
+	public static void tearDownAfterClass() throws Exception {
+		testFolder.toFile().deleteOnExit();
 	}
 
 	//Files Only
@@ -112,7 +126,7 @@ public class CmpApplicationTest {
 	@Test
 	public void shouldShowFirstDiffWhenNoOptionsFileStdin() throws Exception {
 		String fileNameA = fileA.toString();
-		InputStream stdin = new FileInputStream(fileB.toFile());
+		stdin = new FileInputStream(fileB.toFile());
 		String expected = String.format(NORMAL_FORMAT, fileNameA, STDIN, 3, 1, "");
 		assertEquals(expected, cmpApp.cmpFileAndStdin(fileNameA, stdin, false, false, false));
 	}
@@ -120,14 +134,14 @@ public class CmpApplicationTest {
 	@Test
 	public void shouldShowSimplifiedWhenSimplifyOnFileStdin() throws Exception {
 		String fileNameA = fileA.toString();
-		InputStream stdin = new FileInputStream(fileB.toFile());
+		stdin = new FileInputStream(fileB.toFile());
 		assertEquals(SIMPLE, cmpApp.cmpFileAndStdin(fileNameA, stdin, true, true, true));
 	}
 	
 	@Test
 	public void shouldShowDiffCharWhenDiffCharOnFileStdin() throws Exception {
 		String fileNameA = fileA.toString();
-		InputStream stdin = new FileInputStream(fileB.toFile());
+		stdin = new FileInputStream(fileB.toFile());
 		String appendString = getIsFormatString(TEXT_A.getBytes()[2], TEXT_B.getBytes()[2]);
 		String expected = String.format(NORMAL_FORMAT, fileNameA, STDIN, 3, 1, appendString);
 		assertEquals(expected, cmpApp.cmpFileAndStdin(fileNameA, stdin, true, false, false));
@@ -136,7 +150,7 @@ public class CmpApplicationTest {
 	@Test
 	public void shouldShowLongFormatWhenLongFormatOnFileStdin() throws Exception {
 		String fileNameA = fileA.toString();
-		InputStream stdin = new FileInputStream(fileB.toFile());
+		stdin = new FileInputStream(fileB.toFile());
 		String expected = getLongFormatString(TEXT_A, TEXT_B, false);
 		assertEquals(expected, cmpApp.cmpFileAndStdin(fileNameA, stdin, false, false, true));
 	}
@@ -144,7 +158,7 @@ public class CmpApplicationTest {
 	@Test
 	public void shouldShowLongFormatCharDiffWhenLongFormatCharDiffOnFileStdin() throws Exception {
 		String fileNameA = fileA.toString();
-		InputStream stdin = new FileInputStream(fileB.toFile());
+		stdin = new FileInputStream(fileB.toFile());
 		String expected = getLongFormatString(TEXT_A, TEXT_B, true);
 		assertEquals(expected, cmpApp.cmpFileAndStdin(fileNameA, stdin, true, false, true));
 	}
@@ -152,7 +166,7 @@ public class CmpApplicationTest {
 	@Test
 	public void shouldReturnEmptyStringWhenFileStdinContentAreSame() throws Exception {
 		String fileNameA = fileA.toString();
-		InputStream stdin = new FileInputStream(fileC.toFile());
+		stdin = new FileInputStream(fileC.toFile());
 		assertEquals("", cmpApp.cmpFileAndStdin(fileNameA, stdin, false, false, false));
 	}
 		
@@ -168,7 +182,7 @@ public class CmpApplicationTest {
 	@Test(expected=CmpException.class)
 	public void shouldThrowExceptionWhenOneArgOnly() throws Exception {
 		String fileNameB = fileB.toString();
-		InputStream stdin = new FileInputStream(fileC.toFile());
+		stdin = new FileInputStream(fileC.toFile());
 		cmpApp.run(new String[] {fileNameB}, stdin, System.out);
 	}
 	
@@ -187,7 +201,7 @@ public class CmpApplicationTest {
 	@Test(expected=CmpException.class)
 	public void shouldThrowExceptionWhenStdoutNotExist() throws Exception {
 		String fileNameB = fileB.toString();
-		InputStream stdin = new FileInputStream(fileC.toFile());
+		stdin = new FileInputStream(fileC.toFile());
 		cmpApp.run(new String[] {fileNameB, STDIN}, stdin, null);
 	}
 	

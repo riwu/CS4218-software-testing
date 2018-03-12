@@ -2,6 +2,7 @@ package sg.edu.nus.comp.cs4218.impl.app;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.math.BigInteger;
@@ -24,19 +25,16 @@ public class CmpApplication implements CmpInterface {
 	private static final String IS_FORMAT = " is %1$s %2$s";
 	private static final String CHAR_FORMAT = "%1$s %2$s"; //octal# value#
 	private static final String STDIN = "-";
-	boolean isPrintCharDiff, isPrintSimplify, isPrintOctalDiff;
+	private boolean isPrintCharDiff, isPrintSimplify, isPrintOctalDiff;
 	
 	@Override
 	public void run(String[] args, InputStream stdin, OutputStream stdout) throws AbstractApplicationException {
 		int fileCount = 0;
-		boolean hasStdin/*, isPrintCharDiff, isPrintSimplify, isPrintOctalDiff*/;
+		boolean hasStdin;
 		hasStdin = isPrintCharDiff = isPrintSimplify = isPrintOctalDiff = false;
 		List<String> fileNames = new ArrayList<String> ();
 		if(stdout == null) {
 			throw new CmpException("Null pointer exception");
-		}
-		if(args.length < 2) {
-			throw new CmpException("Expected two or more arguments");
 		}
 		for(int i = 0; i < args.length; i++) {
 			if(STDIN.equals(args[i])) {
@@ -59,23 +57,36 @@ public class CmpApplication implements CmpInterface {
 				fileNames.add(args[i]);
 				fileCount++;
 			}
-			if(fileCount > 2) {
-				throw new CmpException("Number of files to compare exceeded 2");
-			}
+		}
+		if(fileCount != 2) {
+			throw new CmpException("There must be two files to compare");
 		}
 		if(fileNames.isEmpty()) {
 			throw new CmpException("Cannot compare stdin with stdin");
 		}
 		try {
+			stdout.write(compare(stdin, hasStdin, fileNames));
+			if(stdout == System.out) {
+				stdout.write(System.lineSeparator().getBytes());
+			}
+		} catch (IOException e) {
+			System.out.println(e.getMessage());
+		}
+	}
+
+	private byte[] compare(InputStream stdin, boolean hasStdin, List<String> fileNames) {
+		String output = "";
+		try {
 			if(hasStdin) {
-				cmpFileAndStdin(fileNames.get(0), stdin, isPrintOctalDiff, isPrintOctalDiff, isPrintOctalDiff);
+				output = cmpFileAndStdin(fileNames.get(0), stdin, isPrintOctalDiff, isPrintOctalDiff, isPrintOctalDiff);
 			}
 			else {
-				cmpTwoFiles(fileNames.get(0), fileNames.get(1), isPrintCharDiff, isPrintSimplify, isPrintOctalDiff);
+				output = cmpTwoFiles(fileNames.get(0), fileNames.get(1), isPrintCharDiff, isPrintSimplify, isPrintOctalDiff);
 			}
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
 		}
+		return output.getBytes();
 	}
 
 	private void extractOptions(String arg) {

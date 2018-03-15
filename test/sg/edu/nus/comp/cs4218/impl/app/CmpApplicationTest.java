@@ -126,7 +126,9 @@ public class CmpApplicationTest {
 	public void shouldReturnEmptyStringWhenFileContentsAreSame() throws Exception {
 		String fileNameA = fileA.toString();
 		String fileNameC = fileC.toString();
-		assertEquals("", cmpApp.cmpTwoFiles(fileNameA, fileNameC, false, false, false));
+		String expected = CmpApplicationUtil.getNormalFormatString(fileNameA, 
+				fileNameC, bytesA, bytesC, false);
+		assertEquals(expected, cmpApp.cmpTwoFiles(fileNameA, fileNameC, false, false, false));
 	}
 	
 	//File and Stdin
@@ -190,11 +192,29 @@ public class CmpApplicationTest {
 	}
 	
 	@Test
-	public void shouldPrintSimplifyToBaosWhenRepeatedFlag() throws Exception {
+	public void shouldPrintSimplifyToBaosWhenTwoFilesRepeatedSimplify() throws Exception {
 		String fileNameA = fileA.toString();
 		String fileNameB = fileB.toString();
 		String expected = CmpApplicationUtil.getSimpleString(bytesA, bytesB);
-		cmpApp.run(new String[] {fileNameB, fileNameA, "-s-s-s-s-s-s-s-s-s"}, null, baos);
+		cmpApp.run(new String[] {fileNameB, fileNameA, "-lcs-s-s-s-s-s-s-s-s"}, null, baos);
+		assertEquals(expected + System.lineSeparator(), baos.toString());
+	}
+	
+	@Test
+	public void shouldPrintSimplifyToBaosWhenFileStdinCharDiff() throws Exception {
+		String fileNameA = fileA.toString();
+		stdin = new FileInputStream(fileB.toFile());
+		String expected = CmpApplicationUtil.getNormalFormatString(fileNameA, CmpApplicationUtil.STDIN, bytesA, bytesB, true);
+		cmpApp.run(new String[] {CmpApplicationUtil.STDIN, fileNameA, "-c"}, stdin, baos);
+		assertEquals(expected + System.lineSeparator(), baos.toString());
+	}
+	
+	@Test
+	public void shouldPrintSimplifyToBaosWhenSimplifySingle() throws Exception {
+		String fileNameA = fileA.toString();
+		String fileNameB = fileB.toString();
+		String expected = CmpApplicationUtil.getSimpleString(bytesA, bytesB);
+		cmpApp.run(new String[] {fileNameB, fileNameA, "-s"}, null, baos);
 		assertEquals(expected + System.lineSeparator(), baos.toString());
 	}
 	

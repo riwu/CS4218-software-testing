@@ -35,7 +35,7 @@ public class CmpApplication implements CmpInterface {
 				}
 				hasStdin = true;
 			}
-			else if (args[i].startsWith("-")) {
+			else if (args[i].matches("^-[lcs]+$")) {
 				extractOptions(args[i]);
 			}
 			else {

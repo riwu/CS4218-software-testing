@@ -17,26 +17,32 @@ import sg.edu.nus.comp.cs4218.exception.CmpException;
 
 public class CmpApplication implements CmpInterface {
 	
-	private boolean isPrintCharDiff, isPrintSimplify, isPrintOctalDiff;
+	private static final int CHAR_IDX = 0;
+	private static final int SIMPLIFY_IDX = 1;
+	private static final int OCTAL_IDX = 2;
 	
 	@Override
 	public void run(String[] args, InputStream stdin, OutputStream stdout) throws AbstractApplicationException {
 		int fileCount = 0;
 		boolean hasStdin;
-		hasStdin = isPrintCharDiff = isPrintSimplify = isPrintOctalDiff = false;
+		hasStdin = false;
+		boolean[] flags = new boolean[3];
 		List<String> fileNames = new ArrayList<String> ();
-		if(stdin == null || stdout == null) {
+		if(stdout == null) {
 			throw new CmpException("Null pointer exception");
 		}
 		for(int i = 0; i < args.length; i++) {
 			if(CmpApplicationUtil.STDIN.equals(args[i])) {
+				if(stdin == null) {
+					throw new CmpException("Specified stdin but stdin is null");
+				}
 				if(!hasStdin) {
 					fileCount++;
 				}
 				hasStdin = true;
 			}
-			else if (args[i].matches("^-[lcs]+$")) {
-				extractOptions(args[i]);
+			else if (args[i].matches("^(-[lcs]+)+$")) {
+				extractOptions(args[i], flags);
 			}
 			else {
 				File file = new File(args[i]);
@@ -51,7 +57,7 @@ public class CmpApplication implements CmpInterface {
 			throw new CmpException("There must be two files to compare");
 		}
 		try {
-			stdout.write(compare(stdin, hasStdin, fileNames));
+			stdout.write(compare(stdin, hasStdin, fileNames, flags));
 			if(stdout instanceof ByteArrayOutputStream) {
 				stdout.write(System.lineSeparator().getBytes());
 			}
@@ -60,32 +66,34 @@ public class CmpApplication implements CmpInterface {
 		}
 	}
 
-	private byte[] compare(InputStream stdin, boolean hasStdin, List<String> fileNames) {
+	private void extractOptions(String options, boolean... flags) {
+		if(options.contains("l")) {
+			flags[OCTAL_IDX] = true;
+		}
+		if(options.contains("s")) {
+			flags[SIMPLIFY_IDX] = true;
+		}
+		if(options.contains("c")) {
+			flags[CHAR_IDX] = true;
+		}
+	}
+
+	private byte[] compare(InputStream stdin, boolean hasStdin, List<String> fileNames,
+				boolean... flags) {
 		String output = "";
 		try {
 			if(hasStdin) {
-				output = cmpFileAndStdin(fileNames.get(0), stdin, isPrintOctalDiff, isPrintOctalDiff, isPrintOctalDiff);
+				output = cmpFileAndStdin(fileNames.get(0), stdin, flags[CHAR_IDX],
+							flags[SIMPLIFY_IDX], flags[OCTAL_IDX]);
 			}
 			else {
-				output = cmpTwoFiles(fileNames.get(0), fileNames.get(1), isPrintCharDiff, isPrintSimplify, isPrintOctalDiff);
+				output = cmpTwoFiles(fileNames.get(0), fileNames.get(1), flags[CHAR_IDX],
+							flags[SIMPLIFY_IDX], flags[OCTAL_IDX]);
 			}
 		} catch (Exception e) {
-			System.out.println(e.getMessage());
+			System.out.print(e.getMessage());
 		}
 		return output.getBytes();
-	}
-
-	private void extractOptions(String arg) {
-		String options = arg.substring(1);
-		if(options.contains("l")) {
-			isPrintOctalDiff = true;
-		}
-		if(options.contains("s")) {
-			isPrintSimplify = true;
-		}
-		if(options.contains("c")) {
-			isPrintCharDiff = true;
-		}
 	}
 
 	@Override

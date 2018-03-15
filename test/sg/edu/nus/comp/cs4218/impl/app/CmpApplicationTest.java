@@ -2,6 +2,7 @@ package sg.edu.nus.comp.cs4218.impl.app;
 
 import static org.junit.Assert.*;
 
+import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
@@ -24,19 +25,21 @@ public class CmpApplicationTest {
 	private static final String TEST_FOLDER = "undertest";
 	private static final String TEXT_A = "This is\tthe texta";
 	private static final String TEXT_B = "That is\nthe textb";
-	static Path testFolder;
-	static Path fileA;
-	static Path fileB;
-	static Path fileC;
-	static byte[] bytesA;
-	static byte[] bytesB;
-	static byte[] bytesC;
+	private static Path testFolder;
+	private static Path fileA;
+	private static Path fileB;
+	private static Path fileC;
+	private static byte[] bytesA;
+	private static byte[] bytesB;
+	private static byte[] bytesC;
+	private static ByteArrayOutputStream baos;
 	private FileInputStream stdin;
 
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
 		cmpApp = new CmpApplication();
 		testFolder = Files.createTempDirectory(BASE_PATH, TEST_FOLDER);
+		baos = new ByteArrayOutputStream();
 	}
 	
 	@Before
@@ -67,11 +70,13 @@ public class CmpApplicationTest {
 		fileA.toFile().delete();
 		fileB.toFile().delete();
 		fileC.toFile().delete();
+		baos.reset();
 	}
 	
 	@AfterClass
 	public static void tearDownAfterClass() throws Exception {
 		testFolder.toFile().deleteOnExit();
+		baos.close();
 	}
 
 	//Files Only
@@ -173,7 +178,26 @@ public class CmpApplicationTest {
 		stdin = new FileInputStream(fileC.toFile());
 		assertEquals("", cmpApp.cmpFileAndStdin(fileNameA, stdin, false, false, false));
 	}
-		
+	
+	//General runs
+	@Test
+	public void shouldPrintNewLineWhenTwoFilesNoOptions() throws Exception {
+		String fileNameA = fileA.toString();
+		String fileNameC = fileC.toString();
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		cmpApp.run(new String[] {fileNameC, fileNameA}, null, baos);
+		assertEquals(System.lineSeparator(), baos.toString());
+	}
+	
+	@Test
+	public void shouldPrintSimplifyToBaosWhenRepeatedFlag() throws Exception {
+		String fileNameA = fileA.toString();
+		String fileNameB = fileB.toString();
+		String expected = CmpApplicationUtil.getSimpleString(bytesA, bytesB);
+		cmpApp.run(new String[] {fileNameB, fileNameA, "-s-s-s-s-s-s-s-s-s"}, null, baos);
+		assertEquals(expected + System.lineSeparator(), baos.toString());
+	}
+	
 	//General application violations
 	@Test(expected=CmpException.class)
 	public void shouldThrowExceptionWhenMoreThanTwoFiles() throws Exception {
@@ -209,4 +233,16 @@ public class CmpApplicationTest {
 		cmpApp.run(new String[] {fileNameB, CmpApplicationUtil.STDIN}, stdin, null);
 	}
 	
+	@Test(expected=CmpException.class)
+	public void shouldThrowExceptionWhenTwoStdin() throws Exception {
+		stdin = new FileInputStream(fileC.toFile());
+		cmpApp.run(new String[] {CmpApplicationUtil.STDIN, CmpApplicationUtil.STDIN}, stdin, System.out);
+	}
+	
+	@Test(expected=CmpException.class)
+	public void shouldThrowExceptionWhenInvalidFlagFormat() throws Exception {
+		String fileNameA = fileA.toString();
+		String fileNameC = fileC.toString();
+		cmpApp.run(new String[] {fileNameC, fileNameA, "-s-s-s-s-s-s-s-s-s-"}, null, baos);
+	}
 }

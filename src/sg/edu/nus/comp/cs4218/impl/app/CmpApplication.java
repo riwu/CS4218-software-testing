@@ -2,7 +2,6 @@ package sg.edu.nus.comp.cs4218.impl.app;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
@@ -57,11 +56,12 @@ public class CmpApplication implements CmpInterface {
 			throw new CmpException("There must be two files to compare");
 		}
 		try {
-			stdout.write(compare(stdin, hasStdin, fileNames, flags));
-			if(stdout instanceof ByteArrayOutputStream) {
+			byte[] output = compare(stdin, hasStdin, fileNames, flags);
+			stdout.write(output);
+			if(output.length > 0 && stdout instanceof ByteArrayOutputStream) {
 				stdout.write(System.lineSeparator().getBytes());
 			}
-		} catch (IOException e) {
+		} catch (Exception e) {
 			System.out.println(e.getMessage());
 		}
 	}
@@ -91,7 +91,7 @@ public class CmpApplication implements CmpInterface {
 							flags[SIMPLIFY_IDX], flags[OCTAL_IDX]);
 			}
 		} catch (Exception e) {
-			System.out.print(e.getMessage());
+			System.out.println(e.getMessage());
 		}
 		return output.getBytes();
 	}
@@ -111,6 +111,9 @@ public class CmpApplication implements CmpInterface {
 		else {
 			message = CmpApplicationUtil.getNormalFormatString(fileNameA, fileNameB, 
 						bytesA, bytesB, isPrintCharDiff);
+		}
+		if(message.isEmpty()) {
+			hasNoDiffTillEof(fileNameA, fileNameB, bytesA.length, bytesB.length);
 		}
 		return message;
 	}
@@ -138,7 +141,20 @@ public class CmpApplication implements CmpInterface {
 			message = CmpApplicationUtil.getNormalFormatString(fileName, CmpApplicationUtil.STDIN, 
 						bytesA, bytesB, isPrintCharDiff);
 		}
+		if(message.isEmpty()) {
+			hasNoDiffTillEof(fileName, CmpApplicationUtil.STDIN, bytesA.length, bytesB.length);
+		}
 		return message;
+	}
+	
+	private void hasNoDiffTillEof(String fileNameA, String fileNameB, int sizeA, int sizeB)
+			throws CmpException {
+		if(sizeA < sizeB) {
+			throw new CmpException(CmpException.EOF_MSG + fileNameA);
+		}
+		if(sizeA > sizeB) {
+			throw new CmpException(CmpException.EOF_MSG + fileNameB);
+		}
 	}
 
 }

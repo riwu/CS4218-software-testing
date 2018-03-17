@@ -183,12 +183,12 @@ public class CmpApplicationTest {
 	
 	//General runs
 	@Test
-	public void shouldPrintNewLineWhenTwoFilesNoOptions() throws Exception {
+	public void shouldPrintEmptyStringWhenTwoFilesSameNoOptions() throws Exception {
 		String fileNameA = fileA.toString();
 		String fileNameC = fileC.toString();
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		cmpApp.run(new String[] {fileNameC, fileNameA}, null, baos);
-		assertEquals(System.lineSeparator(), baos.toString());
+		assertEquals("", baos.toString());
 	}
 	
 	@Test

@@ -135,6 +135,9 @@ public class ShellImpl implements Shell {
             case "diff":
             	absApp = new DiffApplication();
             	break;
+            case "cmp":
+            	absApp = new CmpApplication();
+              break;
             case "cd":
             	absApp = new CdApplication();
             	break;

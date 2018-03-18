@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Arrays;
+import java.util.regex.Pattern;
 
 import sg.edu.nus.comp.cs4218.app.EchoInterface;
 import sg.edu.nus.comp.cs4218.exception.EchoException;
@@ -50,9 +51,15 @@ public class EchoApplication implements EchoInterface {
 	}
 
 	public String evaluate(String[] args){
-        return Arrays.stream(args)
+		Pattern spacePattern = Pattern.compile("\\s+");
+		boolean hasSpaces = Arrays.stream(args).map( arg -> spacePattern.matcher(arg).matches())
+							.reduce(false, (result, bool) -> result || bool);
+
+        return hasSpaces? Arrays.stream(args)
+				.reduce("", (result, arg) -> result + " " + arg) + System.lineSeparator():
+				Arrays.stream(args)
                 .reduce("", (result, arg) -> result + " " + arg)
-                .trim();
+                .trim() + System.lineSeparator();
     }
 
 }

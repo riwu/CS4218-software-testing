@@ -40,22 +40,5 @@ public interface CmpInterface extends Application {
 	 */
 	public String cmpFileAndStdin(String fileName, InputStream stdin, Boolean isPrintCharDiff, Boolean isPrintSimplify, Boolean isPrintOctalDiff)
 			throws Exception;
-	
-	/**
-	 * Returns a string reporting differing inputs. The report contains whether
-	 * the Stdin args differ, the first byte in which they differ, and the 
-	 * corresponding line number. Returns an empty string if there are no 
-	 * difference.
-	 * @param stdin InputStream of Stdin args to be compared
-	 * @param isPrintCharDiff Boolean option to print differing characters and 
-	 * the differing octal values
-	 * @param isPrintSimplify Boolean option to only print "Input differ" if
-	 * the inputs are different 
-	 * @param isPrintOctalDiff Boolean option to print the byte offset to the
-	 * differing byte and the differing octal values. 
-	 * @throws Exception
-	 */
-	public String cmpStdin(InputStream stdin, Boolean isPrintCharDiff, Boolean isPrintSimplify, Boolean isPrintOctalDiff)
-			throws Exception;
 
 }

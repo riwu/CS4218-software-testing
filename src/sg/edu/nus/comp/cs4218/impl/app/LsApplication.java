@@ -65,6 +65,7 @@ public class LsApplication implements LsInterface {
 			}
 			String[] folderNames = folders.toArray(new String[folders.size()]);
 			String display = listFolderContent(isFoldersOnly, isRecursive, folderNames);
+			display += System.lineSeparator();
 			stdout.write(display.getBytes());
 		} catch (Exception e) {
 			throw new LsException(e.getMessage());

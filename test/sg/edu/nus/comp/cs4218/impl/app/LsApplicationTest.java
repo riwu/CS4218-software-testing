@@ -48,14 +48,14 @@ public class LsApplicationTest {
 	}
 	
 	@Test
-	public void Should_ListAllContents_When_ValidPathNoOptions() throws Exception {
+	public void shouldListAllContentsWhenValidPathNoOptions() throws Exception {
 		String path = testPath.toString();
 		String expected = getContentString(testPath, false) + System.lineSeparator();
 		assertEquals(expected, lsApp.listFolderContent(false, false, path));
 	}
 	
 	@Test
-	public void Should_ListEachFolderContents_When_MultipleValidPaths() throws Exception {
+	public void shouldListEachFolderContentsWhenMultipleValidPaths() throws Exception {
 		String path = testPath.toString();
 		String secondPath = folderPathNested.toString();
 		String expected = path + ":" + System.lineSeparator()
@@ -66,14 +66,14 @@ public class LsApplicationTest {
 	}
 	
 	@Test
-	public void Should_ListFoldersOnly_When_ValidPathDirectoryOnly() throws Exception {
+	public void shouldListFoldersOnlyWhenValidPathDirectoryOnly() throws Exception {
 		String path = testPath.toString();
 		String expected = getContentString(testPath, true) + System.lineSeparator();;
 		assertEquals(expected, lsApp.listFolderContent(true, false, path));
 	}
 	
 	@Test
-	public void Should_RecursiveListAllContents_When_ValidPathRecursiveOnly() throws Exception {
+	public void shouldRecursiveListAllContentsWhenValidPathRecursiveOnly() throws Exception {
 		String path = testPath.toString();
 		String expected = path + ":" + System.lineSeparator() 
 				+ getContentString(testPath, false) + System.lineSeparator()
@@ -86,7 +86,7 @@ public class LsApplicationTest {
 	}
 	
 	@Test
-	public void Should_RecursiveListFoldersOnly_When_ValidPathBothOptions() throws Exception {
+	public void shouldRecursiveListFoldersOnlyWhenValidPathBothOptions() throws Exception {
 		String path = testPath.toString();
 		String expected = path + ":" + System.lineSeparator()
 						+ getContentString(testPath, true) + System.lineSeparator()
@@ -99,13 +99,13 @@ public class LsApplicationTest {
 	}
 	
 	@Test(expected=LsException.class)
-	public void Should_ThrowException_When_NotDirectoryPath() throws Exception {
+	public void shouldThrowExceptionWhenNotDirectoryPath() throws Exception {
 		String path = filePath.toString();
 		lsApp.run(new String[] {path}, System.in, System.out);
 	}
 
 	@Test(expected=LsException.class)
-	public void Should_ThrowException_When_StdOutIsNull() throws Exception {
+	public void shouldThrowExceptionWhenStdOutIsNull() throws Exception {
 		lsApp.run(new String[] {}, System.in, null);	
 	}
 	

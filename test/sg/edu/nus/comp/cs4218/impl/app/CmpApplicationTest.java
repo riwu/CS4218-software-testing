@@ -3,6 +3,7 @@ package sg.edu.nus.comp.cs4218.impl.app;
 import static org.junit.Assert.*;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
@@ -16,12 +17,13 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import sg.edu.nus.comp.cs4218.Environment;
 import sg.edu.nus.comp.cs4218.exception.CmpException;
 import sg.edu.nus.comp.cs4218.impl.CmpApplicationUtil;
 
 public class CmpApplicationTest {
 	private static CmpApplication cmpApp;
-	private static final Path BASE_PATH = Paths.get(System.getProperty("user.dir"));
+	private static final Path BASE_PATH = Paths.get(Environment.currentDirectory);
 	private static final String TEST_FOLDER = "undertest";
 	private static final String TEXT_A = "This is\tthe texta";
 	private static final String TEXT_B = "That is\nthe textb";
@@ -71,6 +73,7 @@ public class CmpApplicationTest {
 		fileB.toFile().delete();
 		fileC.toFile().delete();
 		baos.reset();
+		Environment.currentDirectory = BASE_PATH.toString();
 	}
 	
 	@AfterClass
@@ -83,6 +86,17 @@ public class CmpApplicationTest {
 	@Test
 	public void shouldShowFirstDiffWhenNoOptionsFilesOnly() throws Exception {
 		String fileNameA = fileA.toString();
+		String fileNameB = fileB.toString();
+		String expected = CmpApplicationUtil.getNormalFormatString(fileNameA, fileNameB, 
+							bytesA, bytesB, false);
+		assertEquals(expected, cmpApp.cmpTwoFiles(fileNameA, fileNameB, false, false, false));
+	}
+	
+	@Test
+	public void shouldShowFirstDiffWhenNoOptionsRelativePathFiles() throws Exception {
+		Environment.currentDirectory = testFolder.toString();
+		String fileNameA = ".." + File.separator + fileA.getName(fileA.getNameCount()-2).toString()
+						+ File.separator + fileA.getName(fileA.getNameCount()-1).toString();
 		String fileNameB = fileB.toString();
 		String expected = CmpApplicationUtil.getNormalFormatString(fileNameA, fileNameB, 
 							bytesA, bytesB, false);
@@ -135,6 +149,17 @@ public class CmpApplicationTest {
 	@Test
 	public void shouldShowFirstDiffWhenNoOptionsFileStdin() throws Exception {
 		String fileNameA = fileA.toString();
+		stdin = new FileInputStream(fileB.toFile());
+		String expected = CmpApplicationUtil.getNormalFormatString(fileNameA, 
+							CmpApplicationUtil.STDIN, bytesA, bytesB, false);
+		assertEquals(expected, cmpApp.cmpFileAndStdin(fileNameA, stdin, false, false, false));
+	}
+	
+	@Test
+	public void shouldShowFirstDiffWhenNoOptionsRelativeFileStdin() throws Exception {
+		Environment.currentDirectory = testFolder.toString();
+		String fileNameA = ".." + File.separator + fileA.getName(fileA.getNameCount()-2).toString()
+						+ File.separator + fileA.getName(fileA.getNameCount()-1).toString();
 		stdin = new FileInputStream(fileB.toFile());
 		String expected = CmpApplicationUtil.getNormalFormatString(fileNameA, 
 							CmpApplicationUtil.STDIN, bytesA, bytesB, false);

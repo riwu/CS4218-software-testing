@@ -5,10 +5,12 @@ import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
+import sg.edu.nus.comp.cs4218.Environment;
 import sg.edu.nus.comp.cs4218.app.CmpInterface;
 import sg.edu.nus.comp.cs4218.impl.CmpApplicationUtil;
 import sg.edu.nus.comp.cs4218.exception.AbstractApplicationException;
@@ -44,7 +46,8 @@ public class CmpApplication implements CmpInterface {
 				extractOptions(args[i], flags);
 			}
 			else {
-				File file = new File(args[i]);
+				Path currentDir = Paths.get(Environment.currentDirectory);
+				File file = currentDir.resolve(args[i]).toFile();
 				if(!file.exists() || file.isDirectory()) {
 					throw new CmpException(file.getName() + " cannot be resolved to a file");
 				}
@@ -100,8 +103,9 @@ public class CmpApplication implements CmpInterface {
 	public String cmpTwoFiles(String fileNameA, String fileNameB, Boolean isPrintCharDiff, Boolean isPrintSimplify,
 			Boolean isPrintOctalDiff) throws Exception {
 		String message;
-		byte[] bytesA = Files.readAllBytes(Paths.get(fileNameA));
-		byte[] bytesB = Files.readAllBytes(Paths.get(fileNameB));
+		Path currentDir = Paths.get(Environment.currentDirectory);
+		byte[] bytesA = Files.readAllBytes(currentDir.resolve(fileNameA));
+		byte[] bytesB = Files.readAllBytes(currentDir.resolve(fileNameB));
 		if(isPrintSimplify) {
 			message = CmpApplicationUtil.getSimpleString(bytesA, bytesB);
 		}
@@ -122,7 +126,8 @@ public class CmpApplication implements CmpInterface {
 	public String cmpFileAndStdin(String fileName, InputStream stdin, Boolean isPrintCharDiff, Boolean isPrintSimplify,
 			Boolean isPrintOctalDiff) throws Exception {
 		String message;
-		byte[] bytesA = Files.readAllBytes(Paths.get(fileName));
+		Path currentDir = Paths.get(Environment.currentDirectory);
+		byte[] bytesA = Files.readAllBytes(currentDir.resolve(fileName));
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		int read;
 		byte[] data = new byte[1024];

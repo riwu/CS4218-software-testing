@@ -34,7 +34,8 @@ public class QuotingTest {
         testEchoCommand("'", "Hello World");
     }
 
-    @Test(expected = NullPointerException.class)
+
+    @Test(expected = ShellException.class)
     public void shouldNotIgnoreBackticks() throws Exception {
         testEchoCommand("`", "Hello World");
     }

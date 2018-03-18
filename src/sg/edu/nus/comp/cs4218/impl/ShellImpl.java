@@ -10,6 +10,9 @@ import sg.edu.nus.comp.cs4218.impl.cmd.PipeCommand;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -294,17 +297,61 @@ public class ShellImpl implements Shell {
         InputStream inputPipe = new ByteArrayInputStream("".getBytes(StandardCharsets.UTF_8));
         OutputStream outputPipe = new ByteArrayOutputStream();
 
+        String[] sequencedCommands = extractSemicolon(cmdline);
+
         PipeCommand pipeCommand = null;
-		for (String command : cmdline.split(";")) {
-			pipeCommand = new PipeCommand(command);
+        for (String cmd: sequencedCommands) {
+            pipeCommand = new PipeCommand(cmd);
             pipeCommand.parse();
-			try {
-                pipeCommand.evaluate(inputPipe, outputPipe);
-            } catch (Exception e) {
-			    e.printStackTrace();
-            }
+            pipeCommand.evaluate(inputPipe, outputPipe);
         }
         writeToStdout(pipeCommand.getResultStream(), stdout);
+    }
 
+    // TODO: Can consider extract to different class
+    public String[] extractSemicolon(String cmdline){
+        // GUARDS:
+        // does not contain semicolon, don't evaluate
+        if (!cmdline.contains(";")) return new String[]{cmdline};
+
+        // if the command is of form <command> '<single_quote_content>', don't evaluate
+        Pattern singleQuote = Pattern.compile("(?:.+)\\s+'(?:.*)'");
+        if (singleQuote.matcher(cmdline).matches()) return new String[]{cmdline};
+
+        // if the command is of form <command> "<double_quote_content>", don't evaluate
+        Pattern doubleQuote = Pattern.compile("(?:.+)\\s+\"(?:.*)\"");
+        if (doubleQuote.matcher(cmdline).matches()) return new String[]{cmdline};
+        // END GUARDS
+
+        // cmdline matches sequenced command pattern
+        List<String> validCommands = new ArrayList<>();
+
+        // this regex will match all the semicolons NOT within backtick
+        Pattern semicolonNotInsideBQPattern = Pattern.compile("(?!\\B`[^`]*);(?![^`]*`\\B)");
+        Matcher matcher = semicolonNotInsideBQPattern.matcher(cmdline);
+
+        // for each semicolons that matches, we extract the substring up to that semicolon position
+        int lastValidCommandStartIndex = 0;
+        while (matcher.find()) {
+            String validCommand = cmdline.substring(lastValidCommandStartIndex, matcher.start());
+            validCommands.add(validCommand);
+
+            lastValidCommandStartIndex = matcher.end();
+        }
+
+        // evaluate last portion that maybe have no semicolon
+        // eg: echo hello; echo world
+        // as such the word has to be added into valid command even if there's no semicolon precedes it
+        String validCommand = cmdline.substring(lastValidCommandStartIndex);
+
+        if (!validCommand.isEmpty()) {
+            // this happens when valid command such as:
+            // echo hello;
+            // as such we will not add the empty string into valid command
+            validCommands.add(validCommand);
+        }
+
+
+        return validCommands.toArray(new String[]{});
     }
 }

@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 
 import sg.edu.nus.comp.cs4218.Environment;
@@ -49,7 +51,8 @@ public class LsApplication implements LsInterface {
 				optionCount++;
 			}
 			else {
-				File folder = new File(arg);
+				Path currentDir = Paths.get(Environment.currentDirectory);
+				File folder = currentDir.resolve(arg).toFile();
 				if(folder.isDirectory()) {
 					folders.add(arg);
 				}
@@ -61,11 +64,10 @@ public class LsApplication implements LsInterface {
 		
 		try {
 			if(args == null || optionCount == args.length) {
-				folders.add(Environment.currentDirectory);
+				folders.add(".");
 			}
 			String[] folderNames = folders.toArray(new String[folders.size()]);
 			String display = listFolderContent(isFoldersOnly, isRecursive, folderNames);
-			display += System.lineSeparator();
 			stdout.write(display.getBytes());
 		} catch (Exception e) {
 			throw new LsException(e.getMessage());
@@ -83,6 +85,7 @@ public class LsApplication implements LsInterface {
 			}
 		}
 		else {
+			Path currentDir = Paths.get(Environment.currentDirectory);
 			boolean displayFolder = false;
 			boolean extraNewLine = false;
 			if(folderName.length > 1) {
@@ -90,7 +93,7 @@ public class LsApplication implements LsInterface {
 				extraNewLine = true;
 			}
 			for(String name: folderName) {
-				File folder = new File(name);
+				File folder = currentDir.resolve(name).toFile();
 				folderContents = folder.listFiles(directoryFilter);
 				if(displayFolder) {
 					strBuilder.append(name).append(':').append(System.lineSeparator());
@@ -119,13 +122,15 @@ public class LsApplication implements LsInterface {
 		StringBuilder strBuilder = new StringBuilder();
 		
 		File folder = new File(folderName);
+		Path currentDir = Paths.get(Environment.currentDirectory);
+		folder = currentDir.resolve(folderName).toFile();
 		if(folder.isDirectory()) {
 			strBuilder.append(folderName).append(':').append(System.lineSeparator());
 			folderContents = folder.listFiles(directoryFilter);
 			if(folderContents.length > 0) {
 				strBuilder.append(listContents(folderContents));
-				strBuilder.append(System.lineSeparator());
 			}
+			strBuilder.append(System.lineSeparator());
 			for(File file: folderContents) {
 				String fileName = folderName + File.separator + file.getName();
 				strBuilder.append(listFolderContentRecursive(directoryFilter, fileName));

@@ -137,7 +137,7 @@ public class ShellImpl implements Shell {
             	break;
             case "cmp":
             	absApp = new CmpApplication();
-              break;
+            	break;
             case "cd":
             	absApp = new CdApplication();
             	break;

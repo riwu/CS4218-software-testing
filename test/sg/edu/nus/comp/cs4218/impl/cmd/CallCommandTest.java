@@ -3,6 +3,10 @@ package sg.edu.nus.comp.cs4218.impl.cmd;
 import org.junit.*;
 
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -46,6 +50,22 @@ public class CallCommandTest {
         - file_6
 
      */
+
+    private InputStream inputStream;
+    private OutputStream outputStream;
+
+    @Before
+    public void setUp() throws Exception {
+        this.inputStream = new ByteArrayInputStream("".getBytes());
+        this.outputStream = new ByteArrayOutputStream();
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        this.inputStream.close();
+        this.outputStream.close();
+    }
+
 
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {
@@ -153,5 +173,29 @@ public class CallCommandTest {
         assertTrue(actual.containsAll(expected)); // actual is a superset of expected
 
         // then we can conclude that both set are identical and same.
+    }
+
+    @Test
+    public void Should_DisableGlobing_When_SingleQuoting() throws Exception{
+        PipeCommand pipeCommand = new PipeCommand("echo '"+ testFolder.toAbsolutePath()+"/*'");
+        pipeCommand.parse();
+        pipeCommand.evaluate(inputStream, outputStream);
+
+        String expected = testFolder.toAbsolutePath()+"/*" + System.lineSeparator();
+        String actual = pipeCommand.getResultStream().toString();
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void Should_DisableGlobing_When_DoubleQuoting() throws Exception{
+        PipeCommand pipeCommand = new PipeCommand("echo \""+ testFolder.toAbsolutePath()+"/*\"");
+        pipeCommand.parse();
+        pipeCommand.evaluate(inputStream, outputStream);
+
+        String expected = testFolder.toAbsolutePath()+"/*" + System.lineSeparator();
+        String actual = pipeCommand.getResultStream().toString();
+
+        assertEquals(expected, actual);
     }
 }

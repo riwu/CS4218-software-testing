@@ -4,13 +4,11 @@ import org.junit.AfterClass;
 import org.junit.Assume;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import sg.edu.nus.comp.cs4218.impl.CommandTestUtil;
 
-import java.io.ByteArrayOutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-
-import static org.junit.Assert.assertEquals;
 
 public class CmdSubstitutionTest {
 	private boolean isImplemented = false;
@@ -34,57 +32,39 @@ public class CmdSubstitutionTest {
 
     @Test
     public void shouldReturnFileContentWhenEchoFileName() throws Exception {
-        PipeCommand pipeCommand = new PipeCommand("cat `echo " + FILE_NAME + "`");
-        pipeCommand.parse();
-        pipeCommand.evaluate(System.in, new ByteArrayOutputStream());
-        assertEquals(FILE_CONTENT, pipeCommand.getResultStream().toString());
+        CommandTestUtil.testCommand(FILE_CONTENT, "cat `echo " + FILE_NAME + "`");
     }
 
     @Test
     public void shouldReturnFileContentWhenDoubleQuotedEcho() throws Exception {
-        PipeCommand pipeCommand = new PipeCommand("cat \"`echo " + FILE_NAME + "`\"");
-        pipeCommand.parse();
-        pipeCommand.evaluate(System.in, new ByteArrayOutputStream());
-        assertEquals(FILE_CONTENT, pipeCommand.getResultStream().toString());
+        CommandTestUtil.testCommand(FILE_CONTENT, "cat \"`echo " + FILE_NAME + "`\"");
     }
 
     @Test
     public void shouldReturnStringWhenSingleQuotedEcho() throws Exception {
     	Assume.assumeTrue(isImplemented);
         String catCommand = "`cat " + FILE_NAME + "`";
-        PipeCommand pipeCommand = new PipeCommand("echo '" + catCommand + "'");
-        pipeCommand.parse();
-        pipeCommand.evaluate(System.in, new ByteArrayOutputStream());
-        assertEquals(catCommand, pipeCommand.getResultStream().toString());
+        CommandTestUtil.testCommand(catCommand, "echo '" + catCommand + "'");
     }
 
     @Test
     public void shouldReturnFileContentsWhenEchoMultipleTimes() throws Exception {
         String echoCommand = "`echo " + FILE_NAME + "`";
-        PipeCommand pipeCommand = new PipeCommand("cat " + echoCommand + " " + echoCommand);
-        pipeCommand.parse();
-        pipeCommand.evaluate(System.in, new ByteArrayOutputStream());
-        assertEquals(FILE_CONTENT + FILE_CONTENT, pipeCommand.getResultStream().toString());
+        CommandTestUtil.testCommand(FILE_CONTENT + FILE_CONTENT, "cat " + echoCommand + " " + echoCommand);
     }
 
     @Test
     public void shouldReturnFileContentsWhenEchoMultipleFiles() throws Exception {
     	Assume.assumeTrue(isImplemented);
         String echoCommand = "`echo " + FILE_NAME + " " + FILE_NAME + "`";
-        PipeCommand pipeCommand = new PipeCommand("cat " + echoCommand);
-        pipeCommand.parse();
-        pipeCommand.evaluate(System.in, new ByteArrayOutputStream());
-        assertEquals(FILE_CONTENT + FILE_CONTENT, pipeCommand.getResultStream().toString());
+        CommandTestUtil.testCommand(FILE_CONTENT + FILE_CONTENT, "cat " + echoCommand);
     }
 
     @Test
     public void shouldReplaceNewLinesWithSpacesWhenSubstituted() throws Exception {
     	Assume.assumeTrue(isImplemented);
         String catCommand = "`cat " + FILE_NAME + "`";
-        PipeCommand pipeCommand = new PipeCommand("echo " + catCommand);
-        pipeCommand.parse();
-        pipeCommand.evaluate(System.in, new ByteArrayOutputStream());
-        assertEquals(FILE_CONTENT.replace(System.lineSeparator(), " "), pipeCommand.getResultStream().toString());
+        CommandTestUtil.testCommand(FILE_CONTENT.replace(System.lineSeparator(), " "), "echo " + catCommand);
     }
 
     @Test
@@ -92,9 +72,6 @@ public class CmdSubstitutionTest {
     	Assume.assumeTrue(isImplemented);
         String catCommand = "cat " + FILE_NAME;
         String echoCommand = "`echo `" + catCommand + "``";
-        PipeCommand pipeCommand = new PipeCommand("echo " + echoCommand);
-        pipeCommand.parse();
-        pipeCommand.evaluate(System.in, new ByteArrayOutputStream());
-        assertEquals(catCommand, pipeCommand.getResultStream().toString());
+        CommandTestUtil.testCommand(catCommand, "echo " + echoCommand);
     }
 }

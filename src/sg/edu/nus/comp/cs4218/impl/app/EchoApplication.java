@@ -33,6 +33,7 @@ public class EchoApplication implements EchoInterface {
 	 * @throws EchoException
 	 *             If an I/O exception occurs.
 	 */
+	@Override
 	@SuppressWarnings("PMD.PreserveStackTrace")
 	public void run(String[] args, InputStream stdin, OutputStream stdout)
 			throws EchoException {

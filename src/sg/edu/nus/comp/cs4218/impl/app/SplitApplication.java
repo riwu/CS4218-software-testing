@@ -1,11 +1,18 @@
 package sg.edu.nus.comp.cs4218.impl.app;
 
-import sg.edu.nus.comp.cs4218.Environment;
 import sg.edu.nus.comp.cs4218.app.SplitInterface;
 import sg.edu.nus.comp.cs4218.exception.AbstractApplicationException;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * The cd command changes current directory to the specified directory.
@@ -30,6 +37,13 @@ public class SplitApplication implements SplitInterface {
 
     @Override
     public void run(String[] args, InputStream stdin, OutputStream stdout) throws AbstractApplicationException {
+        try {
+            splitFileByBytes("/tmp/dropbox-antifreeze-0N9a1Y", "x", "1b");
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
     }
 
@@ -40,11 +54,68 @@ public class SplitApplication implements SplitInterface {
 
     @Override
     public void splitFileByBytes(String fileName, String prefix, String bytesPerFile) throws Exception {
+        Path filePath = Paths.get(fileName);
+        byte[] fileBytes = Files.readAllBytes(filePath);
+        int splitByte = bytes(bytesPerFile);
+
+
+        int i = 1;
+        int bytePosition = 0;
+        while(bytePosition < fileBytes.length){
+
+            int toBytePosition = bytePosition + splitByte > fileBytes.length ? fileBytes.length: bytePosition + splitByte;
+
+            writeBytesToFile(Arrays.copyOfRange(fileBytes, bytePosition, toBytePosition), prefix + toBijectiveBase26(i));
+
+            i++;
+            bytePosition+=toBytePosition;
+        }
+    }
+
+    public void writeBytesToFile(byte[] byteArray, String filename){
+        try (FileOutputStream fos = new FileOutputStream("/tmp/"+filename)) {
+            fos.write(byteArray);
+        } catch (IOException ioe) {
+            ioe.printStackTrace();
+        }
+    }
+
+    public String toBijectiveBase26(int num) {
+        final int skip = 26;
+        num += skip;
+
+        StringBuilder result = new StringBuilder();
+
+        while(num > 0) {
+            --num;
+            result.append((char)('a' + num%26 ));
+            num/=26;
+        }
+
+        return result.reverse().toString();
 
     }
 
+    private int bytes(String bytesPerFile) {
+        // this regex matches any number of digits follow by exactly one of [b,k,m]
+        Pattern pattern = Pattern.compile("^(\\d+)([b,k,m])$");
+        Matcher matcher = pattern.matcher(bytesPerFile);
 
+        // doesn't match, return negative value
+        if (!matcher.matches()) return -1;
 
+        // extract matched components
+        int base = Integer.parseInt(matcher.group(1)); // guaranteed digits by regex
+        char multiplier = matcher.group(2).charAt(0); // guaranteed single char by regex
 
+        // calculate & return the exact bytes in numerical form
+        switch (multiplier){
+            case 'b': return base * 512;
+            case 'k': return base * 1024;
+            case 'm': return base * 1048576;
+            default: return -1;
+        }
+
+    }
 
 }

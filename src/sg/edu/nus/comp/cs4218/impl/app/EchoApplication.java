@@ -33,6 +33,7 @@ public class EchoApplication implements EchoInterface {
 	 * @throws EchoException
 	 *             If an I/O exception occurs.
 	 */
+	@SuppressWarnings("PMD.PreserveStackTrace")
 	public void run(String[] args, InputStream stdin, OutputStream stdout)
 			throws EchoException {
 		if (args == null) {
@@ -50,7 +51,8 @@ public class EchoApplication implements EchoInterface {
 		}
 	}
 
-	public String evaluate(String[] args){
+	@Override
+	public String evaluate(String... args){
 		Pattern spacePattern = Pattern.compile("\\s+");
 		boolean hasSpaces = Arrays.stream(args).map( arg -> spacePattern.matcher(arg).matches())
 							.reduce(false, (result, bool) -> result || bool);

@@ -159,7 +159,8 @@ public class ShellImpl implements Shell {
      * @return InputStream of file opened
      * @throws ShellException If file is not found.
      */
-    public static InputStream openInputRedir(String inputStreamS)
+    @SuppressWarnings({ "PMD.PreserveStackTrace", "PMD.AvoidDuplicateLiterals" })
+	public static InputStream openInputRedir(String inputStreamS)
             throws ShellException {
         File inputFile = new File(inputStreamS);
         FileInputStream fInputStream = null;
@@ -179,7 +180,8 @@ public class ShellImpl implements Shell {
      * @return OutputStream of file opened.
      * @throws ShellException If file destination cannot be opened or inaccessible.
      */
-    public static OutputStream openOutputRedir(String outputStreamS) throws ShellException {
+    @SuppressWarnings("PMD.PreserveStackTrace")
+	public static OutputStream openOutputRedir(String outputStreamS) throws ShellException {
         File outputFile = new File(outputStreamS);
         FileOutputStream fOutputStream = null;
         try {
@@ -196,7 +198,8 @@ public class ShellImpl implements Shell {
      * @param inputStream InputStream to be closed.
      * @throws ShellException If inputStream cannot be closed successfully.
      */
-    public static void closeInputStream(InputStream inputStream)
+    @SuppressWarnings("PMD.PreserveStackTrace")
+	public static void closeInputStream(InputStream inputStream)
             throws ShellException {
         if (inputStream != System.in) {
             try {
@@ -214,7 +217,8 @@ public class ShellImpl implements Shell {
      * @param outputStream OutputStream to be closed.
      * @throws ShellException If outputStream cannot be closed successfully.
      */
-    public static void closeOutputStream(OutputStream outputStream)
+    @SuppressWarnings("PMD.PreserveStackTrace")
+	public static void closeOutputStream(OutputStream outputStream)
             throws ShellException {
         if (outputStream != System.out) {
             try {
@@ -233,7 +237,8 @@ public class ShellImpl implements Shell {
      * @param stdout       Destination outputStream to write stream to.
      * @throws ShellException If exception is thrown during writing.
      */
-    public static void writeToStdout(OutputStream outputStream,
+    @SuppressWarnings("PMD.PreserveStackTrace")
+	public static void writeToStdout(OutputStream outputStream,
                                      OutputStream stdout) throws ShellException {
         if (outputStream instanceof FileOutputStream) {
             return;
@@ -315,29 +320,37 @@ public class ShellImpl implements Shell {
     }
 
     // TODO: Can consider extract to different class
-    public String[] extractSemicolon(String cmdline){
+	public String[] extractSemicolon(String cmdline){
         // GUARDS:
         // does not contain semicolon, don't evaluate
-        if (!cmdline.contains(";")) return new String[]{cmdline};
+        if (!cmdline.contains(";")) {
+        	return new String[]{cmdline};
+        }
 
         // if the command is of form <command> '<single_quote_content>', don't evaluate
         Pattern singleQuote = Pattern.compile("(?:.+)\\s+'(?:.*)'");
-        if (singleQuote.matcher(cmdline).matches()) return new String[]{cmdline};
+        if (singleQuote.matcher(cmdline).matches()) {
+        	return new String[]{cmdline};
+        }
 
         // if the command is of form <command> "<double_quote_content>", don't evaluate
         Pattern doubleQuote = Pattern.compile("(?:.+)\\s+\"(?:.*)\"");
-        if (doubleQuote.matcher(cmdline).matches()) return new String[]{cmdline};
+        if (doubleQuote.matcher(cmdline).matches()) {
+        	return new String[]{cmdline};
+        }
         // END GUARDS
 
         // cmdline matches sequenced command pattern
         List<String> validCommands = new ArrayList<>();
 
         // this regex will match all the semicolons NOT within backtick
-        Pattern semicolonNotInsideBQPattern = Pattern.compile("(?!\\B`[^`]*);(?![^`]*`\\B)");
+		@SuppressWarnings("PMD.LongVariable")
+		Pattern semicolonNotInsideBQPattern = Pattern.compile("(?!\\B`[^`]*);(?![^`]*`\\B)");
         Matcher matcher = semicolonNotInsideBQPattern.matcher(cmdline);
 
         // for each semicolons that matches, we extract the substring up to that semicolon position
-        int lastValidCommandStartIndex = 0;
+		@SuppressWarnings("PMD.LongVariable")
+		int lastValidCommandStartIndex = 0;
         while (matcher.find()) {
             String validCommand = cmdline.substring(lastValidCommandStartIndex, matcher.start());
             validCommands.add(validCommand);

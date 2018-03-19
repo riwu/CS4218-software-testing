@@ -8,7 +8,6 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Stream;
 
 import sg.edu.nus.comp.cs4218.Command;
 import sg.edu.nus.comp.cs4218.exception.AbstractApplicationException;
@@ -106,7 +105,6 @@ public class CallCommand implements Command {
 	 *             redirection file path.
 	 */
 
-    // such horrible code without documentation
 	public void parse() throws ShellException {
 		Vector<String> cmdVector = new Vector<String>();
 		Boolean result = true;
@@ -120,9 +118,6 @@ public class CallCommand implements Command {
 			cmdVector.add(""); // reserved for input redir
 			cmdVector.add(""); // reserved for output redir
 
-            // the endIndx f**king mutate after each extract*** calls
-            // make others so difficult to debug this result.
-			// BAD CODE
 			endIdx = extractInputRedir(str, cmdVector, endIdx);
 			endIdx = extractOutputRedir(str, cmdVector, endIdx);
 
@@ -134,7 +129,7 @@ public class CallCommand implements Command {
 			result = false;
 		}
 
-		if (str.substring(endIdx).trim().isEmpty()) {
+		if (str.substring(endIdx).matches("\\s+")) {
 			result = true;
 		} else {
 			result = false;
@@ -280,7 +275,7 @@ public class CallCommand implements Command {
 		String inputRedirS = "";
 		int cmdVectorIndex = cmdVector.size() - 2;
 
-		while (!substring.trim().isEmpty()) {
+		while (!substring.matches("\\s+")) {
 			inputRedirM = inputRedirP.matcher(substring);
 			inputRedirS = "";
 			if (inputRedirM.find()) {
@@ -335,7 +330,7 @@ public class CallCommand implements Command {
 		Matcher inputRedirM;
 		String inputRedirS = "";
 		int cmdVectorIdx = cmdVector.size() - 1;
-		while (!substring.trim().isEmpty()) {
+		while (!substring.matches("\\s+")) {
 
 			inputRedirM = inputRedirP.matcher(substring);
 			inputRedirS = "";

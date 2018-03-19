@@ -134,7 +134,6 @@ public class CallCommand implements Command {
 			result = false;
 		}
 
-		// Orz simply horrible.
 		if (str.substring(endIdx).trim().isEmpty()) {
 			result = true;
 		} else {
@@ -378,19 +377,29 @@ public class CallCommand implements Command {
 
 	public String[] globFilesDirectories(String args) {
 
-		if (args == null) return null;
-
-		if (!args.contains("*")) return new String[] {args};
-
+		if (args == null) {
+			return null;
+		}
+		if (!args.contains("*")) {
+			return new String[] {args};
+		}
 		// if the command is of form <command> '<single_quote_content>', don't evaluate
 		Pattern singleQuote = Pattern.compile("(?:.+)\\s+'(?:.*)'");
-		if (singleQuote.matcher(args).matches()) return new String[]{args};
-		if (singleQuote.matcher(cmdline).matches()) return new String[] {args};
+		if (singleQuote.matcher(args).matches()) {
+			return new String[]{args};
+		}
+		if (singleQuote.matcher(cmdline).matches()) {
+			return new String[] {args};
+		}
 
 		// if the command is of form <command> "<double_quote_content>", don't evaluate
 		Pattern doubleQuote = Pattern.compile("(?:.+)\\s+\"(?:.*)\"");
-		if (doubleQuote.matcher(args).matches()) return new String[]{args};
-		if (doubleQuote.matcher(cmdline).matches()) return new String[] {args};
+		if (doubleQuote.matcher(args).matches()) {
+			return new String[]{args};
+		}
+		if (doubleQuote.matcher(cmdline).matches()) {
+			return new String[] {args};
+		}
 
 		// separate the base dir and glob
         String[] argsArray;

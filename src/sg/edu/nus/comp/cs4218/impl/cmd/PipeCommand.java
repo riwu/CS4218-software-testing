@@ -73,15 +73,21 @@ public class PipeCommand implements Command {
         str = str.trim();
 
         // if there's no pipe, no need to evaluate
-        if (!str.contains("|")) return null;
+        if (!str.contains("|")) {
+        	return null;
+        }
 
         // if the command is of form <command> '<single_quote_content>', don't evaluate
         Pattern singleQuote = Pattern.compile("(?:.+)\\s+'(?:.*)'");
-        if (singleQuote.matcher(str).matches()) return null;
+        if (singleQuote.matcher(str).matches()) {
+        	return null;
+        }
 
         // if the command is of form <command> "<double_quote_content>", don't evaluate
         Pattern doubleQuote = Pattern.compile("(?:.+)\\s+\"(?:.*)\"");
-        if (doubleQuote.matcher(str).matches()) return null;
+        if (doubleQuote.matcher(str).matches()) {
+        	return null;
+        }
 
         List<String> commands = new ArrayList<>();
         Queue<Character> queue = new LinkedList<>();
@@ -124,7 +130,9 @@ public class PipeCommand implements Command {
 
         }
 
-        if(!queue.isEmpty()) commands.add(pollAll(queue));
+        if(!queue.isEmpty()) {
+        	commands.add(pollAll(queue));
+        }
 
         return commands.toArray(new String[]{});
     }
@@ -132,7 +140,9 @@ public class PipeCommand implements Command {
     private String pollAll(Queue<Character> queue){
         StringBuilder result = new StringBuilder();
 
-        while(!queue.isEmpty()) result.append(queue.poll());
+        while(!queue.isEmpty()) {
+        	result.append(queue.poll());
+        }
 
         return result.toString();
     }
@@ -141,7 +151,9 @@ public class PipeCommand implements Command {
         StringBuilder result = new StringBuilder();
 
         while(!queue.isEmpty() && count > 0) {
-            if (queue.isEmpty()) break;
+            if (queue.isEmpty()) {
+            	break;
+            }
 
             result.append(queue.poll());
 

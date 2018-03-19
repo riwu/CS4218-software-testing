@@ -26,6 +26,7 @@ import sg.edu.nus.comp.cs4218.exception.MkdirException;
 public class MkdirApplication implements MkdirInterface {
 
 	@Override
+	@SuppressWarnings("PMD.PreserveStackTrace")
 	public void run(String[] args, InputStream stdin, OutputStream stdout) throws AbstractApplicationException {
 		if (args == null || args.length == 0) {
 			throw new MkdirException("No folders specified");

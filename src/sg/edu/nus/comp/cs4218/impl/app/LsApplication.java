@@ -32,8 +32,9 @@ import sg.edu.nus.comp.cs4218.exception.LsException;
 public class LsApplication implements LsInterface {
 
 	@Override
+	@SuppressWarnings("PMD.PreserveStackTrace")
 	public void run(String[] args, InputStream stdin, OutputStream stdout) throws AbstractApplicationException {
-		if (stdin == null || stdout == null) {
+		if (stdout == null) {
 			throw new LsException("Null Pointer Exception");
 		}
 		boolean isFoldersOnly = false;

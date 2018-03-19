@@ -27,6 +27,7 @@ import sg.edu.nus.comp.cs4218.exception.PasteException;
 public class PasteApplication implements PasteInterface {
 
 	@Override
+	@SuppressWarnings("PMD.PreserveStackTrace")
 	public void run(String[] args, InputStream stdin, OutputStream stdout) throws AbstractApplicationException {
 		if(args == null || args.length == 0) {
 			if(stdin == null || stdout == null) {
@@ -61,6 +62,7 @@ public class PasteApplication implements PasteInterface {
 	}
 
 	@Override
+	@SuppressWarnings("PMD.PreserveStackTrace")
 	public String mergeStdin(InputStream stdin) throws Exception {
 		BufferedReader bReader = null;
 		StringBuilder strBuilder = new StringBuilder();
@@ -90,6 +92,7 @@ public class PasteApplication implements PasteInterface {
 	}
 
 	@Override
+	@SuppressWarnings("PMD.PreserveStackTrace")
 	public String mergeFile(String... fileName) throws Exception {
 		StringBuilder strBuilder = new StringBuilder();
 		Scanner[] scList = new Scanner[fileName.length];

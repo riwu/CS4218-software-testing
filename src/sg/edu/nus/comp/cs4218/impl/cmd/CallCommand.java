@@ -129,7 +129,7 @@ public class CallCommand implements Command {
 			result = false;
 		}
 
-		if (str.substring(endIdx).matches("\\s+")) {
+		if (isSpacesOnly(str.substring(endIdx))) {
 			result = true;
 		} else {
 			result = false;
@@ -275,7 +275,7 @@ public class CallCommand implements Command {
 		String inputRedirS = "";
 		int cmdVectorIndex = cmdVector.size() - 2;
 
-		while (!substring.matches("\\s+")) {
+		while (!isSpacesOnly(substring)) {
 			inputRedirM = inputRedirP.matcher(substring);
 			inputRedirS = "";
 			if (inputRedirM.find()) {
@@ -330,7 +330,7 @@ public class CallCommand implements Command {
 		Matcher inputRedirM;
 		String inputRedirS = "";
 		int cmdVectorIdx = cmdVector.size() - 1;
-		while (!substring.matches("\\s+")) {
+		while (!isSpacesOnly(substring)) {
 
 			inputRedirM = inputRedirP.matcher(substring);
 			inputRedirS = "";
@@ -347,6 +347,16 @@ public class CallCommand implements Command {
 			substring = str.substring(newEndIdx);
 		}
 		return newEndIdx;
+	}
+
+	// TODO Consider putting into utility class
+	private boolean isSpacesOnly(String substring) {
+		for(int i = 0; i < substring.length(); i++) {
+			if(substring.charAt(i) != ' ') {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	/**

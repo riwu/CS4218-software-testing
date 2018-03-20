@@ -1,12 +1,15 @@
 package sg.edu.nus.comp.cs4218.impl.app;
 
 import java.io.*;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import sg.edu.nus.comp.cs4218.Environment;
 import sg.edu.nus.comp.cs4218.app.SedInterface;
 import sg.edu.nus.comp.cs4218.exception.AbstractApplicationException;
 import sg.edu.nus.comp.cs4218.exception.SedException;
@@ -53,7 +56,8 @@ public class SedApplication implements SedInterface {
 	@Override
 	public String replaceSubstringInFile(String pattern, String replacement, int replacementIndex, String fileName)
 			throws Exception {
-        File file = new File(fileName);
+		Path currentDir = Paths.get(Environment.currentDirectory);
+        File file = currentDir.resolve(fileName).toFile();
         if (!file.exists()) {
             throw new Exception("file does not exist");
         }
@@ -81,7 +85,8 @@ public class SedApplication implements SedInterface {
 			throws Exception {
         Scanner fileScanner = new Scanner(stdin);
         String filename = fileScanner.nextLine();
-        File file = new File(filename);
+        Path currentDir = Paths.get(Environment.currentDirectory);
+        File file = currentDir.resolve(filename).toFile();
         fileScanner.close();
         if (!file.exists()) {
             throw new Exception("Invalid file");

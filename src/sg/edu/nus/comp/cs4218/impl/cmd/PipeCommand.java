@@ -11,6 +11,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.regex.Pattern;
 
+@SuppressWarnings("PMD.ImmutableField")
 public class PipeCommand implements Command {
 
     private Queue<CallCommand> commandQ;
@@ -61,16 +62,21 @@ public class PipeCommand implements Command {
         return resultStream;
     }
 
+    /**
+     * Unimplemented method not used
+     */
     @Override
-    public void terminate() {
+    @SuppressWarnings("PMD.UncommentedEmptyMethodBody")
+	public void terminate() {
 
     }
 
 
-    private String[] extract(String str)
+    @SuppressWarnings("PMD.ExcessiveMethodLength")
+	private String[] extract(String cmd)
             throws ShellException {
-
-        str = str.trim();
+    	
+        String str = cmd.trim();
 
         // if there's no pipe, no need to evaluate
         if (!str.contains("|")) {
@@ -96,7 +102,8 @@ public class PipeCommand implements Command {
         int count = 0;
 
         while(!str.isEmpty()){
-            Character c = str.charAt(0); // processing char from front of string
+            @SuppressWarnings("PMD.ShortVariable")
+			Character c = str.charAt(0); // processing char from front of string
             str = str.substring(1); // reduce the string by one
 
             if(c != '|' && c != '`'){
@@ -149,15 +156,15 @@ public class PipeCommand implements Command {
 
     private String pollMutiple(Queue<Character> queue, int count){
         StringBuilder result = new StringBuilder();
-
-        while(!queue.isEmpty() && count > 0) {
+        int numLeft = count;
+        while(!queue.isEmpty() && numLeft > 0) {
             if (queue.isEmpty()) {
             	break;
             }
 
             result.append(queue.poll());
 
-            count--;
+            numLeft--;
         }
 
         return result.toString();

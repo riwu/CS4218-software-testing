@@ -13,7 +13,7 @@ import sg.edu.nus.comp.cs4218.exception.AbstractApplicationException;
 import sg.edu.nus.comp.cs4218.exception.SedException;
 
 public class SedApplication implements SedInterface {
-	public static String REPLACE_ALL_INDEX = "-1";
+	public static String REPLACE_SINGLE_INDEX = "-1";
 
 	@Override
 	public void run(String[] args, InputStream stdin, OutputStream stdout) throws AbstractApplicationException {
@@ -22,12 +22,10 @@ public class SedApplication implements SedInterface {
             throw new SedException("null stdout");
         }
         ArrayList<String> parsedArg = parseArgs(args);
-        System.out.println(Arrays.toString(parsedArg.toArray()));
         String result = "";
 
         // no input file, get from stdin
         if (parsedArg.size() == 3) {
-            System.out.println("stdin" + stdin);
             if (stdin == null) {
                 throw new SedException("Input arg missing");
             }
@@ -67,6 +65,10 @@ public class SedApplication implements SedInterface {
         String line;
 
         while ((line = br.readLine()) != null) {
+            if (pattern.equals("")) {
+                sb.append(line).append(System.lineSeparator());
+                continue;
+            }
             String replaced = replaceLine(pattern, replacement, replacementIndex, line);
             sb.append(replaced).append(System.lineSeparator());
         }
@@ -88,29 +90,36 @@ public class SedApplication implements SedInterface {
 	}
 
 	private ArrayList<String> parseArgs(String[] args) throws SedException {
+        if (args.length == 0) {
+	        throw new SedException("Missing sed argument");
+        }
 		String firstArg = args[0];
 		if (firstArg.length() < 2) {
-			throw new SedException("Invalid sed syntax");
+			throw new SedException("Invalid sed syntax: s/ is mssing");
 		}
 		String delimiter = Character.toString(firstArg.charAt(1));
 		String sedArgString = String.join(" ", args);
-		String[] sedArgs = sedArgString.split(delimiter);
-        ArrayList<String> parsedArg;
-
-		if (!validateInput(sedArgs, delimiter)) {
-		    throw new SedException("sed Argument should not contain delimiter char");
+		// min s///
+		if (sedArgString.length() < 4) {
+		    throw new SedException("Invalid sed syntax: Missing arguments");
         }
-        parsedArg = new ArrayList<>(Arrays.asList(sedArgs[1], sedArgs[2]));
+        ArrayList<String> sedArgs = splitArg(sedArgString, delimiter);
+        ArrayList<String> parsedArg;
+        if (!validateInput(sedArgs, delimiter)) {
+		    throw new SedException("Invalid sed argument");
+        }
+        parsedArg = new ArrayList<>(Arrays.asList(sedArgs.get(1), sedArgs.get(2)));
+
 
         // no filename and replacementIndex
-		if (sedArgs.length == 3) {
-		    parsedArg.add(REPLACE_ALL_INDEX);
+		if (sedArgs.size() == 3) {
+            parsedArg.add(REPLACE_SINGLE_INDEX);
             return parsedArg;
         }
-		else if (sedArgs.length != 4) {
+		else if (sedArgs.size() != 4) {
 			throw new SedException("Invalid sed syntax");
 		}
-        ArrayList<String> indexAndFilename = parseFileArg(sedArgs[3]);
+        ArrayList<String> indexAndFilename = parseFileArg(sedArgs.get(3));
         parsedArg.add(indexAndFilename.get(0));
 
 		// only have replacementIndex no filename
@@ -137,42 +146,47 @@ public class SedApplication implements SedInterface {
 
 	private ArrayList<String> parseFileArg(String fileArg) throws SedException {
 		ArrayList<String> parsedArgs = new ArrayList<>();
+        int index = fileArg.indexOf(' ');
 
-		int index = fileArg.indexOf(' ');
-		if (index <= 0) {
-		    parsedArgs.add(fileArg);
+        if (index < 0) {
+		    if (isValidReplacementIndex(fileArg)) {
+		        parsedArgs.add(fileArg);
+		        return parsedArgs;
+            } else {
+		        throw new SedException("Invalid Sed Syntax");
+            }
+
+        } else if (index == 0) {
+		    parsedArgs.add(REPLACE_SINGLE_INDEX);
+		    parsedArgs.add(fileArg.substring(1));
 			return parsedArgs;
 		}
 
+        // check if the spacing is because of filename
 		String replaceDigit = fileArg.substring(0, index);
         String filename = fileArg.substring(index + 1);
-        for (int i=0; i<replaceDigit.length(); i++) {
-		    if (i == 0 && replaceDigit.charAt(i) == '-') {
-		        throw new SedException("Invalid replacementIndex");
-            }
-		    if (!Character.isDigit(replaceDigit.charAt(i))) {
-                parsedArgs.add(fileArg.substring(1));
-                return parsedArgs;
-            }
-        }
 
-        if (replaceDigit.equals("")) {
-		    parsedArgs.add(REPLACE_ALL_INDEX);
-        } else {
+        if (isValidReplacementIndex(replaceDigit)) {
             parsedArgs.add(replaceDigit);
+            parsedArgs.add(filename);
+        } else {
+            parsedArgs.add(REPLACE_SINGLE_INDEX);
+            parsedArgs.add(fileArg);
         }
-		parsedArgs.add(filename);
 		return parsedArgs;
 	}
 
-	private boolean validateInput(String[] args, String delimiter) {
+	private boolean validateInput(ArrayList<String> args, String delimiter) {
+        if (!(args.size() == 3 || args.size() == 4)) {
+            return false;
+        }
         for (int i=0; i < 3; i++) {
 	        if (i==0) {
-                if (!args[i].equals("s")) {
+                if (!args.get(i).equals("s")) {
                     return false;
                 }
             } else {
-	            if (args[i].contains(delimiter)) {
+	            if (args.get(i).contains(delimiter)) {
                     return false;
                 }
             }
@@ -194,12 +208,48 @@ public class SedApplication implements SedInterface {
             }
         }
 
+
         if (matcher.find()) {
             matcher.appendReplacement(sb, Matcher.quoteReplacement(replacement));
         }
 
         matcher.appendTail(sb);
         return sb.toString();
+    }
+
+    private boolean isValidReplacementIndex(String digit) throws SedException {
+        for (int i=0; i<digit.length(); i++) {
+            if (i == 0 && digit.charAt(i) == '-') {
+                throw new SedException("Invalid replacement index");
+            }
+            if (!Character.isDigit(digit.charAt(i))) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private ArrayList<String> splitArg(String input, String delimiter) {
+	    ArrayList<String> splitInput = new ArrayList<>();
+	    int startIndex = 0;
+	    int count = 3;
+
+	    for (int i=0; i<input.length(); i++) {
+	        if (input.charAt(i) == delimiter.charAt(0)) {
+	            splitInput.add(input.substring(startIndex, i));
+	            startIndex = i + 1;
+	            count -= 1;
+	            if (count == 0) {
+	                break;
+                }
+            }
+        }
+        String lastSlice = input.substring(startIndex);
+	    if (!lastSlice.equals("")) {
+	        splitInput.add(lastSlice);
+        }
+
+        return splitInput;
     }
 
 }

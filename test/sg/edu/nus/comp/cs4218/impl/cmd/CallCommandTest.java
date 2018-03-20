@@ -1,6 +1,7 @@
 package sg.edu.nus.comp.cs4218.impl.cmd;
 
 import org.junit.*;
+import sg.edu.nus.comp.cs4218.exception.ShellException;
 
 
 import java.io.ByteArrayInputStream;
@@ -197,5 +198,196 @@ public class CallCommandTest {
         String actual = pipeCommand.getResultStream().toString();
 
         assertEquals(expected, actual);
+    }
+
+
+    @Test
+    public void testParseAppNameWithOneSpace() throws Exception {
+        CallCommand callCommand = new CallCommand(" ls -d");
+        callCommand.parse();
+        assertEquals("ls", callCommand.app);
+    }
+
+
+    @Test
+    public void testParseAppNameWithMultipleSpace() throws ShellException {
+        CallCommand callCommand = new CallCommand("  ls -d");
+        callCommand.parse();
+        assertEquals("ls", callCommand.app);
+    }
+
+    @Test
+    public void testParseAppNameWithOneTab() throws ShellException {
+        CallCommand callCommand = new CallCommand("\tls -d");
+        callCommand.parse();
+        assertEquals("ls", callCommand.app);
+    }
+
+    @Test
+    public void testParseAppNameWithWhitespace() throws ShellException {
+        CallCommand callCommand = new CallCommand("\t \t ls -d");
+        callCommand.parse();
+        assertEquals("ls", callCommand.app);
+    }
+
+    @Test
+    public void testParseAppNameWithMultipleTab() throws ShellException {
+        CallCommand callCommand = new CallCommand("\t\tls -d");
+        callCommand.parse();
+        assertEquals("ls", callCommand.app);
+    }
+
+    @Test
+    public void testParseArgs() throws ShellException {
+        int expectedNumArgs = 2;
+        String[] expectedArgs = {"hello1", "world1"};
+
+        CallCommand callCommand = new CallCommand("cat \"hello1\" \"world1\"");
+        callCommand.parse();
+
+        assertEquals(expectedNumArgs, callCommand.argsArray.length);
+        assertArrayEquals(expectedArgs, callCommand.argsArray);
+    }
+
+    @Test
+    public void testParseArgsWithMulSpace() throws ShellException {
+        int expectedNumArgs = 2;
+        final int inOutNumArgs = 2; // need to substract from total
+
+        CallCommand callCommand = new CallCommand("cat   \"hello2\"   \"world2\"");
+        callCommand.parse();
+
+        assertEquals(expectedNumArgs, callCommand.argsArray.length - inOutNumArgs);
+    }
+
+    @Test
+    public void testParseArgsWithTab() throws ShellException {
+        int expectedNumArgs = 2;
+        String[] expectedArgs = {"hello3", "world3"};
+
+        CallCommand callCommand = new CallCommand("cat\t\"hello3\"\t\"world3\"");
+        callCommand.parse();
+
+        assertEquals(expectedNumArgs, callCommand.argsArray.length);
+        assertArrayEquals(expectedArgs, callCommand.argsArray);
+    }
+
+    @Test
+    public void testParseArgsWithMulTab() throws ShellException {
+        int expectedNumArgs = 2;
+        final int inOutNumArgs = 2; // need to substract from total
+
+        CallCommand callCommand = new CallCommand("cat\t\t\t\"hello4\"\t\t\t\"world4\"");
+        callCommand.parse();
+
+        assertEquals(expectedNumArgs, callCommand.argsArray.length - inOutNumArgs);
+    }
+
+    @Test
+    public void testParseArgsWithWhitespace() throws ShellException {
+        int expectedNumArgs = 2;
+        final int inOutNumArgs = 2; // need to substract from total
+
+        CallCommand callCommand = new CallCommand("cat\t \"hello5\" \t\"world5\"");
+        callCommand.parse();
+
+        assertEquals(expectedNumArgs, callCommand.argsArray.length - inOutNumArgs);
+    }
+
+
+    @Test
+    public void testParseStartSingleSpaceInArg() throws ShellException {
+        int expectedNumArgs = 2;
+        String[] expectedArgs = {" hello6", " world6"};
+
+        CallCommand callCommand = new CallCommand("cat \" hello6\" \" world6\"");
+        callCommand.parse();
+
+        assertEquals(expectedNumArgs, callCommand.argsArray.length);
+        assertArrayEquals(expectedArgs, callCommand.argsArray);
+    }
+
+    @Test
+    public void testParseStartMulSpaceInArg() throws ShellException {
+        int expectedNumArgs = 2;
+        String[] expectedArgs = {"  hello7", "  world7"};
+
+        CallCommand callCommand = new CallCommand("cat \"  hello7\" \"  world7\"");
+        callCommand.parse();
+
+        assertEquals(expectedNumArgs, callCommand.argsArray.length);
+        assertArrayEquals(expectedArgs, callCommand.argsArray);
+    }
+
+    @Test
+    public void testParseEndSingleSpaceInArg() throws ShellException {
+        int expectedNumArgs = 2;
+        String[] expectedArgs = {"hello8 ", "world8 "};
+
+        CallCommand callCommand = new CallCommand("cat \"hello8 \" \"world8 \"");
+        callCommand.parse();
+
+        assertEquals(expectedNumArgs, callCommand.argsArray.length);
+        assertArrayEquals(expectedArgs, callCommand.argsArray);
+    }
+
+    @Test
+    public void testParseEndMulSpaceInArg() throws ShellException {
+        int expectedNumArgs = 2;
+        String[] expectedArgs = {"hello9  ", "world9  "};
+
+        CallCommand callCommand = new CallCommand("cat \"hello9  \" \"world9  \"");
+        callCommand.parse();
+
+        assertEquals(expectedNumArgs, callCommand.argsArray.length);
+        assertArrayEquals(expectedArgs, callCommand.argsArray);
+    }
+
+    @Test
+    public void testParseStartSingleTabInArg() throws ShellException {
+        int expectedNumArgs = 2;
+        String[] expectedArgs = {"\thello10", "\tworld10"};
+
+        CallCommand callCommand = new CallCommand("cat \"\thello10\" \"\tworld10\"");
+        callCommand.parse();
+
+        assertEquals(expectedNumArgs, callCommand.argsArray.length);
+        assertArrayEquals(expectedArgs, callCommand.argsArray);
+    }
+
+    @Test
+    public void testParseStartMulTabInArg() throws ShellException {
+        int expectedNumArgs = 2;
+        String[] expectedArgs = {"\t\thello11", "\t\tworld11"};
+
+        CallCommand callCommand = new CallCommand("cat \"\t\thello11\" \"\t\tworld11\"");
+        callCommand.parse();
+
+        assertEquals(expectedNumArgs, callCommand.argsArray.length);
+        assertArrayEquals(expectedArgs, callCommand.argsArray);
+    }
+
+    @Test
+    public void testParseEndSingleTabInArg() throws ShellException {
+        int expectedNumArgs = 2;
+        String[] expectedArgs = {"hello12\t", "world12\t"};
+
+        CallCommand callCommand = new CallCommand("cat \"hello12\t\" \"world12\t\"");
+        callCommand.parse();
+
+        assertEquals(expectedNumArgs, callCommand.argsArray.length);
+        assertArrayEquals(expectedArgs, callCommand.argsArray);
+    }
+
+    @Test
+    public void testParseEndMulTabInArg() throws ShellException {
+        int expectedNumArgs = 2;
+        String[] expectedArgs = {"hello13\t\t", "world13\t\t"};
+
+        CallCommand callCommand = new CallCommand("cat \"hello13\t\t\" \"world13\t\t\"");
+        callCommand.parse();
+
+        assertEquals(expectedNumArgs, callCommand.argsArray.length);
+        assertArrayEquals(expectedArgs, callCommand.argsArray);
     }
 }

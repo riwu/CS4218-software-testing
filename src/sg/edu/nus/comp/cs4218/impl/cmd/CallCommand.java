@@ -8,6 +8,7 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 import sg.edu.nus.comp.cs4218.Command;
 import sg.edu.nus.comp.cs4218.exception.AbstractApplicationException;
@@ -75,7 +76,11 @@ public class CallCommand implements Command {
 		InputStream inputStream;
 		OutputStream outputStream;
 
-		argsArray = ShellImpl.processBQ(argsArray);
+		// do not process BQ if it's of the SQ regex
+		Pattern singleQuote = Pattern.compile("(?:.+)\\s+'(?:.*)'");
+		if (!singleQuote.matcher(cmdline).matches()) {
+			argsArray = ShellImpl.processBQ(argsArray);
+		}
 
 		if (("").equals(inputStreamS)) {// empty
 			inputStream = stdin;
@@ -105,6 +110,7 @@ public class CallCommand implements Command {
 	 *             redirection file path.
 	 */
 
+    // such horrible code without documentation
 	public void parse() throws ShellException {
 		Vector<String> cmdVector = new Vector<String>();
 		Boolean result = true;
@@ -118,6 +124,9 @@ public class CallCommand implements Command {
 			cmdVector.add(""); // reserved for input redir
 			cmdVector.add(""); // reserved for output redir
 
+            // the endIndx f**king mutate after each extract*** calls
+            // make others so difficult to debug this result.
+			// BAD CODE
 			endIdx = extractInputRedir(str, cmdVector, endIdx);
 			endIdx = extractOutputRedir(str, cmdVector, endIdx);
 
@@ -129,7 +138,8 @@ public class CallCommand implements Command {
 			result = false;
 		}
 
-		if (isSpacesOnly(str.substring(endIdx))) {
+		// Orz simply horrible.
+		if (str.substring(endIdx).trim().isEmpty()) {
 			result = true;
 		} else {
 			result = false;
@@ -275,7 +285,7 @@ public class CallCommand implements Command {
 		String inputRedirS = "";
 		int cmdVectorIndex = cmdVector.size() - 2;
 
-		while (!isSpacesOnly(substring)) {
+		while (!substring.trim().isEmpty()) {
 			inputRedirM = inputRedirP.matcher(substring);
 			inputRedirS = "";
 			if (inputRedirM.find()) {
@@ -330,7 +340,7 @@ public class CallCommand implements Command {
 		Matcher inputRedirM;
 		String inputRedirS = "";
 		int cmdVectorIdx = cmdVector.size() - 1;
-		while (!isSpacesOnly(substring)) {
+		while (!substring.trim().isEmpty()) {
 
 			inputRedirM = inputRedirP.matcher(substring);
 			inputRedirS = "";
@@ -347,16 +357,6 @@ public class CallCommand implements Command {
 			substring = str.substring(newEndIdx);
 		}
 		return newEndIdx;
-	}
-
-	// TODO Consider putting into utility class
-	private boolean isSpacesOnly(String substring) {
-		for(int i = 0; i < substring.length(); i++) {
-			if(substring.charAt(i) != ' ') {
-				return false;
-			}
-		}
-		return true;
 	}
 
 	/**
@@ -382,29 +382,19 @@ public class CallCommand implements Command {
 
 	public String[] globFilesDirectories(String args) {
 
-		if (args == null) {
-			return null;
-		}
-		if (!args.contains("*")) {
-			return new String[] {args};
-		}
+		if (args == null) return null;
+
+		if (!args.contains("*")) return new String[] {args};
+
 		// if the command is of form <command> '<single_quote_content>', don't evaluate
 		Pattern singleQuote = Pattern.compile("(?:.+)\\s+'(?:.*)'");
-		if (singleQuote.matcher(args).matches()) {
-			return new String[]{args};
-		}
-		if (singleQuote.matcher(cmdline).matches()) {
-			return new String[] {args};
-		}
+		if (singleQuote.matcher(args).matches()) return new String[]{args};
+		if (singleQuote.matcher(cmdline).matches()) return new String[] {args};
 
 		// if the command is of form <command> "<double_quote_content>", don't evaluate
 		Pattern doubleQuote = Pattern.compile("(?:.+)\\s+\"(?:.*)\"");
-		if (doubleQuote.matcher(args).matches()) {
-			return new String[]{args};
-		}
-		if (doubleQuote.matcher(cmdline).matches()) {
-			return new String[] {args};
-		}
+		if (doubleQuote.matcher(args).matches()) return new String[]{args};
+		if (doubleQuote.matcher(cmdline).matches()) return new String[] {args};
 
 		// separate the base dir and glob
         String[] argsArray;

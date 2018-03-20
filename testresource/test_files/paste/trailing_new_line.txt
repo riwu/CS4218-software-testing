@@ -1,0 +1,4 @@
+trailing new line hello 1
+trailing new line hello 2
+trailing new line hello 3
+trailing new line hello 4

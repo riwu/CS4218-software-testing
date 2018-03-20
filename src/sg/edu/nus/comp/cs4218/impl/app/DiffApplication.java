@@ -45,6 +45,7 @@ public class DiffApplication implements DiffInterface {
 	 *             If the file(s) specified do not exist or are unreadable.
 	 */
 	@Override
+	@SuppressWarnings("PMD.PreserveStackTrace")
 	public void run(String[] args, InputStream stdin, OutputStream stdout)
 			throws DiffException {
         Boolean[] options = parseOptions(args);
@@ -174,7 +175,7 @@ public class DiffApplication implements DiffInterface {
                     String fileB = folderB + File.separator + file.getName();
                     String result = diffTwoFiles(fileA, fileB, isShowSame, isNoBlank, isSimple);
 
-                    if (result.equals("")) {
+                    if (result.isEmpty()) {
                         continue;
                     }
                     char c = result.charAt(0);
@@ -227,6 +228,7 @@ public class DiffApplication implements DiffInterface {
 		return output;
 	}
 
+	@SuppressWarnings("PMD.PreserveStackTrace")
     private Set<String> getFileInDir(String folder) throws DiffException {
 	    Set<String> set = new HashSet<String>();
 
@@ -260,6 +262,7 @@ public class DiffApplication implements DiffInterface {
         return set;
     }
 
+	@SuppressWarnings("PMD.PreserveStackTrace")
     private boolean isTextFile(String filename) throws DiffException {
         File file = new File(filename);
         String s;
@@ -397,7 +400,7 @@ public class DiffApplication implements DiffInterface {
             strBuilder.append(' ');
         }
         strBuilder.append(folderB).append(File.separator).append(file);
-	    if (!postSentence.equals("")) {
+	    if (!postSentence.isEmpty()) {
 	        strBuilder.append(' ').append(postSentence);
         }
 

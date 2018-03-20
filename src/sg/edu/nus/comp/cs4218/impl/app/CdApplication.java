@@ -31,6 +31,7 @@ public class CdApplication implements CdInterface {
      * @throws
      */
     @Override
+	@SuppressWarnings("PMD.PreserveStackTrace")
 	public void run(String[] args, InputStream stdin, OutputStream stdout) throws AbstractApplicationException {
     	if(args != null && args.length > 0) {
     		try {

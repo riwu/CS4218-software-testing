@@ -11,7 +11,6 @@ import sg.edu.nus.comp.cs4218.impl.cmd.PipeCommand;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -102,7 +101,8 @@ public class ShellImpl implements Shell {
      *                                      application(s).
      * @throws ShellException               If an unsupported or invalid application command is detected.
      */
-    public static void runApp(String app, String[] argsArray,
+    @SuppressWarnings("PMD.ExcessiveMethodLength")
+	public static void runApp(String app, String[] argsArray,
                               InputStream inputStream, OutputStream outputStream)
             throws AbstractApplicationException, ShellException {
         Application absApp = null;
@@ -323,6 +323,7 @@ public class ShellImpl implements Shell {
     }
 
     // TODO: Can consider extract to different class
+    @SuppressWarnings("PMD.ExcessiveMethodLength")
 	public String[] extractSemicolon(String cmdline){
         // GUARDS:
         // does not contain semicolon, don't evaluate

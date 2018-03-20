@@ -18,6 +18,7 @@ import java.nio.file.Paths;
 
 import static org.junit.Assert.assertEquals;
 
+@SuppressWarnings("PMD.AvoidDuplicateLiterals")
 public class CatApplicationTest {
 
     private final CatApplication catApplication = new CatApplication();
@@ -100,7 +101,7 @@ public class CatApplicationTest {
     }
 
     @Test(expected = ShellException.class)
-    public void shouldThrowExceptionWhenInputFileDoesNotExist() throws Exception {
+	public void shouldThrowExceptionWhenInputFileDoesNotExist() throws Exception {
         CommandTestUtil.getCommandOutput("cat " + " < " + NON_EXISTENT_FILE.toString());
     }
 

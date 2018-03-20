@@ -13,7 +13,7 @@ import sg.edu.nus.comp.cs4218.exception.SedException;
 
 @SuppressWarnings("PMD.GodClass")
 public class SedApplication implements SedInterface {
-	public static final String DEFAULT_INDEX = "-1";
+	public static final String NO_INDEX = "-1";
 
 	@Override
 	@SuppressWarnings("PMD.PreserveStackTrace")
@@ -53,7 +53,6 @@ public class SedApplication implements SedInterface {
 	@Override
 	public String replaceSubstringInFile(String pattern, String replacement, int replacementIndex, String fileName)
 			throws Exception {
-		// TODO Auto-generated method stub
         File file = new File(fileName);
         if (!file.exists()) {
             throw new Exception("file does not exist");
@@ -119,7 +118,7 @@ public class SedApplication implements SedInterface {
 
         // no filename and replacementIndex
 		if (sedArgs.size() == 3) {
-            parsedArg.add(DEFAULT_INDEX);
+            parsedArg.add(NO_INDEX);
             return parsedArg;
         }
 		else if (sedArgs.size() != 4) {
@@ -163,7 +162,7 @@ public class SedApplication implements SedInterface {
 		        throw new SedException("Invalid Sed Syntax");
             }
         } else if (index == 0) {
-		    parsedArgs.add(DEFAULT_INDEX);
+		    parsedArgs.add(NO_INDEX);
 		    parsedArgs.add(fileArg.substring(1));
 			return parsedArgs;
 		}
@@ -176,7 +175,7 @@ public class SedApplication implements SedInterface {
             parsedArgs.add(replaceDigit);
             parsedArgs.add(filename);
         } else {
-            parsedArgs.add(DEFAULT_INDEX);
+            parsedArgs.add(NO_INDEX);
             parsedArgs.add(fileArg);
         }
 		return parsedArgs;

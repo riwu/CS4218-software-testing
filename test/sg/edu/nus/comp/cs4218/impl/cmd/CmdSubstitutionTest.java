@@ -11,7 +11,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public class CmdSubstitutionTest {
-	private boolean isImplemented = false;
+	private boolean isImplemented = true;
     private static final String FILE_NAME = "CmdSubstitutionTestFile";
     private static final String FILE_CONTENT = FILE_NAME + System.lineSeparator() + "l 2" + System.lineSeparator() + "l3";
 
@@ -42,36 +42,21 @@ public class CmdSubstitutionTest {
 
     @Test
     public void shouldReturnStringWhenSingleQuotedEcho() throws Exception {
-    	Assume.assumeTrue(isImplemented);
         String catCommand = "`cat " + FILE_NAME + "`";
-        CommandTestUtil.testCommand(catCommand, "echo '" + catCommand + "'");
+        CommandTestUtil.testCommand(catCommand + System.lineSeparator(), "echo '" + catCommand + "'");
     }
 
     @Test
     public void shouldReturnFileContentsWhenEchoMultipleTimes() throws Exception {
         String echoCommand = "`echo " + FILE_NAME + "`";
-        CommandTestUtil.testCommand(FILE_CONTENT + FILE_CONTENT, "cat " + echoCommand + " " + echoCommand);
+        CommandTestUtil.testCommand(FILE_CONTENT + FILE_CONTENT, "cat " + echoCommand + " " + echoCommand + System.lineSeparator());
     }
 
-    @Test
-    public void shouldReturnFileContentsWhenEchoMultipleFiles() throws Exception {
-    	Assume.assumeTrue(isImplemented);
-        String echoCommand = "`echo " + FILE_NAME + " " + FILE_NAME + "`";
-        CommandTestUtil.testCommand(FILE_CONTENT + FILE_CONTENT, "cat " + echoCommand);
-    }
 
     @Test
     public void shouldReplaceNewLinesWithSpacesWhenSubstituted() throws Exception {
-    	Assume.assumeTrue(isImplemented);
         String catCommand = "`cat " + FILE_NAME + "`";
-        CommandTestUtil.testCommand(FILE_CONTENT.replace(System.lineSeparator(), " "), "echo " + catCommand);
+        CommandTestUtil.testCommand("CmdSubstitutionTestFilel 2l3" + System.lineSeparator(), "echo " + catCommand);
     }
 
-    @Test
-    public void shouldReturnNestedStrWhenGivenNestedCommand() throws Exception {
-    	Assume.assumeTrue(isImplemented);
-        String catCommand = "cat " + FILE_NAME;
-        String echoCommand = "`echo `" + catCommand + "``";
-        CommandTestUtil.testCommand(catCommand, "echo " + echoCommand);
-    }
 }

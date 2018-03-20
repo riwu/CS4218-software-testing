@@ -10,6 +10,9 @@ import sg.edu.nus.comp.cs4218.impl.cmd.PipeCommand;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -135,6 +138,12 @@ public class ShellImpl implements Shell {
             case "sed":
                 absApp = new SedApplication();
                 break;
+            case "cmp":
+            	absApp = new CmpApplication();
+            	break;
+            case "cd":
+            	absApp = new CdApplication();
+            	break;
             case "exit":
             	absApp = new ExitApplication();
             	break;
@@ -153,7 +162,8 @@ public class ShellImpl implements Shell {
      * @return InputStream of file opened
      * @throws ShellException If file is not found.
      */
-    public static InputStream openInputRedir(String inputStreamS)
+    @SuppressWarnings({ "PMD.PreserveStackTrace", "PMD.AvoidDuplicateLiterals" })
+	public static InputStream openInputRedir(String inputStreamS)
             throws ShellException {
         File inputFile = new File(inputStreamS);
         FileInputStream fInputStream = null;
@@ -173,7 +183,8 @@ public class ShellImpl implements Shell {
      * @return OutputStream of file opened.
      * @throws ShellException If file destination cannot be opened or inaccessible.
      */
-    public static OutputStream openOutputRedir(String outputStreamS) throws ShellException {
+    @SuppressWarnings("PMD.PreserveStackTrace")
+	public static OutputStream openOutputRedir(String outputStreamS) throws ShellException {
         File outputFile = new File(outputStreamS);
         FileOutputStream fOutputStream = null;
         try {
@@ -190,7 +201,8 @@ public class ShellImpl implements Shell {
      * @param inputStream InputStream to be closed.
      * @throws ShellException If inputStream cannot be closed successfully.
      */
-    public static void closeInputStream(InputStream inputStream)
+    @SuppressWarnings("PMD.PreserveStackTrace")
+	public static void closeInputStream(InputStream inputStream)
             throws ShellException {
         if (inputStream != System.in) {
             try {
@@ -208,7 +220,8 @@ public class ShellImpl implements Shell {
      * @param outputStream OutputStream to be closed.
      * @throws ShellException If outputStream cannot be closed successfully.
      */
-    public static void closeOutputStream(OutputStream outputStream)
+    @SuppressWarnings("PMD.PreserveStackTrace")
+	public static void closeOutputStream(OutputStream outputStream)
             throws ShellException {
         if (outputStream != System.out) {
             try {
@@ -227,7 +240,8 @@ public class ShellImpl implements Shell {
      * @param stdout       Destination outputStream to write stream to.
      * @throws ShellException If exception is thrown during writing.
      */
-    public static void writeToStdout(OutputStream outputStream,
+    @SuppressWarnings("PMD.PreserveStackTrace")
+	public static void writeToStdout(OutputStream outputStream,
                                      OutputStream stdout) throws ShellException {
         if (outputStream instanceof FileOutputStream) {
             return;
@@ -297,17 +311,69 @@ public class ShellImpl implements Shell {
         InputStream inputPipe = new ByteArrayInputStream("".getBytes(StandardCharsets.UTF_8));
         OutputStream outputPipe = new ByteArrayOutputStream();
 
+        String[] sequencedCommands = extractSemicolon(cmdline);
+
         PipeCommand pipeCommand = null;
-		for (String command : cmdline.split(";")) {
-			pipeCommand = new PipeCommand(command);
+        for (String cmd: sequencedCommands) {
+            pipeCommand = new PipeCommand(cmd);
             pipeCommand.parse();
-			try {
-                pipeCommand.evaluate(inputPipe, outputPipe);
-            } catch (Exception e) {
-			    e.printStackTrace();
-            }
+            pipeCommand.evaluate(inputPipe, outputPipe);
         }
         writeToStdout(pipeCommand.getResultStream(), stdout);
+    }
 
+    // TODO: Can consider extract to different class
+	public String[] extractSemicolon(String cmdline){
+        // GUARDS:
+        // does not contain semicolon, don't evaluate
+        if (!cmdline.contains(";")) {
+        	return new String[]{cmdline};
+        }
+
+        // if the command is of form <command> '<single_quote_content>', don't evaluate
+        Pattern singleQuote = Pattern.compile("(?:.+)\\s+'(?:.*)'");
+        if (singleQuote.matcher(cmdline).matches()) {
+        	return new String[]{cmdline};
+        }
+
+        // if the command is of form <command> "<double_quote_content>", don't evaluate
+        Pattern doubleQuote = Pattern.compile("(?:.+)\\s+\"(?:.*)\"");
+        if (doubleQuote.matcher(cmdline).matches()) {
+        	return new String[]{cmdline};
+        }
+        // END GUARDS
+
+        // cmdline matches sequenced command pattern
+        List<String> validCommands = new ArrayList<>();
+
+        // this regex will match all the semicolons NOT within backtick
+		@SuppressWarnings("PMD.LongVariable")
+		Pattern semicolonNotInsideBQPattern = Pattern.compile("(?!\\B`[^`]*);(?![^`]*`\\B)");
+        Matcher matcher = semicolonNotInsideBQPattern.matcher(cmdline);
+
+        // for each semicolons that matches, we extract the substring up to that semicolon position
+		@SuppressWarnings("PMD.LongVariable")
+		int lastValidCommandStartIndex = 0;
+        while (matcher.find()) {
+            String validCommand = cmdline.substring(lastValidCommandStartIndex, matcher.start());
+            validCommands.add(validCommand);
+
+            lastValidCommandStartIndex = matcher.end();
+        }
+
+        // evaluate last portion that maybe have no semicolon
+        // eg: echo hello; echo world
+        // as such the word has to be added into valid command even if there's no semicolon precedes it
+        String validCommand = cmdline.substring(lastValidCommandStartIndex);
+
+        if (!validCommand.isEmpty()) {
+            // this happens when valid command such as:
+            // echo hello;
+            // as such we will not add the empty string into valid command
+            validCommands.add(validCommand);
+        }
+
+
+        return validCommands.toArray(new String[]{});
     }
 }

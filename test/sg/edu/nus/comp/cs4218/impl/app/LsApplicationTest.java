@@ -8,16 +8,18 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import sg.edu.nus.comp.cs4218.Environment;
 import sg.edu.nus.comp.cs4218.exception.LsException;
 
 public class LsApplicationTest {
 	
 	private static LsApplication lsApp;
-	private static final Path basePath = Paths.get(System.getProperty("user.dir"));
+	private static final Path BASE_PATH = Paths.get(Environment.currentDirectory);
 	private static final String TEST_FOLDER = "undertest";
 	private static final String FOLDER_NAME = "One";
 	private static final String FILE_NAME = "Two";
@@ -31,15 +33,11 @@ public class LsApplicationTest {
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
 		lsApp = new LsApplication();
-		testPath = Files.createTempDirectory(basePath, TEST_FOLDER);
+		testPath = Files.createTempDirectory(BASE_PATH, TEST_FOLDER);
 		folderPath = Files.createTempDirectory(testPath, FOLDER_NAME);
 		filePath = Files.createTempFile(testPath, FILE_NAME, "");
 		folderPathNested = Files.createTempDirectory(folderPath, FOLDER_NAME);
 		filePathNested = Files.createTempFile(folderPath, FILE_NAME, "");
-	}
-
-	@AfterClass
-	public static void tearDownAfterClass() throws Exception {
 		testPath.toFile().deleteOnExit();
 		folderPath.toFile().deleteOnExit();
 		filePath.toFile().deleteOnExit();
@@ -47,9 +45,39 @@ public class LsApplicationTest {
 		filePathNested.toFile().deleteOnExit();
 	}
 	
+	@After
+	public void tearDown() throws Exception {
+		Environment.currentDirectory = BASE_PATH.toString();
+	}
+
+	@AfterClass
+	public static void tearDownAfterClass() throws Exception {
+/*		testPath.toFile().deleteOnExit();
+		folderPath.toFile().deleteOnExit();
+		filePath.toFile().deleteOnExit();
+		folderPathNested.toFile().deleteOnExit();
+		filePathNested.toFile().deleteOnExit();*/
+	}
+	
 	@Test
 	public void shouldListAllContentsWhenValidPathNoOptions() throws Exception {
 		String path = testPath.toString();
+		String expected = getContentString(testPath, false) + System.lineSeparator();
+		assertEquals(expected, lsApp.listFolderContent(false, false, path));
+	}
+	
+	@Test
+	public void shouldShowCurrentDirectoryWhenNoArgs() throws Exception {
+		Environment.currentDirectory = testPath.toString();
+		String path = ".";
+		String expected = getContentString(testPath, false) + System.lineSeparator();
+		assertEquals(expected, lsApp.listFolderContent(false, false, path));
+	}
+	
+	@Test
+	public void shouldShowCurrentDirectoryWhenRelativePath() throws Exception {
+		String path = ".." + File.separator + testPath.getName(testPath.getNameCount()-2)
+					+ File.separator + testPath.getName(testPath.getNameCount()-1);
 		String expected = getContentString(testPath, false) + System.lineSeparator();
 		assertEquals(expected, lsApp.listFolderContent(false, false, path));
 	}
@@ -68,7 +96,7 @@ public class LsApplicationTest {
 	@Test
 	public void shouldListFoldersOnlyWhenValidPathDirectoryOnly() throws Exception {
 		String path = testPath.toString();
-		String expected = getContentString(testPath, true) + System.lineSeparator();;
+		String expected = getContentString(testPath, true) + System.lineSeparator();
 		assertEquals(expected, lsApp.listFolderContent(true, false, path));
 	}
 	
@@ -81,7 +109,7 @@ public class LsApplicationTest {
 				+ folderPath + ":" + System.lineSeparator()
 				+ getContentString(folderPath, false) + System.lineSeparator()
 				+ System.lineSeparator()
-				+ folderPathNested + ":" + System.lineSeparator();
+				+ folderPathNested + ":" + System.lineSeparator() + System.lineSeparator();
 		assertEquals(expected, lsApp.listFolderContent(false, true, path));
 	}
 	
@@ -94,7 +122,7 @@ public class LsApplicationTest {
 						+ folderPath + ":" + System.lineSeparator()
 						+ getContentString(folderPath, true) + System.lineSeparator()
 						+ System.lineSeparator()
-						+ folderPathNested + ":" + System.lineSeparator();
+						+ folderPathNested + ":" + System.lineSeparator() + System.lineSeparator();
 		assertEquals(expected, lsApp.listFolderContent(true, true, path));
 	}
 	

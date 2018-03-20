@@ -44,6 +44,7 @@ public class CatApplication implements CatInterface {
 	 *             If the file(s) specified do not exist or are unreadable.
 	 */
 	@Override
+	@SuppressWarnings("PMD.PreserveStackTrace")
 	public void run(String[] args, InputStream stdin, OutputStream stdout)
 			throws CatException {
 
@@ -94,7 +95,8 @@ public class CatApplication implements CatInterface {
 		}
 	}
   
-  	@Override
+	@Override
+	@SuppressWarnings("PMD.PreserveStackTrace")
 	public byte[] getContent(Path file) throws CatException {
         try {
         	return Files.readAllBytes(file);

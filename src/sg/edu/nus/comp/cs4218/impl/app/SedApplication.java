@@ -132,15 +132,13 @@ public class SedApplication implements SedInterface {
 
         // check for valid file
         String filename = indexAndFilename.get(1);
-        System.out.println(filename);
         File f = new File(filename);
+
         if (!f.exists()) {
             throw new SedException("Invalid input file");
         }
         else if (f.isDirectory()) {
             throw new SedException("Input file is a directory");
-        } else {
-            System.out.println("failed");
         }
 
         // no errors return

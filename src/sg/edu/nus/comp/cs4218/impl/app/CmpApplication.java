@@ -48,7 +48,7 @@ public class CmpApplication implements CmpInterface {
 			else {
 				Path currentDir = Paths.get(Environment.currentDirectory);
 				File file = currentDir.resolve(args[i]).toFile();
-				if(!file.exists() || file.isDirectory()) {
+				if(!file.isFile()) {
 					throw new CmpException(file.getName() + " cannot be resolved to a file");
 				}
 				fileNames.add(args[i]);

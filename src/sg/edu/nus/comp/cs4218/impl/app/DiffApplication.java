@@ -54,13 +54,13 @@ public class DiffApplication implements DiffInterface {
         if (stdout == null) {
             throw new DiffException("null stdout");
         }
-        boolean hasStdIn = inputFiles[1].equals("-");
+        boolean hasInputArg = inputFiles[1].equals("-");
         String result = "";
 
-        if (hasStdIn && stdin == null) {
-            throw new DiffException("Stdin is null");
+        if (hasInputArg && stdin == null) {
+            throw new DiffException("Input arg missing");
         }
-        else if (hasStdIn) {
+        else if (hasInputArg) {
             try {
                 result = diffFileAndStdin(inputFiles[0], stdin,
                         options[optionsMap.get('s')], options[optionsMap.get('B')], options[optionsMap.get('q')]);

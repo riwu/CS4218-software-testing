@@ -1,5 +1,6 @@
 package sg.edu.nus.comp.cs4218.impl.app;
 
+import sg.edu.nus.comp.cs4218.Environment;
 import sg.edu.nus.comp.cs4218.app.GrepInterface;
 import sg.edu.nus.comp.cs4218.exception.AbstractApplicationException;
 
@@ -60,7 +61,8 @@ public class GrepApplication implements GrepInterface {
         final Pattern grepPattern = Pattern.compile(pattern);
 
         // transform each filenames into Stream of Path
-        final Stream<Path> paths = Arrays.stream(fileNames).map(fileName -> Paths.get(fileName));
+        Path currentDir = Paths.get(Environment.currentDirectory);
+        final Stream<Path> paths = Arrays.stream(fileNames).map(fileName -> currentDir.resolve(fileName));
 
         final StringBuilder result = new StringBuilder();
 
@@ -86,7 +88,7 @@ public class GrepApplication implements GrepInterface {
     @Override
     public void run(String[] args, InputStream stdin, OutputStream stdout) throws AbstractApplicationException {
 
-        boolean isInvert = Arrays.stream(args).anyMatch(arg -> arg.equals("-v"));
+        boolean isInvert = Arrays.stream(args).anyMatch(arg -> ("-v").equals(arg));
         int invertOptionIndex = Arrays.binarySearch(args, "-v");
 
         // grep [-v] PATTERN [FILE]...

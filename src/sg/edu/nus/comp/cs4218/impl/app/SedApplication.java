@@ -105,6 +105,7 @@ public class SedApplication implements SedInterface {
         }
         ArrayList<String> sedArgs = splitArg(sedArgString, delimiter);
         ArrayList<String> parsedArg;
+
         if (!validateInput(sedArgs, delimiter)) {
 		    throw new SedException("Invalid sed argument");
         }
@@ -131,12 +132,15 @@ public class SedApplication implements SedInterface {
 
         // check for valid file
         String filename = indexAndFilename.get(1);
+        System.out.println(filename);
         File f = new File(filename);
         if (!f.exists()) {
             throw new SedException("Invalid input file");
         }
         else if (f.isDirectory()) {
             throw new SedException("Input file is a directory");
+        } else {
+            System.out.println("failed");
         }
 
         // no errors return
@@ -155,7 +159,6 @@ public class SedApplication implements SedInterface {
             } else {
 		        throw new SedException("Invalid Sed Syntax");
             }
-
         } else if (index == 0) {
 		    parsedArgs.add(REPLACE_SINGLE_INDEX);
 		    parsedArgs.add(fileArg.substring(1));

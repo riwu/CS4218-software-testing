@@ -30,7 +30,7 @@ public class SedApplication implements SedInterface {
                 throw new SedException("Input arg missing");
             }
             try {
-                replaceSubstringInStdin(parsedArg.get(0), parsedArg.get(1), Integer.parseInt(parsedArg.get(2)), stdin);
+                result = replaceSubstringInStdin(parsedArg.get(0), parsedArg.get(1), Integer.parseInt(parsedArg.get(2)), stdin);
             } catch (Exception e) {
                 throw new SedException(e.getMessage());
             }
@@ -65,6 +65,7 @@ public class SedApplication implements SedInterface {
         String line;
 
         while ((line = br.readLine()) != null) {
+            System.out.println(line);
             if (pattern.equals("")) {
                 sb.append(line).append(System.lineSeparator());
                 continue;
@@ -78,8 +79,10 @@ public class SedApplication implements SedInterface {
 	@Override
 	public String replaceSubstringInStdin(String pattern, String replacement, int replacementIndex, InputStream stdin)
 			throws Exception {
+        System.out.println("inside");
         Scanner fileScanner = new Scanner(stdin);
         String filename = fileScanner.nextLine();
+        System.out.println(filename);
         File file = new File(filename);
         if (!file.exists()) {
             throw new SedException("Invalid file");

@@ -323,4 +323,12 @@ public class SedApplicationTest {
         assertEquals(replacedFirstIndex, stdout.toString());
     }
 
+    @Test
+    public void whenOtherSeparatingCharExpectReplacementFile() throws Exception {
+        Assume.assumeTrue(isImplemented);
+        String[] args = {"s|test|t|"};
+        sedApp.run(args, stdin, stdout);
+        assertEquals(replacedFirstIndex, stdout.toString());
+    }
+
 }

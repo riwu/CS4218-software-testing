@@ -3,16 +3,16 @@ package sg.edu.nus.comp.cs4218.impl.app;
 import sg.edu.nus.comp.cs4218.app.SplitInterface;
 import sg.edu.nus.comp.cs4218.exception.AbstractApplicationException;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 /**
  * The cd command changes current directory to the specified directory.
@@ -44,12 +44,23 @@ public class SplitApplication implements SplitInterface {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
     }
 
     @Override
-    public void splitFileByLines(String fileName, String prefix, int linesPerFile) throws Exception {
+    public void splitFileByLines(InputStream stdin, String prefix, int linesPerFile) throws Exception {
+        BufferedReader reader = new BufferedReader(new InputStreamReader(stdin));
+        List<String> lines = new ArrayList<>();
+        reader.lines().forEach(lines::add);
 
+        PrintWriter writer = null;
+        for (int i = 0; i < lines.size(); i++) {
+            if (i % linesPerFile == 0) {
+                if (writer != null) writer.close();
+                writer = new PrintWriter(prefix + toBijectiveBase26(i / linesPerFile + 1), "UTF-8");
+            }
+            writer.println(lines.get(i));
+        }
+        if (writer != null) writer.close();
     }
 
     @Override
@@ -61,19 +72,19 @@ public class SplitApplication implements SplitInterface {
 
         int i = 1;
         int bytePosition = 0;
-        while(bytePosition < fileBytes.length){
+        while (bytePosition < fileBytes.length) {
 
-            int toBytePosition = bytePosition + splitByte > fileBytes.length ? fileBytes.length: bytePosition + splitByte;
+            int toBytePosition = bytePosition + splitByte > fileBytes.length ? fileBytes.length : bytePosition + splitByte;
 
             writeBytesToFile(Arrays.copyOfRange(fileBytes, bytePosition, toBytePosition), prefix + toBijectiveBase26(i));
 
             i++;
-            bytePosition+=toBytePosition;
+            bytePosition += toBytePosition;
         }
     }
 
-    public void writeBytesToFile(byte[] byteArray, String filename){
-        try (FileOutputStream fos = new FileOutputStream("/tmp/"+filename)) {
+    public void writeBytesToFile(byte[] byteArray, String filename) {
+        try (FileOutputStream fos = new FileOutputStream("/tmp/" + filename)) {
             fos.write(byteArray);
         } catch (IOException ioe) {
             ioe.printStackTrace();
@@ -86,10 +97,10 @@ public class SplitApplication implements SplitInterface {
 
         StringBuilder result = new StringBuilder();
 
-        while(num > 0) {
+        while (num > 0) {
             --num;
-            result.append((char)('a' + num%26 ));
-            num/=26;
+            result.append((char) ('a' + num % 26));
+            num /= 26;
         }
 
         return result.reverse().toString();
@@ -109,11 +120,15 @@ public class SplitApplication implements SplitInterface {
         char multiplier = matcher.group(2).charAt(0); // guaranteed single char by regex
 
         // calculate & return the exact bytes in numerical form
-        switch (multiplier){
-            case 'b': return base * 512;
-            case 'k': return base * 1024;
-            case 'm': return base * 1048576;
-            default: return -1;
+        switch (multiplier) {
+            case 'b':
+                return base * 512;
+            case 'k':
+                return base * 1024;
+            case 'm':
+                return base * 1048576;
+            default:
+                return -1;
         }
 
     }

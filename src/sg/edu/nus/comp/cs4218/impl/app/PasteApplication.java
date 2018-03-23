@@ -5,9 +5,12 @@ import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+import sg.edu.nus.comp.cs4218.Environment;
 import sg.edu.nus.comp.cs4218.app.PasteInterface;
 import sg.edu.nus.comp.cs4218.exception.AbstractApplicationException;
 import sg.edu.nus.comp.cs4218.exception.PasteException;
@@ -46,7 +49,7 @@ public class PasteApplication implements PasteInterface {
 			for(String arg: args) {
 				File file = new File(arg);
 				if(!file.isFile()) {
-					throw new PasteException(file.getName() + "is not a file");
+					throw new PasteException(file.getName() + " is not a file");
 				}
 				list.add(arg);
 			}
@@ -96,9 +99,10 @@ public class PasteApplication implements PasteInterface {
 	public String mergeFile(String... fileName) throws Exception {
 		StringBuilder strBuilder = new StringBuilder();
 		Scanner[] scList = new Scanner[fileName.length];
+		Path currentDir = Paths.get(Environment.currentDirectory);
 		try {
 			for(int i = 0; i < fileName.length; i++) {
-				scList[i] = new Scanner(new File(fileName[i]));
+				scList[i] = new Scanner(currentDir.resolve(fileName[i]).toFile());
 			}
 		} catch (Exception e) {
 			throw new Exception(e.getMessage());

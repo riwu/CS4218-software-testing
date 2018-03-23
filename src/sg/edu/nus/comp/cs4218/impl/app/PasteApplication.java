@@ -46,8 +46,9 @@ public class PasteApplication implements PasteInterface {
 		}
 		else {
 			ArrayList<String> list = new ArrayList<String>();
+			Path currentDir = Paths.get(Environment.currentDirectory);
 			for(String arg: args) {
-				File file = new File(arg);
+				File file = currentDir.resolve(arg).toFile();
 				if(!file.isFile()) {
 					throw new PasteException(file.getName() + " is not a file");
 				}

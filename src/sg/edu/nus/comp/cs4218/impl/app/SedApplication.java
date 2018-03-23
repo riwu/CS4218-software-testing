@@ -65,7 +65,6 @@ public class SedApplication implements SedInterface {
         String line;
 
         while ((line = br.readLine()) != null) {
-            System.out.println(line);
             if (pattern.equals("")) {
                 sb.append(line).append(System.lineSeparator());
                 continue;
@@ -79,17 +78,21 @@ public class SedApplication implements SedInterface {
 	@Override
 	public String replaceSubstringInStdin(String pattern, String replacement, int replacementIndex, InputStream stdin)
 			throws Exception {
-        System.out.println("inside");
+
         Scanner fileScanner = new Scanner(stdin);
-        String filename = fileScanner.nextLine();
-        System.out.println(filename);
-        File file = new File(filename);
-        if (!file.exists()) {
-            throw new SedException("Invalid file");
-        } else if (file.isDirectory()) {
-            throw new SedException("stdin is directory");
+        String line;
+        StringBuilder sb = new StringBuilder();
+
+        while (fileScanner.hasNextLine()) {
+            line = fileScanner.nextLine();
+            if (pattern.equals("")) {
+                sb.append(line).append(System.lineSeparator());
+                continue;
+            }
+            String replaced = replaceLine(pattern, replacement, replacementIndex, line);
+            sb.append(replaced).append(System.lineSeparator());
         }
-        return replaceSubstringInFile(pattern, replacement, replacementIndex, filename);
+        return sb.toString();
 	}
 
 	private ArrayList<String> parseArgs(String[] args) throws SedException {

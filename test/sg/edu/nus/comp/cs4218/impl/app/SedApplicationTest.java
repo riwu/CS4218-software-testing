@@ -50,7 +50,7 @@ public class SedApplicationTest {
 		file2 = new File(currentDir + File.separator + DIR_NAME + File.separator + FILENAME2);
 		Files.write(file2.toPath(), original.getBytes());
 
-		stdin = new ByteArrayInputStream(file1.toString().getBytes());
+		stdin = new ByteArrayInputStream(original.getBytes());
 		stdout = new ByteArrayOutputStream();
 	}
 
@@ -60,6 +60,8 @@ public class SedApplicationTest {
 		file1.delete();
 		file2.delete();
 		dir.delete();
+		stdin.close();
+		stdout.close();
 	}
 
     @Test
@@ -123,16 +125,6 @@ public class SedApplicationTest {
 		int replacementIndex = 0;
 
         assertEquals(original, sedApp.replaceSubstringInStdin(pattern, replacement, replacementIndex, stdin));
-	}
-
-	@Test(expected=SedException.class)
-	public void shouldThrowExceptionWhenStdinIsDirectory() throws Exception {
-		Assume.assumeTrue(isImplemented);
-		String pattern = "is";
-		String replacement = "";
-		int replacementIndex = 0;
-		InputStream dirStream = new FileInputStream(file1.toString());
-		sedApp.replaceSubstringInStdin(pattern, replacement, replacementIndex, dirStream);
 	}
 
     @Test
@@ -320,6 +312,14 @@ public class SedApplicationTest {
         Assume.assumeTrue(isImplemented);
         String[] args = {"sxtestxtx", file1.toString()};
         sedApp.run(args, null, stdout);
+        assertEquals(replacedFirstIndex, stdout.toString());
+    }
+
+    @Test
+    public void whenOtherSeparatingCharExpectReplacementFile() throws Exception {
+        Assume.assumeTrue(isImplemented);
+        String[] args = {"s|test|t|"};
+        sedApp.run(args, stdin, stdout);
         assertEquals(replacedFirstIndex, stdout.toString());
     }
 

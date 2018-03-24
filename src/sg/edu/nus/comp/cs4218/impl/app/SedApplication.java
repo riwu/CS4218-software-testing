@@ -1,7 +1,6 @@
 package sg.edu.nus.comp.cs4218.impl.app;
 
 import java.io.*;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Scanner;
@@ -22,7 +21,7 @@ public class SedApplication implements SedInterface {
             throw new SedException("null stdout");
         }
         ArrayList<String> parsedArg = parseArgs(args);
-        String result = "";
+        String result;
 
         // no input file, get from stdin
         if (parsedArg.size() == 3) {
@@ -30,7 +29,7 @@ public class SedApplication implements SedInterface {
                 throw new SedException("Input arg missing");
             }
             try {
-                replaceSubstringInStdin(parsedArg.get(0), parsedArg.get(1), Integer.parseInt(parsedArg.get(2)), stdin);
+                result = replaceSubstringInStdin(parsedArg.get(0), parsedArg.get(1), Integer.parseInt(parsedArg.get(2)), stdin);
             } catch (Exception e) {
                 throw new SedException(e.getMessage());
             }
@@ -78,15 +77,21 @@ public class SedApplication implements SedInterface {
 	@Override
 	public String replaceSubstringInStdin(String pattern, String replacement, int replacementIndex, InputStream stdin)
 			throws Exception {
+
         Scanner fileScanner = new Scanner(stdin);
-        String filename = fileScanner.nextLine();
-        File file = new File(filename);
-        if (!file.exists()) {
-            throw new SedException("Invalid file");
-        } else if (file.isDirectory()) {
-            throw new SedException("stdin is directory");
+        String line;
+        StringBuilder sb = new StringBuilder();
+
+        while (fileScanner.hasNextLine()) {
+            line = fileScanner.nextLine();
+            if (pattern.equals("")) {
+                sb.append(line).append(System.lineSeparator());
+                continue;
+            }
+            String replaced = replaceLine(pattern, replacement, replacementIndex, line);
+            sb.append(replaced).append(System.lineSeparator());
         }
-        return replaceSubstringInFile(pattern, replacement, replacementIndex, filename);
+        return sb.toString();
 	}
 
 	private ArrayList<String> parseArgs(String[] args) throws SedException {

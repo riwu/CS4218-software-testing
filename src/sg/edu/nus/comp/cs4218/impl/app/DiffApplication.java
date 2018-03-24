@@ -394,8 +394,8 @@ public class DiffApplication implements DiffInterface {
 	@SuppressWarnings("PMD.PreserveStackTrace")
     private boolean isTextFile(String filename) throws DiffException {
         File file = new File(filename);
-        String s;
-        String s2;
+        String filedata;
+        String replacedData;
 
         try {
             FileInputStream inputStream = new FileInputStream(file);
@@ -407,8 +407,8 @@ public class DiffApplication implements DiffInterface {
             byte[] data = new byte[size];
             inputStream.read(data);
             inputStream.close();
-            s = new String(data, "ISO-8859-1");
-            s2 = s.replaceAll(
+            filedata = new String(data, "ISO-8859-1");
+            replacedData = filedata.replaceAll(
                     "[a-zA-Z0-9ßöäü\\.\\*!\"§\\$\\%&/()=\\?@~'#:,;\\"+
                             "+><\\|\\[\\]\\{\\}\\^°²³\\\\ \\n\\r\\t_\\-`´âêîô"+
                             "ÂÊÔÎáéíóàèìòÁÉÍÓÀÈÌÒ©‰¢£¥€±¿»«¼½¾™ª]", "");
@@ -416,7 +416,7 @@ public class DiffApplication implements DiffInterface {
         } catch (IOException e) {
             throw new DiffException(e.getMessage());
         }
-        double val = (double)(s.length() - s2.length()) / (double)(s.length());
+        double val = (double)(filedata.length() - replacedData.length()) / (double)(filedata.length());
         // percentage of text signs in the text
         return val > 0.95;
     }
@@ -427,15 +427,15 @@ public class DiffApplication implements DiffInterface {
 
         for (String arg : args) {
             for (int i = 0; i < arg.length(); i++) {
-                Character c = arg.charAt(i);
+                Character stringChar = arg.charAt(i);
 
-                if (i == 0 && c != '-') {
+                if (i == 0 && stringChar != '-') {
                     break;
                 } else if (i == 0) {
                     continue;
                 }
-                if (optionsMap.containsKey(c)) {
-					optionBool[optionsMap.get(c)] = true;
+                if (optionsMap.containsKey(stringChar)) {
+					optionBool[optionsMap.get(stringChar)] = true;
                 } else {
 					throw new DiffException("Invalid option");
                 }

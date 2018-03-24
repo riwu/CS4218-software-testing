@@ -1,12 +1,14 @@
-package sg.edu.nus.comp.cs4218.impl.app;
+package sg.edu.nus.comp.cs4218.integration;
 
 import static org.junit.Assert.*;
 
 import java.io.File;
+import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Assume;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -14,10 +16,11 @@ import org.junit.Test;
 
 import sg.edu.nus.comp.cs4218.Environment;
 import sg.edu.nus.comp.cs4218.exception.MkdirException;
+import sg.edu.nus.comp.cs4218.impl.ShellImpl;
 
-public class MkdirApplicationTest {
-	
-	static MkdirApplication mkdir;
+@SuppressWarnings("PMD.AvoidDuplicateLiterals")
+public class MkdirShellIntegrationTest {
+	private final ShellImpl shell = new ShellImpl();
 	private static final Path BASE_PATH = Paths.get(Environment.currentDirectory);
 	private static final String TEST_FOLDER = "undertest";
 	private static Path testPath;
@@ -26,15 +29,21 @@ public class MkdirApplicationTest {
 	private static final String MULTI_LEVEL_TWO = "Level11" + File.separator + "Level12";
 	private static final String INVALID_PATH = "Level1" + File.separator + "Level*2";
 	private static final boolean IS_WINDOWS = System.getProperty("os.name").contains("Wind");
-	
+
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
 		testPath = BASE_PATH.resolve(TEST_FOLDER);
-		mkdir = new MkdirApplication();
+	}
+
+	@AfterClass
+	public static void tearDownAfterClass() throws Exception {
+		Environment.currentDirectory = BASE_PATH.toString();
+		testPath.toFile().deleteOnExit();
 	}
 
 	@Before
 	public void setUp() throws Exception {
+		Environment.currentDirectory = testPath.toString();
 		testPath.toFile().mkdir();
 	}
 
@@ -48,25 +57,29 @@ public class MkdirApplicationTest {
 	}
 
 	@Test
-	public void shouldIgnoreWhenFolderAlreadyExists() throws Exception {
-		Path folderPath = testPath.resolve(LEVEL_ONE);
-		mkdir.createFolder(folderPath.toString(), folderPath.toString());
-		assertTrue(folderPath.toFile().isDirectory());
-		folderPath.toFile().delete();
+	public void shouldCreateDirectoryWhenNotExists() throws Exception {
+		String cmdline = "mkdir " + LEVEL_ONE;
+		Path folder = testPath.resolve(LEVEL_ONE);
+		assertTrue(!folder.toFile().exists());
+		shell.parseAndEvaluate(cmdline, System.out);
+		assertTrue(folder.toFile().exists());
+		folder.toFile().delete();
 	}
 	
 	@Test
-	public void shouldCreateFolderWhenSingleLevelFolderNotExists() throws Exception {
-		Path folderPath = testPath.resolve(LEVEL_ONE);
-		mkdir.createFolder(folderPath.toString());
-		assertTrue(folderPath.toFile().isDirectory());
-		folderPath.toFile().delete();
+	public void shouldIgnoreWhenDirectoryExists() throws Exception {
+		String cmdline = "mkdir " + LEVEL_ONE;
+		Path folder = testPath.resolve(LEVEL_ONE);
+		shell.parseAndEvaluate(cmdline, System.out);
+		assertTrue(folder.toFile().exists());
+		folder.toFile().delete();
 	}
 	
 	@Test
 	public void shouldCreateFoldersWhenMultiLevelFolderNotExists() throws Exception {
+		String cmdline = "mkdir " + MULTI_LEVEL_ONE;
 		Path folderPath = testPath.resolve(MULTI_LEVEL_ONE);
-		mkdir.createFolder(folderPath.toString());
+		shell.parseAndEvaluate(cmdline, System.out);
 		assertTrue(folderPath.toFile().isDirectory());
 		folderPath.toFile().delete();
 		folderPath.getParent().toFile().delete();
@@ -74,9 +87,10 @@ public class MkdirApplicationTest {
 	
 	@Test
 	public void shouldCreateFoldersWhenMultipleArgsExists() throws Exception {
+		String cmdline = "mkdir " + LEVEL_ONE + " " + MULTI_LEVEL_TWO;
 		Path folderPathOne = testPath.resolve(LEVEL_ONE);
 		Path folderPathTwo = testPath.resolve(MULTI_LEVEL_TWO);
-		mkdir.createFolder(new String[] {folderPathOne.toString(), folderPathTwo.toString()});
+		shell.parseAndEvaluate(cmdline, System.out);
 		assertTrue(folderPathOne.toFile().isDirectory());
 		assertTrue(folderPathTwo.toFile().isDirectory());
 		folderPathOne.toFile().delete();
@@ -86,35 +100,39 @@ public class MkdirApplicationTest {
 	
 	@Test
 	public void shouldCreateFolderWhenValidAbsolutePath() throws Exception {
-		String path = testPath.toString() + File.separator + LEVEL_ONE;
-		mkdir.run(new String[] {path}, System.in, System.out);
-		File folderPath = new File(path);
-		assertTrue(folderPath.isDirectory());
-		folderPath.delete();
+		Path folder = testPath.resolve(LEVEL_ONE);
+		assertTrue(folder.isAbsolute());
+		String cmdline = "mkdir " + folder.toString();
+		shell.parseAndEvaluate(cmdline, System.out);
+		assertTrue(folder.toFile().isDirectory());
+		folder.toFile().delete();
 	}
 	
 	@Test(expected=MkdirException.class)
 	public void shouldThrowExceptionWhenInvalidDirectoryPath() throws Exception {
-		String path = testPath.toString() + File.separator + LEVEL_ONE;
-		File duplicate = new File(path);
-		duplicate.createNewFile();
-		mkdir.run(new String[] {path}, System.in, System.out);
+		String cmdline = "mkdir " + LEVEL_ONE;
+		Path path = testPath.resolve(LEVEL_ONE);
+		path.toFile().createNewFile();
+		shell.parseAndEvaluate(cmdline, System.out);
 	}
 	
-	@Test(expected=MkdirException.class)
+	@Test(expected=InvalidPathException.class)
 	public void shouldThrowExceptionWhenInvalidCharacterExists() throws Exception {
 		Assume.assumeTrue(IS_WINDOWS);
-		mkdir.run(new String[] {INVALID_PATH}, System.in, System.out);
+		String cmdline = "mkdir " + INVALID_PATH;
+		shell.parseAndEvaluate(cmdline, System.out);
 	}
 	
 	@Test(expected=MkdirException.class)
 	public void shouldThrowExceptionWhenNoFoldersSpecified() throws Exception {
-		mkdir.run(new String[] {}, System.in, System.out);		
+		String cmdline = "mkdir";
+		shell.parseAndEvaluate(cmdline, System.out);
 	}
 	
-	@Test(expected=MkdirException.class)
+	@Test(expected=InvalidPathException.class)
 	public void shouldThrowExceptionWhenInvalidInArgsExists() throws Exception {
 		Assume.assumeTrue(IS_WINDOWS);
-		mkdir.run(new String[] {LEVEL_ONE, INVALID_PATH}, System.in, System.out);
+		String cmdline = "mkdir " + LEVEL_ONE + " " + INVALID_PATH;
+		shell.parseAndEvaluate(cmdline, System.out);
 	}
 }

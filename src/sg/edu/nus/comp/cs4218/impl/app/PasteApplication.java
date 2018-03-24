@@ -50,7 +50,7 @@ public class PasteApplication implements PasteInterface {
 			for(String arg: args) {
 				File file = currentDir.resolve(arg).toFile();
 				if(!file.isFile()) {
-					throw new PasteException(file.getName() + "is not a file");
+					throw new PasteException(file.getName() + " is not a file");
 				}
 				list.add(arg);
 			}
@@ -100,9 +100,10 @@ public class PasteApplication implements PasteInterface {
 	public String mergeFile(String... fileName) throws Exception {
 		StringBuilder strBuilder = new StringBuilder();
 		Scanner[] scList = new Scanner[fileName.length];
+		Path currentDir = Paths.get(Environment.currentDirectory);
 		try {
 			for(int i = 0; i < fileName.length; i++) {
-				scList[i] = new Scanner(new File(fileName[i]));
+				scList[i] = new Scanner(currentDir.resolve(fileName[i]).toFile());
 			}
 		} catch (Exception e) {
 			throw new Exception(e.getMessage());

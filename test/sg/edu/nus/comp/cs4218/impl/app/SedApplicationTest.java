@@ -6,7 +6,6 @@ import java.io.*;
 import java.nio.file.Files;
 
 import org.junit.After;
-import org.junit.Assume;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -14,14 +13,13 @@ import org.junit.Test;
 import sg.edu.nus.comp.cs4218.Environment;
 import sg.edu.nus.comp.cs4218.exception.SedException;
 
+@SuppressWarnings("PMD.AvoidDuplicateLiterals")
 public class SedApplicationTest {
-	boolean isImplemented = true;
 	private static SedApplication sedApp;
-	private String currentDir;
-	private String original = "This\tis testtest\nthe\ttest text test\n";
-	private String replacedSecondIndex = "This\tis testt\nthe\ttest text t\n";
-    private String replacedFirstIndex = "This\tis ttest\nthe\tt text test\n";
-    private String deleteText = "This\tis test\nthe\t text test\n";
+	private static final String ORIGINAL = "This\tis testtest" + System.lineSeparator() + "the\ttest text test" + System.lineSeparator();
+	private static final String REPLACED_SECOND = "This\tis testt" + System.lineSeparator() + "the\ttest text t" + System.lineSeparator();
+    private static final String REPLACED_FIRST = "This\tis ttest" + System.lineSeparator() + "the\tt text test" + System.lineSeparator();
+    private static final String DELETE_TEXT = "This\tis test" + System.lineSeparator() + "the\t text test" + System.lineSeparator();
 	private static final String MISSING_S = "/\t/ /";
 	private static final String INVALID_INDEX = "s/is/was/-2";
 	private static final String DIR_NAME = "sedTestDir";
@@ -41,16 +39,16 @@ public class SedApplicationTest {
 
 	@Before
 	public void setUp() throws Exception {
-		currentDir = Environment.currentDirectory;
+		String currentDir = Environment.currentDirectory;
 		dir = new File(currentDir + File.separator + DIR_NAME);
 		dir.mkdir();
 
 		file1 = new File(currentDir + File.separator + DIR_NAME + File.separator + FILENAME1);
-		Files.write(file1.toPath(), original.getBytes());
+		Files.write(file1.toPath(), ORIGINAL.getBytes());
 		file2 = new File(currentDir + File.separator + DIR_NAME + File.separator + FILENAME2);
-		Files.write(file2.toPath(), original.getBytes());
+		Files.write(file2.toPath(), ORIGINAL.getBytes());
 
-		stdin = new ByteArrayInputStream(original.getBytes());
+		stdin = new ByteArrayInputStream(ORIGINAL.getBytes());
 		stdout = new ByteArrayOutputStream();
 	}
 
@@ -69,12 +67,12 @@ public class SedApplicationTest {
         String pattern = "";
         String replacement = "> ";
         int replacementIndex = -1;
-        assertEquals(original, sedApp.replaceSubstringInStdin(pattern, replacement, replacementIndex, stdin));
+        assertEquals(ORIGINAL, sedApp.replaceSubstringInStdin(pattern, replacement, replacementIndex, stdin));
     }
 
     @Test
     public void whenRegexMatchAddLeadBracketStdin() throws Exception {
-        expected = "> This\tis testtest\n> the\ttest text test\n";
+        expected = "> This\tis testtest" + System.lineSeparator() + "> the\ttest text test" + System.lineSeparator();
         String pattern = "^";
         String replacement = "> ";
         int replacementIndex = -1;
@@ -83,48 +81,43 @@ public class SedApplicationTest {
 
 	@Test
 	public void whenNothingToReplaceExpectNoChangeToContentStdin() throws Exception {
-		Assume.assumeTrue(isImplemented);
 		String pattern = ">";
 		String replacement = "";
 		int replacementIndex = 0;
-		assertEquals(original, sedApp.replaceSubstringInStdin(pattern, replacement, replacementIndex, stdin));
+		assertEquals(ORIGINAL, sedApp.replaceSubstringInStdin(pattern, replacement, replacementIndex, stdin));
 	}
 	
 	@Test
 	public void whenNeverReachReplacementIndexExpectNoChangeToContentStdin() throws Exception {
-		Assume.assumeTrue(isImplemented);
 		String pattern = "is";
 		String replacement = "";
 		int replacementIndex = 50;
-		assertEquals(original, sedApp.replaceSubstringInStdin(pattern, replacement, replacementIndex, stdin));
+		assertEquals(ORIGINAL, sedApp.replaceSubstringInStdin(pattern, replacement, replacementIndex, stdin));
 	}
 	
 	@Test
 	public void whenReachReplacementIndexExpectChangeAtIndexStdin() throws Exception {
-		Assume.assumeTrue(isImplemented);
 		String pattern = "test";
 		String replacement = "t";
 		int replacementIndex = 2;
-		assertEquals(replacedSecondIndex, sedApp.replaceSubstringInStdin(pattern, replacement, replacementIndex, stdin));
+		assertEquals(REPLACED_SECOND, sedApp.replaceSubstringInStdin(pattern, replacement, replacementIndex, stdin));
 	}
 
     @Test
     public void whenEmptyReplacementExpectDeleteStdin() throws Exception {
-        Assume.assumeTrue(isImplemented);
         String pattern = "test";
         String replacement = "";
         int replacementIndex = 1;
-        assertEquals(deleteText, sedApp.replaceSubstringInStdin(pattern, replacement, replacementIndex, stdin));
+        assertEquals(DELETE_TEXT, sedApp.replaceSubstringInStdin(pattern, replacement, replacementIndex, stdin));
     }
 
 	@Test
 	public void shouldNotReplaceWhenIndexIsZeroStdin() throws Exception {
-		Assume.assumeTrue(isImplemented);
 		String pattern = "\t";
 		String replacement = " ";
 		int replacementIndex = 0;
 
-        assertEquals(original, sedApp.replaceSubstringInStdin(pattern, replacement, replacementIndex, stdin));
+        assertEquals(ORIGINAL, sedApp.replaceSubstringInStdin(pattern, replacement, replacementIndex, stdin));
 	}
 
     @Test
@@ -132,12 +125,12 @@ public class SedApplicationTest {
         String pattern = "";
         String replacement = "> ";
         int replacementIndex = -1;
-        assertEquals(original, sedApp.replaceSubstringInFile(pattern, replacement, replacementIndex, file1.toString()));
+        assertEquals(ORIGINAL, sedApp.replaceSubstringInFile(pattern, replacement, replacementIndex, file1.toString()));
     }
 
     @Test
     public void whenRegexMatchExpectAddLeadBracketFile() throws Exception {
-        expected = "> This\tis testtest\n> the\ttest text test\n";
+        expected = "> This\tis testtest" + System.lineSeparator() + "> the\ttest text test" + System.lineSeparator();
         String pattern = "^";
         String replacement = "> ";
         int replacementIndex = -1;
@@ -146,61 +139,54 @@ public class SedApplicationTest {
 	
 	@Test
 	public void whenNothingToReplaceExpectNoChangeToContentFile() throws Exception {
-		Assume.assumeTrue(isImplemented);
 		String pattern = ">";
 		String replacement = "";
 		int replacementIndex = -1;
-		assertEquals(original, sedApp.replaceSubstringInFile(pattern, replacement, replacementIndex, file1.toString()));
+		assertEquals(ORIGINAL, sedApp.replaceSubstringInFile(pattern, replacement, replacementIndex, file1.toString()));
 	}
 	
 	@Test
 	public void whenNeverReachReplacementIndexExpectNoChangeToContentFile() throws Exception {
-		Assume.assumeTrue(isImplemented);
 		String pattern = "is";
 		String replacement = "";
 		int replacementIndex = 50;
-		assertEquals(original, sedApp.replaceSubstringInFile(pattern, replacement, replacementIndex, file1.toString()));
+		assertEquals(ORIGINAL, sedApp.replaceSubstringInFile(pattern, replacement, replacementIndex, file1.toString()));
 	}
 	
 	@Test
 	public void whenReachReplacementIndexExpectChangeAtIndexFile() throws Exception {
-		Assume.assumeTrue(isImplemented);
 		String pattern = "test";
 		String replacement = "t";
 		int replacementIndex = 2;
-		assertEquals(replacedSecondIndex, sedApp.replaceSubstringInFile(pattern, replacement, replacementIndex, file1.toString()));
+		assertEquals(REPLACED_SECOND, sedApp.replaceSubstringInFile(pattern, replacement, replacementIndex, file1.toString()));
 	}
 
     @Test
     public void whenEmptyReplacementExpectDeleteFile() throws Exception {
-        Assume.assumeTrue(isImplemented);
         String pattern = "test";
         String replacement = "";
         int replacementIndex = 1;
-        assertEquals(deleteText, sedApp.replaceSubstringInFile(pattern, replacement, replacementIndex, file1.toString()));
+        assertEquals(DELETE_TEXT, sedApp.replaceSubstringInFile(pattern, replacement, replacementIndex, file1.toString()));
     }
 
 	@Test
 	public void shouldNotReplaceWhenIndexIsZeroFile() throws Exception {
-		Assume.assumeTrue(isImplemented);
 		String pattern = "\t";
 		String replacement = " ";
 		int replacementIndex = 0;
-		assertEquals(original, sedApp.replaceSubstringInFile(pattern, replacement, replacementIndex, file1.toString()));
+		assertEquals(ORIGINAL, sedApp.replaceSubstringInFile(pattern, replacement, replacementIndex, file1.toString()));
 	}
 	
-	@Test(expected=SedException.class)
+	@Test(expected=Exception.class)
 	public void shouldThrowExceptionWhenFileNotExists() throws Exception {
-		Assume.assumeTrue(isImplemented);
 		String pattern = "is";
 		String replacement = "";
 		int replacementIndex = 0;
 		sedApp.replaceSubstringInFile(pattern, replacement, replacementIndex, "missing.txt");
 	}
 	
-	@Test(expected=SedException.class)
+	@Test(expected=Exception.class)
 	public void shouldThrowExceptionWhenFileIsDirectory() throws Exception {
-		Assume.assumeTrue(isImplemented);
 		String pattern = "is";
 		String replacement = "";
 		int replacementIndex = 0;
@@ -209,118 +195,102 @@ public class SedApplicationTest {
 	
 	@Test(expected=SedException.class)
 	public void shouldThrowExceptionWhenReplacementRuleMissing() throws Exception {
-		Assume.assumeTrue(isImplemented);
 		String path = file1.toString();
 		sedApp.run(new String[] {path}, System.in, System.out);
 	}
 	
 	@Test(expected=SedException.class)
 	public void shouldThrowExceptionWhenReplacementRuleMissingS() throws Exception {
-		Assume.assumeTrue(isImplemented);
 		String path = file1.toString();
 		sedApp.run(new String[] {MISSING_S, path}, System.in, System.out);
 	}
 	
 	@Test(expected=SedException.class)
 	public void shouldThrowExceptionWhenReplacementRuleNegativeIndex() throws Exception {
-		Assume.assumeTrue(isImplemented);
 		String path = file1.toString();
 		sedApp.run(new String[] {INVALID_INDEX, path}, System.in, System.out);
 	}
 
     @Test(expected=SedException.class)
     public void shouldThrowExceptionWhenIndexLessThanZero() throws Exception {
-        Assume.assumeTrue(isImplemented);
         String[] args = {"s/is/b/-1", file1.toString()};
         sedApp.run(args, null, stdout);
     }
 
     @Test(expected=SedException.class)
     public void shouldThrowExceptionWhenNoStdInAndNoInputFile() throws Exception {
-        Assume.assumeTrue(isImplemented);
-        String[] args = {"s/test/t/"};
+		String[] args = {"s/test/t/"};
         sedApp.run(args, null, stdout);
     }
 
     @Test(expected=SedException.class)
     public void shouldThrowExceptionWhenInvalidSyntax() throws Exception {
-        Assume.assumeTrue(isImplemented);
         String[] args = {"s/hello", file1.toString()};
         sedApp.run(args, null, stdout);
     }
 
     @Test(expected=SedException.class)
     public void shouldThrowExceptionWhenStdoutMissing() throws Exception {
-        Assume.assumeTrue(isImplemented);
         String[] args = {"s/test/t/", file1.toString()};
         sedApp.run(args, null, null);
     }
 
     @Test(expected=SedException.class)
     public void shouldThrowExceptionWhenUseDelimiterInReplacement() throws Exception {
-        Assume.assumeTrue(isImplemented);
         String[] args = {"s/test/t//", file1.toString()};
         sedApp.run(args, null, stdout);
     }
 
     @Test(expected=SedException.class)
     public void shouldThrowExceptionWhenHave2InputFile() throws Exception {
-        Assume.assumeTrue(isImplemented);
         String[] args = {"s/test/t/", file1.toString(), file2.toString()};
         sedApp.run(args, null, stdout);
     }
 
     @Test(expected=SedException.class)
     public void shouldThrowExceptionWhenEmptyArguments() throws Exception {
-        Assume.assumeTrue(isImplemented);
         String[] args = {};
         sedApp.run(args, null, stdout);
     }
 
     @Test(expected=SedException.class)
     public void shouldThrowExceptionWhenInvalidReplaceIndex() throws Exception {
-        Assume.assumeTrue(isImplemented);
         String[] args = {"s/test/t/??", file1.toString()};
         sedApp.run(args, null, stdout);
     }
 
     @Test(expected=SedException.class)
     public void shouldThrowExceptionWhenInvalidCommandPosition() throws Exception {
-        Assume.assumeTrue(isImplemented);
         String[] args = {file1.toString(), "s/test/t/"};
         sedApp.run(args, null, stdout);
     }
 
     @Test
     public void whenMissingReplacementIndexExpectReplaceFirst() throws Exception {
-        Assume.assumeTrue(isImplemented);
         String[] args = {"s/test/t/", file1.toString()};
         sedApp.run(args, null, stdout);
-        assertEquals(replacedFirstIndex, stdout.toString());
+        assertEquals(REPLACED_FIRST, stdout.toString());
     }
 
     @Test
     public void whenMissingRegexExpectNoChange() throws Exception {
-        Assume.assumeTrue(isImplemented);
         String[] args = {"s//t/", file1.toString()};
         sedApp.run(args, null, stdout);
-        assertEquals(original, stdout.toString());
+        assertEquals(ORIGINAL, stdout.toString());
     }
 
     @Test
     public void whenOtherSeparatingCharExpectReplacement() throws Exception {
-        Assume.assumeTrue(isImplemented);
         String[] args = {"sxtestxtx", file1.toString()};
         sedApp.run(args, null, stdout);
-        assertEquals(replacedFirstIndex, stdout.toString());
+        assertEquals(REPLACED_FIRST, stdout.toString());
     }
 
     @Test
     public void whenOtherSeparatingCharExpectReplacementFile() throws Exception {
-        Assume.assumeTrue(isImplemented);
         String[] args = {"s|test|t|"};
         sedApp.run(args, stdin, stdout);
-        assertEquals(replacedFirstIndex, stdout.toString());
+        assertEquals(REPLACED_FIRST, stdout.toString());
     }
 
 }

@@ -24,6 +24,7 @@ import sg.edu.nus.comp.cs4218.impl.ShellImpl;
  * </p>
  */
 
+@SuppressWarnings("PMD.GodClass")
 public class CallCommand implements Command {
 	public static final String EXP_INVALID_APP = "Invalid app.";
 	public static final String EXP_SYNTAX = "Invalid syntax encountered.";
@@ -109,8 +110,7 @@ public class CallCommand implements Command {
 	 *             the input redirection file path is same as that of the output
 	 *             redirection file path.
 	 */
-
-    // such horrible code without documentation
+	@SuppressWarnings("PMD.ExcessiveMethodLength")
 	public void parse() throws ShellException {
 		Vector<String> cmdVector = new Vector<String>();
 		Boolean result = true;
@@ -124,9 +124,6 @@ public class CallCommand implements Command {
 			cmdVector.add(""); // reserved for input redir
 			cmdVector.add(""); // reserved for output redir
 
-            // the endIndx f**king mutate after each extract*** calls
-            // make others so difficult to debug this result.
-			// BAD CODE
 			endIdx = extractInputRedir(str, cmdVector, endIdx);
 			endIdx = extractOutputRedir(str, cmdVector, endIdx);
 
@@ -138,7 +135,6 @@ public class CallCommand implements Command {
 			result = false;
 		}
 
-		// Orz simply horrible.
 		if (str.substring(endIdx).trim().isEmpty()) {
 			result = true;
 		} else {
@@ -380,21 +376,34 @@ public class CallCommand implements Command {
 		return parsedVector;
 	}
 
+	@SuppressWarnings("PMD.ExcessiveMethodLength")
 	public String[] globFilesDirectories(String args) {
 
-		if (args == null) return null;
+		if (args == null) {
+			return null;
+		}
 
-		if (!args.contains("*")) return new String[] {args};
+		if (!args.contains("*")) {
+			return new String[] {args};
+		}
 
 		// if the command is of form <command> '<single_quote_content>', don't evaluate
 		Pattern singleQuote = Pattern.compile("(?:.+)\\s+'(?:.*)'");
-		if (singleQuote.matcher(args).matches()) return new String[]{args};
-		if (singleQuote.matcher(cmdline).matches()) return new String[] {args};
+		if (singleQuote.matcher(args).matches()) {
+			return new String[]{args};
+		}
+		if (singleQuote.matcher(cmdline).matches()) {
+			return new String[] {args};
+		}
 
 		// if the command is of form <command> "<double_quote_content>", don't evaluate
 		Pattern doubleQuote = Pattern.compile("(?:.+)\\s+\"(?:.*)\"");
-		if (doubleQuote.matcher(args).matches()) return new String[]{args};
-		if (doubleQuote.matcher(cmdline).matches()) return new String[] {args};
+		if (doubleQuote.matcher(args).matches()) {
+			return new String[]{args};
+		}
+		if (doubleQuote.matcher(cmdline).matches()) {
+			return new String[] {args};
+		}
 
 		// separate the base dir and glob
         String[] argsArray;

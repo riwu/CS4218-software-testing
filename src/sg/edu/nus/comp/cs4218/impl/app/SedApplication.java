@@ -1,22 +1,26 @@
 package sg.edu.nus.comp.cs4218.impl.app;
 
 import java.io.*;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import sg.edu.nus.comp.cs4218.Environment;
 import sg.edu.nus.comp.cs4218.app.SedInterface;
 import sg.edu.nus.comp.cs4218.exception.AbstractApplicationException;
 import sg.edu.nus.comp.cs4218.exception.SedException;
 
+@SuppressWarnings("PMD.GodClass")
 public class SedApplication implements SedInterface {
-	public static String REPLACE_SINGLE_INDEX = "-1";
+	public static final String NO_INDEX = "-1";
 
 	@Override
+	@SuppressWarnings("PMD.PreserveStackTrace")
 	public void run(String[] args, InputStream stdin, OutputStream stdout) throws AbstractApplicationException {
-		// TODO Auto-generated method stub
         if (stdout == null) {
             throw new SedException("null stdout");
         }
@@ -52,26 +56,28 @@ public class SedApplication implements SedInterface {
 	@Override
 	public String replaceSubstringInFile(String pattern, String replacement, int replacementIndex, String fileName)
 			throws Exception {
-		// TODO Auto-generated method stub
-        File file = new File(fileName);
+		Path currentDir = Paths.get(Environment.currentDirectory);
+        File file = currentDir.resolve(fileName).toFile();
         if (!file.exists()) {
-            throw new SedException("file does not exist");
-        } else if (file.isDirectory()) {
-            throw new SedException("file is a directory");
+            throw new Exception("file does not exist");
         }
-        BufferedReader br = new BufferedReader(new FileReader(file));
-        StringBuilder sb = new StringBuilder();
+        if (file.isDirectory()) {
+            throw new Exception("file is a directory");
+        }
+        BufferedReader bReader = new BufferedReader(new FileReader(file));
+        StringBuilder strBuilder = new StringBuilder();
         String line;
 
-        while ((line = br.readLine()) != null) {
-            if (pattern.equals("")) {
-                sb.append(line).append(System.lineSeparator());
+        while ((line = bReader.readLine()) != null) {
+            if (pattern.isEmpty()) {
+                strBuilder.append(line).append(System.lineSeparator());
                 continue;
             }
             String replaced = replaceLine(pattern, replacement, replacementIndex, line);
-            sb.append(replaced).append(System.lineSeparator());
+            strBuilder.append(replaced).append(System.lineSeparator());
         }
-        return sb.toString();
+        bReader.close();
+        return strBuilder.toString();
 	}
 
 	@Override
@@ -80,21 +86,23 @@ public class SedApplication implements SedInterface {
 
         Scanner fileScanner = new Scanner(stdin);
         String line;
-        StringBuilder sb = new StringBuilder();
+        StringBuilder strBuilder = new StringBuilder();
 
         while (fileScanner.hasNextLine()) {
             line = fileScanner.nextLine();
-            if (pattern.equals("")) {
-                sb.append(line).append(System.lineSeparator());
+            if (pattern.isEmpty()) {
+                strBuilder.append(line).append(System.lineSeparator());
                 continue;
             }
             String replaced = replaceLine(pattern, replacement, replacementIndex, line);
-            sb.append(replaced).append(System.lineSeparator());
+            strBuilder.append(replaced).append(System.lineSeparator());
         }
-        return sb.toString();
+		fileScanner.close();
+        return strBuilder.toString();
 	}
 
-	private ArrayList<String> parseArgs(String[] args) throws SedException {
+	@SuppressWarnings("PMD.ExcessiveMethodLength")
+	private ArrayList<String> parseArgs(String... args) throws SedException {
         if (args.length == 0) {
 	        throw new SedException("Missing sed argument");
         }
@@ -119,7 +127,7 @@ public class SedApplication implements SedInterface {
 
         // no filename and replacementIndex
 		if (sedArgs.size() == 3) {
-            parsedArg.add(REPLACE_SINGLE_INDEX);
+            parsedArg.add(NO_INDEX);
             return parsedArg;
         }
 		else if (sedArgs.size() != 4) {
@@ -137,12 +145,12 @@ public class SedApplication implements SedInterface {
 
         // check for valid file
         String filename = indexAndFilename.get(1);
-        File f = new File(filename);
+        File file = new File(filename);
 
-        if (!f.exists()) {
+        if (!file.exists()) {
             throw new SedException("Invalid input file");
         }
-        else if (f.isDirectory()) {
+        if (file.isDirectory()) {
             throw new SedException("Input file is a directory");
         }
 
@@ -163,7 +171,7 @@ public class SedApplication implements SedInterface {
 		        throw new SedException("Invalid Sed Syntax");
             }
         } else if (index == 0) {
-		    parsedArgs.add(REPLACE_SINGLE_INDEX);
+		    parsedArgs.add(NO_INDEX);
 		    parsedArgs.add(fileArg.substring(1));
 			return parsedArgs;
 		}
@@ -176,7 +184,7 @@ public class SedApplication implements SedInterface {
             parsedArgs.add(replaceDigit);
             parsedArgs.add(filename);
         } else {
-            parsedArgs.add(REPLACE_SINGLE_INDEX);
+            parsedArgs.add(NO_INDEX);
             parsedArgs.add(fileArg);
         }
 		return parsedArgs;
@@ -203,7 +211,7 @@ public class SedApplication implements SedInterface {
 	private String replaceLine(String regex, String replacement, int index, String line) {
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(line);
-        StringBuffer sb = new StringBuffer(line.length());
+        StringBuffer strBuilder = new StringBuffer(line.length());
 
         if (index == 0) {
             return line;
@@ -216,11 +224,11 @@ public class SedApplication implements SedInterface {
 
 
         if (matcher.find()) {
-            matcher.appendReplacement(sb, Matcher.quoteReplacement(replacement));
+            matcher.appendReplacement(strBuilder, Matcher.quoteReplacement(replacement));
         }
 
-        matcher.appendTail(sb);
-        return sb.toString();
+        matcher.appendTail(strBuilder);
+        return strBuilder.toString();
     }
 
     private boolean isValidReplacementIndex(String digit) throws SedException {
@@ -251,7 +259,7 @@ public class SedApplication implements SedInterface {
             }
         }
         String lastSlice = input.substring(startIndex);
-	    if (!lastSlice.equals("")) {
+	    if (!lastSlice.isEmpty()) {
 	        splitInput.add(lastSlice);
         }
 

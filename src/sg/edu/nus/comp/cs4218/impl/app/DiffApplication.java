@@ -1,5 +1,6 @@
 package sg.edu.nus.comp.cs4218.impl.app;
 
+import sg.edu.nus.comp.cs4218.Environment;
 import sg.edu.nus.comp.cs4218.app.DiffInterface;
 import sg.edu.nus.comp.cs4218.exception.DiffException;
 
@@ -104,12 +105,13 @@ public class DiffApplication implements DiffInterface {
 
 	@Override
 	public String diffTwoFiles(String fileNameA, String fileNameB, Boolean isShowSame, Boolean isNoBlank, Boolean isSimple) throws Exception {
+		Path currentDir = Paths.get(Environment.currentDirectory);
         if (isTextFile(fileNameA)) {
             ArrayList<String> fileAExtra = new ArrayList<>();
             ArrayList<String> fileBExtra = new ArrayList<>();
             boolean hasPrevLineFileA = false;
-            BufferedReader br1 = new BufferedReader(new FileReader(new File(fileNameA)));
-            BufferedReader br2 = new BufferedReader(new FileReader(new File(fileNameB)));
+            BufferedReader br1 = new BufferedReader(new FileReader(currentDir.resolve(fileNameA).toFile()));
+            BufferedReader br2 = new BufferedReader(new FileReader(currentDir.resolve(fileNameB).toFile()));
             String lineA = br1.readLine();
             String lineB = br2.readLine();
 
@@ -274,7 +276,8 @@ public class DiffApplication implements DiffInterface {
 
 	@Override
 	public String diffFileAndStdin(String fileName, InputStream stdin, Boolean isShowSame, Boolean isNoBlank, Boolean isSimple) throws Exception {
-	    File firstFile = new File(fileName);
+	    Path currentDir = Paths.get(Environment.currentDirectory);
+		File firstFile = currentDir.resolve(fileName).toFile();
 
         if (firstFile.isDirectory()) {
             throw new DiffException("Unable to diff directory with stdin");
@@ -370,9 +373,10 @@ public class DiffApplication implements DiffInterface {
 	@SuppressWarnings("PMD.PreserveStackTrace")
     private Set<String> getFileInDir(String folder) throws DiffException {
 	    Set<String> set = new HashSet<>();
+		Path currentDir = Paths.get(Environment.currentDirectory);
 
         try {
-            Files.walkFileTree(Paths.get(folder), new SimpleFileVisitor<Path>() {
+            Files.walkFileTree(currentDir.resolve(folder), new SimpleFileVisitor<Path>() {
                 @Override
                 public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
                     File aFile = file.toFile();
@@ -384,7 +388,7 @@ public class DiffApplication implements DiffInterface {
 
                 @Override
                 public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
-                    if (dir.equals(Paths.get(folder))) {
+                    if (dir.equals(currentDir.resolve(folder))) {
                         return FileVisitResult.CONTINUE;
                     }
                     File file = dir.toFile();
@@ -403,7 +407,8 @@ public class DiffApplication implements DiffInterface {
 
 	@SuppressWarnings("PMD.PreserveStackTrace")
     private boolean isTextFile(String filename) throws DiffException {
-        File file = new File(filename);
+		Path currentDir = Paths.get(Environment.currentDirectory);
+        File file = currentDir.resolve(filename).toFile();
         String filedata;
         String replacedData;
 
@@ -483,12 +488,13 @@ public class DiffApplication implements DiffInterface {
         if (fileCounter < 2) {
 	        throw new DiffException("Insufficient arguments to compare");
         }
-        File file = new File(files[0]);
+		Path currentDir = Paths.get(Environment.currentDirectory);
+        File file = currentDir.resolve(files[0]).toFile();
 	    if (!file.exists()) {
 	        throw new DiffException("Invalid file");
         }
         if (!files[1].equals('-')) {
-	        file = new File(files[1]);
+	        file = currentDir.resolve(files[1]).toFile();
 	        if (!file.exists()) {
 	            throw new DiffException("Invalid file");
             }

@@ -1,5 +1,6 @@
 package sg.edu.nus.comp.cs4218.impl.app;
 
+import sg.edu.nus.comp.cs4218.Environment;
 import sg.edu.nus.comp.cs4218.app.CatInterface;
 import sg.edu.nus.comp.cs4218.exception.CatException;
 
@@ -63,10 +64,10 @@ public class CatApplication implements CatInterface {
 		} else {
 
 			//Arrays.stream(String.join(" ", args).split("\\s+")).forEach(System.out::println);
-
+			Path currentDir = Paths.get(Environment.currentDirectory);
 			// transform each filenames into Stream of Path
 			final Stream<Path> paths = Arrays.stream(args)
-					  						 .map(fileName -> Paths.get(fileName));
+					  						 .map(fileName -> currentDir.resolve(fileName));
 
 			final StringBuilder result = new StringBuilder();
 

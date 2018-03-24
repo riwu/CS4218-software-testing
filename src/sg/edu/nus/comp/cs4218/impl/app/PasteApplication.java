@@ -5,9 +5,12 @@ import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+import sg.edu.nus.comp.cs4218.Environment;
 import sg.edu.nus.comp.cs4218.app.PasteInterface;
 import sg.edu.nus.comp.cs4218.exception.AbstractApplicationException;
 import sg.edu.nus.comp.cs4218.exception.PasteException;
@@ -43,8 +46,9 @@ public class PasteApplication implements PasteInterface {
 		}
 		else {
 			ArrayList<String> list = new ArrayList<String>();
+			Path currentDir = Paths.get(Environment.currentDirectory);
 			for(String arg: args) {
-				File file = new File(arg);
+				File file = currentDir.resolve(arg).toFile();
 				if(!file.isFile()) {
 					throw new PasteException(file.getName() + "is not a file");
 				}

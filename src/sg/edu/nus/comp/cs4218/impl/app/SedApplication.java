@@ -1,7 +1,6 @@
 package sg.edu.nus.comp.cs4218.impl.app;
 
 import java.io.*;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Scanner;
@@ -22,7 +21,7 @@ public class SedApplication implements SedInterface {
             throw new SedException("null stdout");
         }
         ArrayList<String> parsedArg = parseArgs(args);
-        String result = "";
+        String result;
 
         // no input file, get from stdin
         if (parsedArg.size() == 3) {

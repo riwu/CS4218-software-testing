@@ -4,7 +4,6 @@ import sg.edu.nus.comp.cs4218.app.DiffInterface;
 import sg.edu.nus.comp.cs4218.exception.DiffException;
 
 import java.io.*;
-import java.lang.reflect.Array;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
@@ -21,8 +20,9 @@ import java.util.*;
  * </dl>
  * </p>
  */
+@SuppressWarnings({"PMD.GodClass", "PMD.ExcessiveMethodLength"})
 public class DiffApplication implements DiffInterface {
-    static String DIFFER_KEYWORD = "differ";
+    static final String DIFFER_KEYWORD = "differ";
     static HashMap<Character, Integer> optionsMap = new HashMap<>();
     static {
         optionsMap.put('s', 0);

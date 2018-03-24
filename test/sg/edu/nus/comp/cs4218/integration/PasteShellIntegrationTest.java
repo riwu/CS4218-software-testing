@@ -51,6 +51,7 @@ public class PasteShellIntegrationTest {
 
 	@AfterClass
 	public static void tearDownAfterClass() throws Exception {
+		Environment.currentDirectory = BASE_PATH.toString();
 		filePathOne.toFile().deleteOnExit();
 		filePathTwo.toFile().deleteOnExit();
 	}

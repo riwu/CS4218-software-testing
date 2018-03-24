@@ -37,6 +37,7 @@ public class MkdirShellIntegrationTest {
 
 	@AfterClass
 	public static void tearDownAfterClass() throws Exception {
+		Environment.currentDirectory = BASE_PATH.toString();
 		testPath.toFile().deleteOnExit();
 	}
 

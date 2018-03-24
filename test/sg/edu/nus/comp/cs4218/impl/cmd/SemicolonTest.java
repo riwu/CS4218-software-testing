@@ -103,7 +103,7 @@ public class SemicolonTest {
     public void PICT_1() throws Exception {
         shell.parseAndEvaluate("echo hello; echo awesome; echo world;", outputStream);
 
-        String expected = "hello\nawesome\nworld\n";
+        String expected = "hello" + System.lineSeparator() + "awesome" + System.lineSeparator() + "world"  + System.lineSeparator();
         String actual = outputStream.toString();
 
         assertEquals(expected, actual);
@@ -115,7 +115,7 @@ public class SemicolonTest {
     public void PICT_2() throws Exception {
         shell.parseAndEvaluate("echo `echo hello; echo awesome`", outputStream);
 
-        String expected = "helloawesome\n";
+        String expected = "helloawesome" + System.lineSeparator();
         String actual = outputStream.toString();
 
         assertEquals(expected, actual);
@@ -127,7 +127,7 @@ public class SemicolonTest {
     public void PICT_3() throws Exception {
         shell.parseAndEvaluate("echo `echo hello; echo awesome;`; echo world;", outputStream);
 
-        String expected = "helloawesome\nworld\n";
+        String expected = "helloawesome" + System.lineSeparator() + "world" + System.lineSeparator();
         String actual = outputStream.toString();
 
         assertEquals(expected, actual);
@@ -139,7 +139,7 @@ public class SemicolonTest {
     public void PICT_4() throws Exception {
         shell.parseAndEvaluate("echo hello; echo awesome; echo world", outputStream);
 
-        String expected = "hello\nawesome\nworld\n";
+        String expected = "hello" + System.lineSeparator() + "awesome" + System.lineSeparator() + "world" + System.lineSeparator();
         String actual = outputStream.toString();
 
         assertEquals(expected, actual);
@@ -151,7 +151,7 @@ public class SemicolonTest {
     public void PICT_5() throws Exception {
         shell.parseAndEvaluate("echo hello; echo awesome;", outputStream);
 
-        String expected = "hello\nawesome\n";
+        String expected = "hello" + System.lineSeparator() + "awesome" + System.lineSeparator();
         String actual = outputStream.toString();
 
         assertEquals(expected, actual);
@@ -163,7 +163,7 @@ public class SemicolonTest {
     public void PICT_6() throws Exception {
         shell.parseAndEvaluate("echo `echo hello; echo awesome`; echo world", outputStream);
 
-        String expected = "helloawesome\nworld\n";
+        String expected = "helloawesome" + System.lineSeparator() + "world" + System.lineSeparator();
         String actual = outputStream.toString();
 
         assertEquals(expected, actual);
@@ -175,7 +175,7 @@ public class SemicolonTest {
     public void PICT_7() throws Exception {
         shell.parseAndEvaluate("echo `echo hello; echo awesome; echo world;`;", outputStream);
 
-        String expected = "helloawesomeworld\n";
+        String expected = "helloawesomeworld" + System.lineSeparator();
         String actual = outputStream.toString();
 
         assertEquals(expected, actual);

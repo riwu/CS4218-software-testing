@@ -25,7 +25,7 @@ public class SedApplication implements SedInterface {
             throw new SedException("null stdout");
         }
         ArrayList<String> parsedArg = parseArgs(args);
-        String result = "";
+        String result;
 
         // no input file, get from stdin
         if (parsedArg.size() == 3) {
@@ -33,7 +33,7 @@ public class SedApplication implements SedInterface {
                 throw new SedException("Input arg missing");
             }
             try {
-                replaceSubstringInStdin(parsedArg.get(0), parsedArg.get(1), Integer.parseInt(parsedArg.get(2)), stdin);
+                result = replaceSubstringInStdin(parsedArg.get(0), parsedArg.get(1), Integer.parseInt(parsedArg.get(2)), stdin);
             } catch (Exception e) {
                 throw new SedException(e.getMessage());
             }
@@ -83,18 +83,22 @@ public class SedApplication implements SedInterface {
 	@Override
 	public String replaceSubstringInStdin(String pattern, String replacement, int replacementIndex, InputStream stdin)
 			throws Exception {
+
         Scanner fileScanner = new Scanner(stdin);
-        String filename = fileScanner.nextLine();
-        Path currentDir = Paths.get(Environment.currentDirectory);
-        File file = currentDir.resolve(filename).toFile();
-        fileScanner.close();
-        if (!file.exists()) {
-            throw new Exception("Invalid file");
+        String line;
+        StringBuilder strBuilder = new StringBuilder();
+
+        while (fileScanner.hasNextLine()) {
+            line = fileScanner.nextLine();
+            if (pattern.isEmpty()) {
+                strBuilder.append(line).append(System.lineSeparator());
+                continue;
+            }
+            String replaced = replaceLine(pattern, replacement, replacementIndex, line);
+            strBuilder.append(replaced).append(System.lineSeparator());
         }
-        if (file.isDirectory()) {
-            throw new Exception("stdin is directory");
-        }
-        return replaceSubstringInFile(pattern, replacement, replacementIndex, filename);
+		fileScanner.close();
+        return strBuilder.toString();
 	}
 
 	@SuppressWarnings("PMD.ExcessiveMethodLength")

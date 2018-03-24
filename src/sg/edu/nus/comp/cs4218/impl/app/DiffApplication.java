@@ -20,13 +20,16 @@ import java.util.*;
  * </dl>
  * </p>
  */
+@SuppressWarnings({"PMD.GodClass", "PMD.ExcessiveMethodLength"})
 public class DiffApplication implements DiffInterface {
+    static final String DIFFER_KEYWORD = "differ";
     static HashMap<Character, Integer> optionsMap = new HashMap<>();
     static {
         optionsMap.put('s', 0);
         optionsMap.put('B', 1);
         optionsMap.put('q', 2);
     }
+    private boolean isStdinFirst = false;
 
 	/**
 	 * Runs the cat application with the specified arguments.
@@ -101,59 +104,125 @@ public class DiffApplication implements DiffInterface {
 
 	@Override
 	public String diffTwoFiles(String fileNameA, String fileNameB, Boolean isShowSame, Boolean isNoBlank, Boolean isSimple) throws Exception {
-        Set<String> set1 = new HashSet<>();
-        Set<String> set2 = new HashSet<>();
-        Set<String> onlySet2 = new HashSet<>();
-        BufferedReader br1 = new BufferedReader(new FileReader(new File(fileNameA)));
-        BufferedReader br2 = new BufferedReader(new FileReader(new File(fileNameB)));
-        String line;
-
         if (isTextFile(fileNameA)) {
-            while ((line = br1.readLine()) != null) {
-                if (isNoBlank && line.trim().equals("")) {
-                    continue;
+            ArrayList<String> fileAExtra = new ArrayList<>();
+            ArrayList<String> fileBExtra = new ArrayList<>();
+            boolean hasPrevLineFileA = false;
+            BufferedReader br1 = new BufferedReader(new FileReader(new File(fileNameA)));
+            BufferedReader br2 = new BufferedReader(new FileReader(new File(fileNameB)));
+            String lineA = br1.readLine();
+            String lineB = br2.readLine();
+
+            while (lineA != null && lineB != null) {
+                if (isNoBlank) {
+                    if (lineA.trim().equals("")) {
+                        lineA = br1.readLine();
+                        continue;
+                    }
+                    if (lineB.trim().equals("")) {
+                        lineB = br2.readLine();
+                        continue;
+                    }
                 }
-                set1.add(line);
+                if (!lineA.equals(lineB)) {
+                    if (isSimple) {
+                        br1.close();
+                        br2.close();
+                        return parseOutput(fileNameA, fileNameB, DIFFER_KEYWORD, false, isShowSame, false);
+                    }
+                    String prevLineFileA = lineA;
+                    lineA = br1.readLine();
+                    if (lineA == null) {
+                        fileAExtra.add(prevLineFileA);
+                        continue;
+                    }
+                    else if (lineA.equals(lineB)) {
+                        fileAExtra.add(prevLineFileA);
+                    } else { // check fileB
+                        String prevLineFileB = lineB;
+                        lineB = br2.readLine();
+                        if (lineB == null) {
+                            fileAExtra.add(prevLineFileA);
+                            fileBExtra.add(prevLineFileB);
+                            continue;
+                        }
+                        else if (prevLineFileA.equals(lineB)) {
+                            fileBExtra.add(prevLineFileB);
+                            hasPrevLineFileA = true;
+                        } else {
+                            fileAExtra.add(prevLineFileA);
+                            fileBExtra.add(prevLineFileB);
+                            continue;
+                        }
+                    }
+                }
+                if (!hasPrevLineFileA) {
+                    lineA = br1.readLine();
+                }
+                hasPrevLineFileA = false;
+                lineB = br2.readLine();
             }
-            while ((line = br2.readLine()) != null) {
-                if (isNoBlank && line.trim().equals("")) {
-                    continue;
+
+            while (lineA != null) {
+                if (!(isNoBlank && lineA.trim().equals(""))) {
+                    fileAExtra.add(lineA);
                 }
-                else if (isSimple && !set1.contains(line)) {
-					br1.close(); br2.close();
-                    return parseOutput(fileNameA, fileNameB, "differ", false);
-                } else if (!set1.contains(line)) {
-                    onlySet2.add(line);
-                }
-                set2.add(line);
+                lineA = br1.readLine();
             }
-			br1.close(); br2.close();
+            while (lineB != null) {
+                if (!(isNoBlank && lineB.trim().equals(""))) {
+                    fileBExtra.add(lineB);
+                }
+                lineB = br2.readLine();
+            }
+            br1.close();
+            br2.close();
+
+            if (isSimple && (!fileAExtra.isEmpty() || !fileBExtra.isEmpty())) {
+                return parseOutput(fileNameA, fileNameB, DIFFER_KEYWORD, false, isShowSame, false);
+            }
+
+            if (isShowSame && fileAExtra.isEmpty() && fileBExtra.isEmpty()) {
+                return parseOutput(fileNameA, fileNameB,"are identical", false, isShowSame, false);
+            }
+
+            return parseDiffFormatOutput(fileAExtra, fileBExtra);
         } else {
-            int val1;
-            int val2;
+            InputStream inputStreamA = new FileInputStream(fileNameA);
+            InputStream inputStreamB = new FileInputStream(fileNameB);
+            byte[] bufferA = new byte[4096];
+            byte[] bufferB = new byte[4096];
+            boolean fileDiffers = false;
 
-            while ((val1 = br1.read()) > 0) {
-                val2 = br2.read();
-                if (val1 != val2) {
-					br1.close(); br2.close();
-                    return parseOutput(fileNameA, fileNameB, "differ", true);
+            while ( inputStreamA.read(bufferA) > 0) {
+                int valB = inputStreamB.read(bufferB);
+                if (valB == -1) {
+                    fileDiffers = true;
+                    break;
+                }
+                if (!Arrays.equals(bufferA, bufferB)) {
+                    fileDiffers = true;
+                    break;
                 }
             }
-            if (isShowSame) {
-				br1.close(); br2.close();
-                return parseOutput(fileNameA, fileNameB, "are identical", true);
+            inputStreamA.close();
+
+            if (fileDiffers) {
+                inputStreamB.close();
+                return parseOutput(fileNameA, fileNameB, DIFFER_KEYWORD, true, isShowSame, false);
             }
-        }
 
-        set1.removeAll(set2);
-        if (isShowSame && onlySet2.isEmpty() && set1.isEmpty()) {
-            return parseOutput(fileNameA, fileNameB, "are identical", false);
-        }
-        if (isSimple && !set1.isEmpty()) {
-            return parseOutput(fileNameA, fileNameB, "differ", false);
-        }
+            if (inputStreamB.read(bufferB) > 0) {
+                inputStreamB.close();
+                return parseOutput(fileNameA, fileNameB, DIFFER_KEYWORD, true, isShowSame, false);
+            }
+            inputStreamB.close();
+            if (isShowSame) {
+                return parseOutput(fileNameA, fileNameB, "are identical", true, isShowSame, false);
+            }
 
-        return parseDiffFormatOutput(set1, onlySet2);
+            return "";
+        }
 	}
 
 	@Override
@@ -161,7 +230,7 @@ public class DiffApplication implements DiffInterface {
         Set<String> set1 = getFileInDir(folderA);
         Set<String> set2 = getFileInDir(folderB);
         StringBuilder strBuilder = new StringBuilder();
-        String outputString = "";
+        String outputString;
 
         for (String filename : set1) {
             if (set2.contains(filename)) {
@@ -178,13 +247,13 @@ public class DiffApplication implements DiffInterface {
                     if (result.isEmpty()) {
                         continue;
                     }
-                    char c = result.charAt(0);
-                    if (c == '>' || c == '<') {
+                    char stringChar = result.charAt(0);
+                    if (stringChar == '>' || stringChar == '<') {
                         outputString = parseDiretoryOutput("diff",
                                 folderA, folderB, file.getName(), "", false);
                         strBuilder.append(outputString);
                     }
-                    strBuilder.append(result).append(System.lineSeparator());;
+                    strBuilder.append(result).append(System.lineSeparator());
                 }
             } else {
                 strBuilder.append("Only in ")
@@ -206,31 +275,101 @@ public class DiffApplication implements DiffInterface {
 	@Override
 	public String diffFileAndStdin(String fileName, InputStream stdin, Boolean isShowSame, Boolean isNoBlank, Boolean isSimple) throws Exception {
 	    File firstFile = new File(fileName);
-		Scanner fileScanner = new Scanner(stdin);
-	    String stdinFileName = fileScanner.nextLine();
-        File stdinFile = new File(stdinFileName);
-		String output = "";
 
-        if (!stdinFile.exists()) {
-			fileScanner.close();
-            throw new DiffException("Invalid stdin file");
+        if (firstFile.isDirectory()) {
+            throw new DiffException("Unable to diff directory with stdin");
         }
-        if (firstFile.isFile() && stdinFile.isFile()) {
-			output = diffTwoFiles(fileName, stdinFileName, isShowSame, isNoBlank, isSimple);
+
+        Scanner fileScanner = new Scanner(stdin);
+        ArrayList<String> fileExtra = new ArrayList<>();
+        ArrayList<String> stdinExtra = new ArrayList<>();
+        boolean hasPrevLineFile = false;
+
+        BufferedReader br1 = new BufferedReader(new FileReader(firstFile));
+        String line = br1.readLine();
+        String stdinLine = getNextStdinLine(fileScanner);
+
+        while (line != null && stdinLine != null) {
+            if (isNoBlank) {
+                if (line.trim().equals("")) {
+                    line = br1.readLine();
+                    continue;
+                }
+                if (stdinLine.trim().equals("")) {
+                    stdinLine = getNextStdinLine(fileScanner);
+                    continue;
+                }
+            }
+            if (!line.equals(stdinLine)) {
+                if (isSimple) {
+                    br1.close();
+                    fileScanner.close();
+                    return parseOutput(fileName, "-", DIFFER_KEYWORD, false, isShowSame, true);
+                }
+                String prevLineFile = line;
+                line = br1.readLine();
+                if (line == null) {
+                    fileExtra.add(prevLineFile);
+                    stdinExtra.add(stdinLine);
+                    continue;
+                }
+                else if (line.equals(stdinLine)) {
+                    fileExtra.add(prevLineFile);
+                } else { // check stdin
+                    String prevLineStdin = stdinLine;
+                    stdinLine = getNextStdinLine(fileScanner);
+
+                    if (stdinLine == null) {
+                        fileExtra.add(prevLineFile);
+                        fileExtra.add(line);
+                        stdinExtra.add(prevLineStdin);
+                        continue;
+                    }
+                    else if (prevLineFile.equals(stdinLine)) {
+                        stdinExtra.add(prevLineStdin);
+                        hasPrevLineFile = true;
+                    } else {
+                        fileExtra.add(prevLineFile);
+                        stdinExtra.add(prevLineStdin);
+                        continue;
+                    }
+                }
+            }
+            if (!hasPrevLineFile) {
+                line = br1.readLine();
+            }
+            hasPrevLineFile = false;
+            stdinLine = getNextStdinLine(fileScanner);
         }
-        else if (firstFile.isDirectory() && stdinFile.isDirectory()) {
-			output = diffTwoDir(fileName, stdinFileName, isShowSame, isNoBlank, isSimple);
-        } else {
-			fileScanner.close();
-            throw new DiffException("Unable to diff directory and file");
+
+        while (line != null) {
+            if (!(isNoBlank && line.trim().equals(""))) {
+                fileExtra.add(line);
+            }
+            line = br1.readLine();
         }
+        while (stdinLine != null) {
+            if (isNoBlank && stdinLine.trim().equals("")) {
+                stdinExtra.add(stdinLine);
+            }
+            stdinLine = getNextStdinLine(fileScanner);
+        }
+        br1.close();
 		fileScanner.close();
-		return output;
+        if (isSimple && (!fileExtra.isEmpty() || !stdinExtra.isEmpty())) {
+            return parseOutput(fileName, "-", DIFFER_KEYWORD, false, isShowSame, true);
+        }
+		if (isShowSame && fileExtra.isEmpty() && stdinExtra.isEmpty()) {
+		    return parseOutput(fileName, "-", "are identical", false, isShowSame, true);
+        }
+
+
+		return parseDiffFormatOutput(fileExtra, stdinExtra);
 	}
 
 	@SuppressWarnings("PMD.PreserveStackTrace")
     private Set<String> getFileInDir(String folder) throws DiffException {
-	    Set<String> set = new HashSet<String>();
+	    Set<String> set = new HashSet<>();
 
         try {
             Files.walkFileTree(Paths.get(folder), new SimpleFileVisitor<Path>() {
@@ -265,8 +404,8 @@ public class DiffApplication implements DiffInterface {
 	@SuppressWarnings("PMD.PreserveStackTrace")
     private boolean isTextFile(String filename) throws DiffException {
         File file = new File(filename);
-        String s;
-        String s2;
+        String filedata;
+        String replacedData;
 
         try {
             FileInputStream inputStream = new FileInputStream(file);
@@ -278,8 +417,8 @@ public class DiffApplication implements DiffInterface {
             byte[] data = new byte[size];
             inputStream.read(data);
             inputStream.close();
-            s = new String(data, "ISO-8859-1");
-            s2 = s.replaceAll(
+            filedata = new String(data, "ISO-8859-1");
+            replacedData = filedata.replaceAll(
                     "[a-zA-Z0-9ßöäü\\.\\*!\"§\\$\\%&/()=\\?@~'#:,;\\"+
                             "+><\\|\\[\\]\\{\\}\\^°²³\\\\ \\n\\r\\t_\\-`´âêîô"+
                             "ÂÊÔÎáéíóàèìòÁÉÍÓÀÈÌÒ©‰¢£¥€±¿»«¼½¾™ª]", "");
@@ -287,7 +426,7 @@ public class DiffApplication implements DiffInterface {
         } catch (IOException e) {
             throw new DiffException(e.getMessage());
         }
-        double val = (double)(s.length() - s2.length()) / (double)(s.length());
+        double val = (double)(filedata.length() - replacedData.length()) / (double)(filedata.length());
         // percentage of text signs in the text
         return val > 0.95;
     }
@@ -298,15 +437,15 @@ public class DiffApplication implements DiffInterface {
 
         for (String arg : args) {
             for (int i = 0; i < arg.length(); i++) {
-                Character c = arg.charAt(i);
+                Character stringChar = arg.charAt(i);
 
-                if (i == 0 && c != '-') {
+                if (i == 0 && stringChar != '-') {
                     break;
                 } else if (i == 0) {
                     continue;
                 }
-                if (optionsMap.containsKey(c)) {
-					optionBool[optionsMap.get(c)] = true;
+                if (optionsMap.containsKey(stringChar)) {
+					optionBool[optionsMap.get(stringChar)] = true;
                 } else {
 					throw new DiffException("Invalid option");
                 }
@@ -328,6 +467,9 @@ public class DiffApplication implements DiffInterface {
                 }
                 isStdin = true;
                 files[1] = arg;
+                if (fileCounter == 0) {
+                    isStdinFirst = true;
+                }
                 fileCounter += 1;
             } else if (arg.charAt(0) == '-') {
                 continue;
@@ -356,28 +498,38 @@ public class DiffApplication implements DiffInterface {
 	    return files;
     }
 
-    private String parseOutput(String fileA, String fileB, String output, boolean isBinary) {
+    private String parseOutput(String fileA, String fileB, String output, boolean isBinary, boolean isShowSame, boolean hasStdin) {
         StringBuilder strBuilder = new StringBuilder();
-	    if (isBinary) {
+	    if (isBinary && !isShowSame) {
 	        strBuilder.append("Binary files ");
         } else {
 	        strBuilder.append("Files ");
         }
-	    strBuilder.append(fileA);
-	    if (isBinary) {
-	        strBuilder.append(" and ");
+
+        if (hasStdin && isStdinFirst) {
+	        strBuilder.append(fileB);
         } else {
-	        strBuilder.append(' ');
+	        strBuilder.append(fileA);
         }
-        strBuilder.append(fileB).append(' ').append(output);
+
+        strBuilder.append(" and ");
+
+        if (hasStdin && isStdinFirst) {
+            strBuilder.append(fileA);
+        } else {
+            strBuilder.append(fileB);
+        }
+
+        strBuilder.append(' ')
+                .append(output);
 
 	    return strBuilder.toString();
     }
 
-    private String parseDiffFormatOutput(Set<String> set1, Set<String> set2) {
+    private String parseDiffFormatOutput(ArrayList<String> array1, ArrayList<String> set2) {
 	    StringBuilder strBuilder = new StringBuilder();
 
-        for (String s: set1) {
+        for (String s: array1) {
             strBuilder.append("< ").append(s).append(System.lineSeparator());
         }
 
@@ -406,5 +558,13 @@ public class DiffApplication implements DiffInterface {
 
         strBuilder.append(System.lineSeparator());
 	    return strBuilder.toString();
+    }
+
+    private String getNextStdinLine(Scanner scanner) {
+	    String output = null;
+	    if (scanner.hasNextLine()) {
+	        output = scanner.nextLine();
+        }
+        return output;
     }
 }

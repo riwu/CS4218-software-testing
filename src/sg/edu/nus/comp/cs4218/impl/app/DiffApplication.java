@@ -22,6 +22,7 @@ import java.util.*;
  * </p>
  */
 public class DiffApplication implements DiffInterface {
+    static String DIFFER_KEYWORD = "differ";
     static HashMap<Character, Integer> optionsMap = new HashMap<>();
     static {
         optionsMap.put('s', 0);
@@ -127,7 +128,7 @@ public class DiffApplication implements DiffInterface {
                     if (isSimple) {
                         br1.close();
                         br2.close();
-                        return parseOutput(fileNameA, fileNameB, "differ", false, isShowSame, false);
+                        return parseOutput(fileNameA, fileNameB, DIFFER_KEYWORD, false, isShowSame, false);
                     }
                     String prevLineFileA = lineA;
                     lineA = br1.readLine();
@@ -178,7 +179,7 @@ public class DiffApplication implements DiffInterface {
             br2.close();
 
             if (isSimple && (!fileAExtra.isEmpty() || !fileBExtra.isEmpty())) {
-                return parseOutput(fileNameA, fileNameB, "differ", false, isShowSame, false);
+                return parseOutput(fileNameA, fileNameB, DIFFER_KEYWORD, false, isShowSame, false);
             }
 
             if (isShowSame && fileAExtra.isEmpty() && fileBExtra.isEmpty()) {
@@ -191,26 +192,35 @@ public class DiffApplication implements DiffInterface {
             InputStream inputStreamB = new FileInputStream(fileNameB);
             byte[] bufferA = new byte[4096];
             byte[] bufferB = new byte[4096];
+            boolean fileDiffers = false;
 
             while ( inputStreamA.read(bufferA) > 0) {
                 int valB = inputStreamB.read(bufferB);
                 if (valB == -1) {
-                    return parseOutput(fileNameA, fileNameB, "differ", true, isShowSame, false);
+                    fileDiffers = true;
+                    break;
                 }
                 if (!Arrays.equals(bufferA, bufferB)) {
-                    inputStreamA.close();
-					inputStreamB.close();
-                    return parseOutput(fileNameA, fileNameB, "differ", true, isShowSame, false);
+                    fileDiffers = true;
+                    break;
                 }
             }
-            if (inputStreamB.read(bufferB) > 0) {
-                return parseOutput(fileNameA, fileNameB, "differ", true, isShowSame, false);
-            }
-            if (isShowSame) {
-                inputStreamA.close();
+            inputStreamA.close();
+
+            if (fileDiffers) {
                 inputStreamB.close();
+                return parseOutput(fileNameA, fileNameB, DIFFER_KEYWORD, true, isShowSame, false);
+            }
+
+            if (inputStreamB.read(bufferB) > 0) {
+                inputStreamB.close();
+                return parseOutput(fileNameA, fileNameB, DIFFER_KEYWORD, true, isShowSame, false);
+            }
+            inputStreamB.close();
+            if (isShowSame) {
                 return parseOutput(fileNameA, fileNameB, "are identical", true, isShowSame, false);
             }
+
             return "";
         }
 	}
@@ -237,8 +247,8 @@ public class DiffApplication implements DiffInterface {
                     if (result.isEmpty()) {
                         continue;
                     }
-                    char c = result.charAt(0);
-                    if (c == '>' || c == '<') {
+                    char stringChar = result.charAt(0);
+                    if (stringChar == '>' || stringChar == '<') {
                         outputString = parseDiretoryOutput("diff",
                                 folderA, folderB, file.getName(), "", false);
                         strBuilder.append(outputString);
@@ -294,7 +304,7 @@ public class DiffApplication implements DiffInterface {
                 if (isSimple) {
                     br1.close();
                     fileScanner.close();
-                    return parseOutput(fileName, "-", "differ", false, isShowSame, true);
+                    return parseOutput(fileName, "-", DIFFER_KEYWORD, false, isShowSame, true);
                 }
                 String prevLineFile = line;
                 line = br1.readLine();
@@ -347,7 +357,7 @@ public class DiffApplication implements DiffInterface {
         br1.close();
 		fileScanner.close();
         if (isSimple && (!fileExtra.isEmpty() || !stdinExtra.isEmpty())) {
-            return parseOutput(fileName, "-", "differ", false, isShowSame, true);
+            return parseOutput(fileName, "-", DIFFER_KEYWORD, false, isShowSame, true);
         }
 		if (isShowSame && fileExtra.isEmpty() && stdinExtra.isEmpty()) {
 		    return parseOutput(fileName, "-", "are identical", false, isShowSame, true);
@@ -496,18 +506,21 @@ public class DiffApplication implements DiffInterface {
 	        strBuilder.append("Files ");
         }
 
-        if (hasStdin) {
-	        if (isStdinFirst) {
-	            String temp = fileA;
-	            fileA = fileB;
-	            fileB = temp;
-            }
+        if (hasStdin && isStdinFirst) {
+	        strBuilder.append(fileB);
+        } else {
+	        strBuilder.append(fileA);
         }
 
-        strBuilder.append(fileA)
-                .append(" and ")
-                .append(fileB)
-                .append(' ')
+        strBuilder.append(" and ");
+
+        if (hasStdin && isStdinFirst) {
+            strBuilder.append(fileA);
+        } else {
+            strBuilder.append(fileB);
+        }
+
+        strBuilder.append(' ')
                 .append(output);
 
 	    return strBuilder.toString();

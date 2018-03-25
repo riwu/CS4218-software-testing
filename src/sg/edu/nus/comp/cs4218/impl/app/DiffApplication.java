@@ -24,12 +24,7 @@ import java.util.*;
 @SuppressWarnings({"PMD.GodClass", "PMD.ExcessiveMethodLength"})
 public class DiffApplication implements DiffInterface {
     static final String DIFFER_KEYWORD = "differ";
-    static HashMap<Character, Integer> optionsMap = new HashMap<>();
-    static {
-        optionsMap.put('s', 0);
-        optionsMap.put('B', 1);
-        optionsMap.put('q', 2);
-    }
+    private HashMap<Character, Integer> optionsMap;
     private boolean isStdinFirst = false;
 
 	/**
@@ -52,6 +47,10 @@ public class DiffApplication implements DiffInterface {
 	@SuppressWarnings("PMD.PreserveStackTrace")
 	public void run(String[] args, InputStream stdin, OutputStream stdout)
 			throws DiffException {
+		optionsMap = new HashMap<>();
+		optionsMap.put('s', 0);
+        optionsMap.put('B', 1);
+        optionsMap.put('q', 2);
         Boolean[] options = parseOptions(args);
         String[] inputFiles = parseFile(args);
 

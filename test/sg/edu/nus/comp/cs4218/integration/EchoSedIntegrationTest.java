@@ -24,7 +24,7 @@ public class EchoSedIntegrationTest {
 
     @Test
     public void whenReplaceEntireWordExpectChange() throws Exception {
-        String expected = "world";
+        String expected = "world" + System.lineSeparator();
         String argument = "echo hello | sed s/hello/world/";
         shell.parseAndEvaluate(argument, stdout);
 
@@ -33,7 +33,7 @@ public class EchoSedIntegrationTest {
 
     @Test
     public void whenReplaceSecondWordExpectOnlySecondChange() throws Exception {
-        String expected = "helco";
+        String expected = "helco" + System.lineSeparator();
         String argument = "echo hello | sed s/l/c/2";
         shell.parseAndEvaluate(argument, stdout);
 

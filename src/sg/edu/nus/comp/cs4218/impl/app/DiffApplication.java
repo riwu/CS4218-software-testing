@@ -368,6 +368,9 @@ public class DiffApplication implements DiffInterface {
         }
 
 
+        if (isStdinFirst) {
+            return parseDiffFormatOutput(stdinExtra, fileExtra);
+        }
 		return parseDiffFormatOutput(fileExtra, stdinExtra);
 	}
 

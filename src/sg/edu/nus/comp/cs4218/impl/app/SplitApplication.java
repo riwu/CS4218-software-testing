@@ -150,7 +150,7 @@ public class SplitApplication implements SplitInterface {
 
     private int bytes(String bytesPerFile) {
         // this regex matches any number of digits follow by exactly one of [b,k,m]
-        Pattern pattern = Pattern.compile("^(\\d+)([b,k,m])$");
+        Pattern pattern = Pattern.compile("^(\\d+)([b,k,m]?)$");
         Matcher matcher = pattern.matcher(bytesPerFile);
 
         // doesn't match, return negative value
@@ -158,7 +158,11 @@ public class SplitApplication implements SplitInterface {
 
         // extract matched components
         int base = Integer.parseInt(matcher.group(1)); // guaranteed digits by regex
-        char multiplier = matcher.group(2).charAt(0); // guaranteed single char by regex
+        String modifier = matcher.group(2);
+        if (modifier.isEmpty()) {
+            return base;
+        }
+        char multiplier = modifier.charAt(0); // guaranteed single char by regex
 
         // calculate & return the exact bytes in numerical form
         switch (multiplier) {

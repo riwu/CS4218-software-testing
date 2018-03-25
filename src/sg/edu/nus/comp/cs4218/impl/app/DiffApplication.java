@@ -494,7 +494,7 @@ public class DiffApplication implements DiffInterface {
 	    if (!file.exists()) {
 	        throw new DiffException("Invalid file");
         }
-        if (!files[1].equals('-')) {
+        if (!files[1].equals("-")) {
 	        file = currentDir.resolve(files[1]).toFile();
 	        if (!file.exists()) {
 	            throw new DiffException("Invalid file");

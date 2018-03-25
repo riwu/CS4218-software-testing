@@ -72,8 +72,9 @@ public class DiffApplication implements DiffInterface {
                 throw new DiffException(e.getMessage());
             }
         } else {
-            File file1 = new File(inputFiles[0]);
-            File file2 = new File(inputFiles[1]);
+			Path currentDir = Paths.get(Environment.currentDirectory);
+            File file1 = currentDir.resolve(inputFiles[0]).toFile();
+            File file2 = currentDir.resolve(inputFiles[1]).toFile();
 
             if ((file1.isDirectory() && file2.isFile()) || file1.isFile() && file2.isDirectory()) {
                 throw new DiffException("Invalid comparison between directory and file");
@@ -493,7 +494,7 @@ public class DiffApplication implements DiffInterface {
 	    if (!file.exists()) {
 	        throw new DiffException("Invalid file");
         }
-        if (!files[1].equals('-')) {
+        if (!files[1].equals("-")) {
 	        file = currentDir.resolve(files[1]).toFile();
 	        if (!file.exists()) {
 	            throw new DiffException("Invalid file");

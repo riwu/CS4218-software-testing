@@ -45,7 +45,6 @@ public class SedApplication implements SedInterface {
             }
         }
 
-
         try {
             stdout.write(result.getBytes());
         } catch (Exception e) {
@@ -83,7 +82,6 @@ public class SedApplication implements SedInterface {
 	@Override
 	public String replaceSubstringInStdin(String pattern, String replacement, int replacementIndex, InputStream stdin)
 			throws Exception {
-
         Scanner fileScanner = new Scanner(stdin);
         String line;
         StringBuilder strBuilder = new StringBuilder();

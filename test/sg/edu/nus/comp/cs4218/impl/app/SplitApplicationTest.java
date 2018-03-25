@@ -17,6 +17,7 @@ public class SplitApplicationTest {
     private static final String XAB = "xab";
     private static final String XAA = "xaa";
     private SplitApplication splitApplication = new SplitApplication();
+    private static final String DEFAULT_DIR = Environment.currentDirectory;
     private static final String CURRENT_DIR = Environment.currentDirectory + File.separator + "SplitApplicationTest";
     private static final String RESOURCE_FOLDER = "testresource";
     private static final String FILENAME = CURRENT_DIR + File.separator + "newfile";
@@ -38,6 +39,7 @@ public class SplitApplicationTest {
             file.delete();
         }
         testDir.delete();
+        Environment.currentDirectory = DEFAULT_DIR;
     }
 
     private void deleteDirectory(File directoryToBeDeleted) {

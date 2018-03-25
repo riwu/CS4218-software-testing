@@ -482,7 +482,11 @@ public class DiffApplication implements DiffInterface {
             } else if (fileCounter == 2) {
                 break;
             } else {
-                files[fileCounter] = arg;
+                if (files[fileCounter] != null) {
+                    files[0] = arg;
+                } else {
+                    files[fileCounter] = arg;
+                }
                 fileCounter += 1;
             }
         }
@@ -501,7 +505,6 @@ public class DiffApplication implements DiffInterface {
             }
 
         }
-
 	    return files;
     }
 

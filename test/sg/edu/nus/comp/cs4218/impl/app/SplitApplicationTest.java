@@ -17,23 +17,27 @@ public class SplitApplicationTest {
     private static final String XAB = "xab";
     private static final String XAA = "xaa";
     private SplitApplication splitApplication = new SplitApplication();
-    private static final String CURRENT_DIR = Environment.currentDirectory;
+    private static final String CURRENT_DIR = Environment.currentDirectory + File.separator + "SplitApplicationTest";
     private static final String RESOURCE_FOLDER = "testresource";
-    private static final String FILENAME = CURRENT_DIR + File.separator + RESOURCE_FOLDER + File.separator + "newfile";
+    private static final String FILENAME = CURRENT_DIR + File.separator + "newfile";
     private File testDir;
     private File file;
     boolean isImplemented = false;
 
     @Before
     public void setUp() throws Exception {
-        testDir = new File(CURRENT_DIR + File.separator + RESOURCE_FOLDER);
+        Environment.currentDirectory = CURRENT_DIR;
+        testDir = new File(CURRENT_DIR);
         testDir.mkdir();
         file = new File(FILENAME);
     }
 
     @After
     public void tearDown() throws Exception {
-        file.delete();
+        for (File file : testDir.listFiles()) {
+            file.delete();
+        }
+        testDir.delete();
     }
 
     private void deleteDirectory(File directoryToBeDeleted) {
@@ -159,8 +163,8 @@ public class SplitApplicationTest {
         String[] args = {FILENAME};
         splitApplication.run(args, null, System.out);
 
-        File firstFile = new File(CURRENT_DIR + File.separator + RESOURCE_FOLDER + File.separator + XAA);
-        File nonExistantFile = new File(CURRENT_DIR + File.separator + RESOURCE_FOLDER + File.separator + XAB);
+        File firstFile = new File(CURRENT_DIR + File.separator + XAA);
+        File nonExistantFile = new File(CURRENT_DIR + File.separator + XAB);
         assertTrue(firstFile.exists());
         assertFalse(nonExistantFile.exists());
         firstFile.delete();
@@ -183,9 +187,9 @@ public class SplitApplicationTest {
         String[] args = {FILENAME};
         splitApplication.run(args, null, System.out);
 
-        File firstFile = new File(CURRENT_DIR + File.separator + RESOURCE_FOLDER + File.separator + XAA);
-        File secondFile = new File(CURRENT_DIR + File.separator + RESOURCE_FOLDER + File.separator + XAB);
-        File nonExistantFile = new File(CURRENT_DIR + File.separator + RESOURCE_FOLDER + File.separator + XAC);
+        File firstFile = new File(CURRENT_DIR + File.separator + XAA);
+        File secondFile = new File(CURRENT_DIR + File.separator + XAB);
+        File nonExistantFile = new File(CURRENT_DIR + File.separator + XAC);
         assertTrue(firstFile.exists());
         assertTrue(secondFile.exists());
         assertFalse(nonExistantFile.exists());
@@ -211,9 +215,9 @@ public class SplitApplicationTest {
         String[] args = {"-l", "2", FILENAME};
         splitApplication.run(args, null, System.out);
 
-        File firstFile = new File(CURRENT_DIR + File.separator + RESOURCE_FOLDER + File.separator + XAA);
-        File lastFile = new File(CURRENT_DIR + File.separator + RESOURCE_FOLDER + File.separator + "xae");
-        File nonExistantFile = new File(CURRENT_DIR + File.separator + RESOURCE_FOLDER + File.separator + "xaf");
+        File firstFile = new File(CURRENT_DIR + File.separator + XAA);
+        File lastFile = new File(CURRENT_DIR + File.separator + "xae");
+        File nonExistantFile = new File(CURRENT_DIR + File.separator + "xaf");
         assertTrue(firstFile.exists());
         assertTrue(lastFile.exists());
         assertFalse(nonExistantFile.exists());
@@ -222,9 +226,9 @@ public class SplitApplicationTest {
 
     @Test
     public void shouldSplitInto4FilesWhen10LineInput() throws Exception {
-        File firstFile = new File(CURRENT_DIR + File.separator + RESOURCE_FOLDER + File.separator + XAA);
-        File lastFile = new File(CURRENT_DIR + File.separator + RESOURCE_FOLDER + File.separator + "xad");
-        File nonExistantFile = new File(CURRENT_DIR + File.separator + RESOURCE_FOLDER + File.separator + "xae");
+        File firstFile = new File(CURRENT_DIR + File.separator + XAA);
+        File lastFile = new File(CURRENT_DIR + File.separator + "xad");
+        File nonExistantFile = new File(CURRENT_DIR + File.separator + "xae");
 
         String inputString = generateString(10);
         Files.write(file.toPath(), inputString.getBytes());
@@ -238,9 +242,9 @@ public class SplitApplicationTest {
 
     @Test
     public void shouldHavexbaNameWhenMoreThan26Line() throws Exception {
-        File firstFile = new File(CURRENT_DIR + File.separator + RESOURCE_FOLDER + File.separator + XAA);
-        File lastFile = new File(CURRENT_DIR + File.separator + RESOURCE_FOLDER + File.separator + "xba");
-        File nonExistantFile = new File(CURRENT_DIR + File.separator + RESOURCE_FOLDER + File.separator + "xbb");
+        File firstFile = new File(CURRENT_DIR + File.separator + XAA);
+        File lastFile = new File(CURRENT_DIR + File.separator + "xba");
+        File nonExistantFile = new File(CURRENT_DIR + File.separator + "xbb");
 
         String inputString = generateString(27);
         Files.write(file.toPath(), inputString.getBytes());
@@ -254,9 +258,9 @@ public class SplitApplicationTest {
 
     @Test
     public void shouldHavezaaNameWhenMoreThan676Line() throws Exception {
-        File firstFile = new File(CURRENT_DIR + File.separator + RESOURCE_FOLDER + File.separator + XAA);
-        File lastFile = new File(CURRENT_DIR + File.separator + RESOURCE_FOLDER + File.separator + "zaa");
-        File nonExistantFile = new File(CURRENT_DIR + File.separator + RESOURCE_FOLDER + File.separator + "zab");
+        File firstFile = new File(CURRENT_DIR + File.separator + XAA);
+        File lastFile = new File(CURRENT_DIR + File.separator + "zaa");
+        File nonExistantFile = new File(CURRENT_DIR + File.separator + "zab");
 
         String inputString = generateString(677);
         Files.write(file.toPath(), inputString.getBytes());
@@ -276,9 +280,9 @@ public class SplitApplicationTest {
         String[] args = {"-b", "5", FILENAME};
         splitApplication.run(args, null, System.out);
 
-        File firstFile = new File(CURRENT_DIR + File.separator + RESOURCE_FOLDER + File.separator + XAA);
-        File lastFile = new File(CURRENT_DIR + File.separator + RESOURCE_FOLDER + File.separator + XAB);
-        File nonExistantFile = new File(CURRENT_DIR + File.separator + RESOURCE_FOLDER + File.separator + XAC);
+        File firstFile = new File(CURRENT_DIR + File.separator + XAA);
+        File lastFile = new File(CURRENT_DIR + File.separator + XAB);
+        File nonExistantFile = new File(CURRENT_DIR + File.separator + XAC);
         assertTrue(firstFile.exists());
         assertTrue(lastFile.exists());
         assertFalse(nonExistantFile.exists());
@@ -286,9 +290,9 @@ public class SplitApplicationTest {
 
     @Test
     public void shouldSplitInto4FilesWhen10ByteInput() throws Exception {
-        File firstFile = new File(CURRENT_DIR + File.separator + RESOURCE_FOLDER + File.separator + XAA);
-        File lastFile = new File(CURRENT_DIR + File.separator + RESOURCE_FOLDER + File.separator + "xad");
-        File nonExistantFile = new File(CURRENT_DIR + File.separator + RESOURCE_FOLDER + File.separator + "xae");
+        File firstFile = new File(CURRENT_DIR + File.separator + XAA);
+        File lastFile = new File(CURRENT_DIR + File.separator + "xad");
+        File nonExistantFile = new File(CURRENT_DIR + File.separator + "xae");
 
         String inputString = generateStringByte(10);
         Files.write(file.toPath(), inputString.getBytes());
@@ -302,9 +306,9 @@ public class SplitApplicationTest {
 
     @Test
     public void shouldHavexbaNameWhenMoreThan26Byte() throws Exception {
-        File firstFile = new File(CURRENT_DIR + File.separator + RESOURCE_FOLDER + File.separator + XAA);
-        File lastFile = new File(CURRENT_DIR + File.separator + RESOURCE_FOLDER + File.separator + "xba");
-        File nonExistantFile = new File(CURRENT_DIR + File.separator + RESOURCE_FOLDER + File.separator + "xbb");
+        File firstFile = new File(CURRENT_DIR + File.separator + XAA);
+        File lastFile = new File(CURRENT_DIR + File.separator + "xba");
+        File nonExistantFile = new File(CURRENT_DIR + File.separator + "xbb");
 
         String inputString = generateStringByte(27);
         Files.write(file.toPath(), inputString.getBytes());
@@ -318,9 +322,9 @@ public class SplitApplicationTest {
 
     @Test
     public void shouldHavezaaNameWhenMoreThan676Byte() throws Exception {
-        File firstFile = new File(CURRENT_DIR + File.separator + RESOURCE_FOLDER + File.separator + XAA);
-        File lastFile = new File(CURRENT_DIR + File.separator + RESOURCE_FOLDER + File.separator + "zaa");
-        File nonExistantFile = new File(CURRENT_DIR + File.separator + RESOURCE_FOLDER + File.separator + "zab");
+        File firstFile = new File(CURRENT_DIR + File.separator + XAA);
+        File lastFile = new File(CURRENT_DIR + File.separator + "zaa");
+        File nonExistantFile = new File(CURRENT_DIR + File.separator + "zab");
 
         String inputString = generateStringByte(677);
         Files.write(file.toPath(), inputString.getBytes());
@@ -339,9 +343,9 @@ public class SplitApplicationTest {
         String[] args = {"-b", "1b", FILENAME};
         splitApplication.run(args, null, System.out);
 
-        File firstFile = new File(CURRENT_DIR + File.separator + RESOURCE_FOLDER + File.separator + XAA);
-        File lastFile = new File(CURRENT_DIR + File.separator + RESOURCE_FOLDER + File.separator + XAB);
-        File nonExistantFile = new File(CURRENT_DIR + File.separator + RESOURCE_FOLDER + File.separator + XAC);
+        File firstFile = new File(CURRENT_DIR + File.separator + XAA);
+        File lastFile = new File(CURRENT_DIR + File.separator + XAB);
+        File nonExistantFile = new File(CURRENT_DIR + File.separator + XAC);
         assertTrue(firstFile.exists());
         assertTrue(lastFile.exists());
         assertFalse(nonExistantFile.exists());
@@ -360,9 +364,9 @@ public class SplitApplicationTest {
 
     @Test
     public void shouldSplitInto2FilesWhen1kInput() throws Exception {
-        File firstFile = new File(CURRENT_DIR + File.separator + RESOURCE_FOLDER + File.separator + XAA);
-        File lastFile = new File(CURRENT_DIR + File.separator + RESOURCE_FOLDER + File.separator + XAB);
-        File nonExistantFile = new File(CURRENT_DIR + File.separator + RESOURCE_FOLDER + File.separator + XAC);
+        File firstFile = new File(CURRENT_DIR + File.separator + XAA);
+        File lastFile = new File(CURRENT_DIR + File.separator + XAB);
+        File nonExistantFile = new File(CURRENT_DIR + File.separator + XAC);
 
         String inputString = generateStringByte(2048);
         Files.write(file.toPath(), inputString.getBytes());
@@ -385,9 +389,9 @@ public class SplitApplicationTest {
 
     @Test
     public void shouldSplitInto2FilesWhen1mInput() throws Exception {
-        File firstFile = new File(CURRENT_DIR + File.separator + RESOURCE_FOLDER + File.separator + XAA);
-        File lastFile = new File(CURRENT_DIR + File.separator + RESOURCE_FOLDER + File.separator + XAB);
-        File nonExistantFile = new File(CURRENT_DIR + File.separator + RESOURCE_FOLDER + File.separator + XAC);
+        File firstFile = new File(CURRENT_DIR + File.separator + XAA);
+        File lastFile = new File(CURRENT_DIR + File.separator + XAB);
+        File nonExistantFile = new File(CURRENT_DIR + File.separator + XAC);
 
         String inputString = generateStringByte(2097152);
         Files.write(file.toPath(), inputString.getBytes());

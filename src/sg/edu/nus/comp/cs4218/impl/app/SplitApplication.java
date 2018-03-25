@@ -19,7 +19,8 @@ import java.util.regex.Pattern;
  */
 public class SplitApplication implements SplitInterface {
 
-    private static final String PREFIX = "x";
+    private static final String DEFAULT_PREFIX = "x";
+    private static final int DEFAULT_LINES = 1000;
 
     /**
      * Runs the cd application with the specified path.
@@ -35,26 +36,50 @@ public class SplitApplication implements SplitInterface {
 
     @Override
     public void run(String[] args, InputStream stdin, OutputStream stdout) throws SplitException {
-        if (args.length < 2) {
-            throw new SplitException("Split option not specified");
-        }
-        try {
+        boolean isSplitByLine = getIsSplitByLine(args);
+        String prefix = getPrefix(args);
 
-            InputStream source = args.length > 2 ? new FileInputStream(args[2]) : stdin;
-            String prefix = args.length > 3 ? args[3] : PREFIX;
-            switch (args[0]) {
-                case "-l":
-                    splitFileByLines(source, prefix, Integer.parseInt(args[1]));
-                    break;
-                case "-b":
-                    splitFileByBytes(source, prefix, args[1]);
-                    break;
-                default:
-                    throw new SplitException("Invalid split option specified");
+        try {
+            InputStream source = getSource(args, stdin);
+            if (isSplitByLine) {
+                splitFileByLines(source, prefix, getLinesArg(args));
+            } else {
+                splitFileByBytes(source, prefix, getBytesArg(args));
             }
         } catch (Exception e) {
             throw new SplitException(e.getMessage());
         }
+    }
+
+    private boolean getIsSplitByLine(String[] args) {
+        return args.length == 0 || !args[0].equals("-b");
+    }
+
+    private String getBytesArg(String[] args) {
+        return args[1];
+    }
+
+    private int getLinesArg(String[] args) {
+        return (args.length > 1 && args[0].equals("-l")) ? Integer.parseInt(args[1]) : DEFAULT_LINES;
+    }
+
+    private boolean hasOptions(String[] args) {
+        return args.length > 0 && (args[0].equals("-b") || args[0].equals("-l"));
+    }
+
+    private InputStream getSource(String[] args, InputStream stdin) throws FileNotFoundException {
+        if (args.length == 0) {
+            return stdin;
+        }
+        if (hasOptions(args)) {
+            return args.length > 2 ? new FileInputStream(args[2]) : stdin;
+        }
+        return new FileInputStream(args[0]);
+    }
+
+    private String getPrefix(String[] args) {
+        int prefixIndex = hasOptions(args) ? 3 : 1;
+        return args.length > prefixIndex ? args[prefixIndex] : DEFAULT_PREFIX;
     }
 
     @Override

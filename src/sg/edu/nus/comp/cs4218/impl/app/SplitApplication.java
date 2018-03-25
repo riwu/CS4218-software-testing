@@ -64,28 +64,21 @@ public class SplitApplication implements SplitInterface {
     }
 
     @Override
-    public void splitFileByBytes(String fileName, String prefix, String bytesPerFile) throws Exception {
-        Path filePath = Paths.get(fileName);
-        byte[] fileBytes = Files.readAllBytes(filePath);
-        int splitByte = bytes(bytesPerFile);
-
-
+    public void splitFileByBytes(InputStream stdin, String prefix, String bytesPerFile) throws Exception {
+        int bytes = bytes(bytesPerFile);
+        byte[] data = new byte[bytes];
         int i = 1;
-        int bytePosition = 0;
-        while (bytePosition < fileBytes.length) {
-
-            int toBytePosition = bytePosition + splitByte > fileBytes.length ? fileBytes.length : bytePosition + splitByte;
-
-            writeBytesToFile(Arrays.copyOfRange(fileBytes, bytePosition, toBytePosition), prefix + toBijectiveBase26(i));
-
+        int nRead;
+        while ((nRead = stdin.read(data)) != -1) {
+            writeBytesToFile(Arrays.copyOfRange(data, 0, nRead), prefix + toBijectiveBase26(i));
             i++;
-            bytePosition += toBytePosition;
         }
     }
 
     public void writeBytesToFile(byte[] byteArray, String filename) {
-        try (FileOutputStream fos = new FileOutputStream("/tmp/" + filename)) {
+        try (FileOutputStream fos = new FileOutputStream(filename)) {
             fos.write(byteArray);
+            fos.close();
         } catch (IOException ioe) {
             ioe.printStackTrace();
         }

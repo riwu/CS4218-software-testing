@@ -1,18 +1,14 @@
 package sg.edu.nus.comp.cs4218.impl.app;
 
 import sg.edu.nus.comp.cs4218.app.SplitInterface;
-import sg.edu.nus.comp.cs4218.exception.AbstractApplicationException;
+import sg.edu.nus.comp.cs4218.exception.SplitException;
 
 import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Stream;
 
 /**
  * The cd command changes current directory to the specified directory.
@@ -36,13 +32,25 @@ public class SplitApplication implements SplitInterface {
      */
 
     @Override
-    public void run(String[] args, InputStream stdin, OutputStream stdout) throws AbstractApplicationException {
+    public void run(String[] args, InputStream stdin, OutputStream stdout) throws SplitException {
+        if (args.length < 2) {
+            throw new SplitException("Split option not specified");
+        }
         try {
-            splitFileByBytes("/tmp/dropbox-antifreeze-0N9a1Y", "x", "1b");
-        } catch (IOException e) {
-            e.printStackTrace();
+            InputStream source = args.length == 2 ? stdin : new FileInputStream(args[2]);
+            String prefix = args.length == 4 ? args[3] : "x";
+            switch (args[0]) {
+                case "-l":
+                    splitFileByLines(source, prefix, Integer.parseInt(args[1]));
+                    break;
+                case "-b":
+                    splitFileByBytes(source, prefix, args[1]);
+                    break;
+                default:
+                    throw new SplitException("Invalid split option specified");
+            }
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new SplitException(e.getMessage());
         }
     }
 

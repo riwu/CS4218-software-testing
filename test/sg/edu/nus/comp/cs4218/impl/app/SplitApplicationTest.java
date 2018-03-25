@@ -259,8 +259,8 @@ public class SplitApplicationTest {
     @Test
     public void shouldHavezaaNameWhenMoreThan676Line() throws Exception {
         File firstFile = new File(CURRENT_DIR + File.separator + XAA);
-        File lastFile = new File(CURRENT_DIR + File.separator + "zaa");
-        File nonExistentFile = new File(CURRENT_DIR + File.separator + "zab");
+        File lastFile = new File(CURRENT_DIR + File.separator + "x~aaa");
+        File nonExistentFile = new File(CURRENT_DIR + File.separator + "x~aab");
 
         String inputString = generateString(677);
         Files.write(file.toPath(), inputString.getBytes());
@@ -296,7 +296,7 @@ public class SplitApplicationTest {
 
         String inputString = generateStringByte(10);
         Files.write(file.toPath(), inputString.getBytes());
-        String[] args1 = {"-l", "3", FILENAME};
+        String[] args1 = {"-b", "3", FILENAME};
         splitApplication.run(args1, null, System.out);
 
         assertTrue(firstFile.exists());
@@ -312,7 +312,7 @@ public class SplitApplicationTest {
 
         String inputString = generateStringByte(27);
         Files.write(file.toPath(), inputString.getBytes());
-        String[] args = {"-l", "1", FILENAME};
+        String[] args = {"-b", "1", FILENAME};
         splitApplication.run(args, null, System.out);
 
         assertTrue(firstFile.exists());
@@ -323,12 +323,12 @@ public class SplitApplicationTest {
     @Test
     public void shouldHavezaaNameWhenMoreThan676Byte() throws Exception {
         File firstFile = new File(CURRENT_DIR + File.separator + XAA);
-        File lastFile = new File(CURRENT_DIR + File.separator + "zaa");
-        File nonExistentFile = new File(CURRENT_DIR + File.separator + "zab");
+        File lastFile = new File(CURRENT_DIR + File.separator + "x~aaa");
+        File nonExistentFile = new File(CURRENT_DIR + File.separator + "x~aab");
 
         String inputString = generateStringByte(677);
         Files.write(file.toPath(), inputString.getBytes());
-        String[] args = {"-l", "1", FILENAME};
+        String[] args = {"-b", "1", FILENAME};
         splitApplication.run(args, null, System.out);
 
         assertTrue(firstFile.exists());
@@ -354,7 +354,7 @@ public class SplitApplicationTest {
 
         inputString = generateStringByte(513);
         Files.write(file.toPath(), inputString.getBytes());
-        String[] args1 = {"-l", "1b", FILENAME};
+        String[] args1 = {"-b", "1b", FILENAME};
         splitApplication.run(args1, null, System.out);
 
         assertTrue(firstFile.exists());
@@ -370,7 +370,7 @@ public class SplitApplicationTest {
 
         String inputString = generateStringByte(2048);
         Files.write(file.toPath(), inputString.getBytes());
-        String[] args2 = {"-l", "1k", FILENAME};
+        String[] args2 = {"-b", "1k", FILENAME};
         splitApplication.run(args2, null, System.out);
 
         assertTrue(firstFile.exists());
@@ -379,7 +379,7 @@ public class SplitApplicationTest {
 
         inputString = generateStringByte(1025);
         Files.write(file.toPath(), inputString.getBytes());
-        String[] args3 = {"-l", "1k", FILENAME};
+        String[] args3 = {"-b", "1k", FILENAME};
         splitApplication.run(args3, null, System.out);
 
         assertTrue(firstFile.exists());
@@ -395,7 +395,7 @@ public class SplitApplicationTest {
 
         String inputString = generateStringByte(2097152);
         Files.write(file.toPath(), inputString.getBytes());
-        String[] args4 = {"-l", "1m", FILENAME};
+        String[] args4 = {"-b", "1m", FILENAME};
         splitApplication.run(args4, null, System.out);
 
         assertTrue(firstFile.exists());
@@ -406,7 +406,7 @@ public class SplitApplicationTest {
 
         inputString = generateStringByte(1048577);
         Files.write(file.toPath(), inputString.getBytes());
-        String[] args5 = {"-l", "1m", FILENAME};
+        String[] args5 = {"-b", "1m", FILENAME};
         splitApplication.run(args5, null, System.out);
 
         assertTrue(firstFile.exists());

@@ -5,6 +5,7 @@ import sg.edu.nus.comp.cs4218.app.DiffInterface;
 import sg.edu.nus.comp.cs4218.exception.DiffException;
 
 import java.io.*;
+import java.lang.reflect.Array;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
@@ -488,12 +489,12 @@ public class DiffApplication implements DiffInterface {
         if (fileCounter < 2) {
 	        throw new DiffException("Insufficient arguments to compare");
         }
-		Path currentDir = Paths.get(Environment.currentDirectory);
+        Path currentDir = Paths.get(Environment.currentDirectory);
         File file = currentDir.resolve(files[0]).toFile();
 	    if (!file.exists()) {
 	        throw new DiffException("Invalid file");
         }
-        if (!files[1].equals('-')) {
+        if (!files[1].equals("-")) {
 	        file = currentDir.resolve(files[1]).toFile();
 	        if (!file.exists()) {
 	            throw new DiffException("Invalid file");

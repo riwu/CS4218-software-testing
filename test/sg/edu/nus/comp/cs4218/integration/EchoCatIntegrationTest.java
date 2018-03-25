@@ -13,7 +13,7 @@ import java.nio.file.Files;
 
 import static org.junit.Assert.assertEquals;
 
-public class echoCatIntegrationTest {
+public class EchoCatIntegrationTest {
     private static ShellImpl shell;
     private OutputStream stdout;
     private static final String ORIGINAL = "This\tis testtest" + System.lineSeparator() + "the\ttest text test" + System.lineSeparator();

@@ -12,7 +12,7 @@ import java.nio.file.Files;
 
 import static org.junit.Assert.assertEquals;
 
-public class echoSedIntegrationTest {
+public class EchoSedIntegrationTest {
     private static ShellImpl shell;
     private OutputStream stdout;
 

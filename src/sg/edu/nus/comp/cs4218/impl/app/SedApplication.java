@@ -96,7 +96,7 @@ public class SedApplication implements SedInterface {
             strBuilder.append(replaced).append(System.lineSeparator());
         }
 		fileScanner.close();
-        return strBuilder.toString().trim();
+        return strBuilder.toString();
 	}
 
 	@SuppressWarnings("PMD.ExcessiveMethodLength")

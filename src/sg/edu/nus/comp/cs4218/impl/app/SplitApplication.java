@@ -39,6 +39,7 @@ public class SplitApplication implements SplitInterface {
             throw new SplitException("Split option not specified");
         }
         try {
+
             InputStream source = args.length > 2 ? new FileInputStream(args[2]) : stdin;
             String prefix = args.length > 3 ? args[3] : PREFIX;
             switch (args[0]) {
@@ -66,7 +67,7 @@ public class SplitApplication implements SplitInterface {
         for (int i = 0; i < lines.size(); i++) {
             if (i % linesPerFile == 0) {
                 if (writer != null) writer.close();
-                writer = new PrintWriter(prefix + toBijectiveBase26(i / linesPerFile + 1), "UTF-8");
+                writer = new PrintWriter(prefix + topologicalPrefix(i) + toBijectiveBase26(i / linesPerFile + 1), "UTF-8");
             }
             writer.println(lines.get(i));
         }
@@ -80,7 +81,7 @@ public class SplitApplication implements SplitInterface {
         int i = 1;
         int nRead;
         while ((nRead = stdin.read(data)) != -1) {
-            writeBytesToFile(Arrays.copyOfRange(data, 0, nRead), prefix + toBijectiveBase26(i));
+            writeBytesToFile(Arrays.copyOfRange(data, 0, nRead), prefix + topologicalPrefix(i) + toBijectiveBase26(i));
             i++;
         }
     }
@@ -92,6 +93,16 @@ public class SplitApplication implements SplitInterface {
         } catch (IOException ioe) {
             ioe.printStackTrace();
         }
+    }
+
+    public String topologicalPrefix(int num) {
+        if (num <= 676) return "";
+
+        String prefix = "~";
+        int count = (int) Math.floor(Math.log(num) / Math.log(26)) - 1;
+
+        return new String(new char[count]).replace("\0", prefix);
+
     }
 
     public String toBijectiveBase26(int num) {

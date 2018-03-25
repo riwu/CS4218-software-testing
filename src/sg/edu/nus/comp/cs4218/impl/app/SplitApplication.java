@@ -94,7 +94,7 @@ public class SplitApplication implements SplitInterface {
             if (i % linesPerFile == 0) {
                 if (writer != null) writer.close();
                 writer = new PrintWriter(Environment.currentDirectory + File.separator +
-                        prefix + topologicalPrefix(i) + toBijectiveBase26(i / linesPerFile + 1), "UTF-8");
+                        prefix + getSuffix(i / linesPerFile + 1), "UTF-8");
             }
             writer.println(lines.get(i));
         }
@@ -108,7 +108,7 @@ public class SplitApplication implements SplitInterface {
         int i = 1;
         int nRead;
         while ((nRead = stdin.read(data)) != -1) {
-            writeBytesToFile(Arrays.copyOfRange(data, 0, nRead), prefix + topologicalPrefix(i) + toBijectiveBase26(i));
+            writeBytesToFile(Arrays.copyOfRange(data, 0, nRead), prefix + getSuffix(i));
             i++;
         }
     }
@@ -120,6 +120,10 @@ public class SplitApplication implements SplitInterface {
         } catch (IOException ioe) {
             ioe.printStackTrace();
         }
+    }
+
+    private String getSuffix(int num) {
+        return topologicalPrefix(num) + toBijectiveBase26(num);
     }
 
     public String topologicalPrefix(int num) {

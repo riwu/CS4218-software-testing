@@ -1,5 +1,6 @@
 package sg.edu.nus.comp.cs4218.impl.app;
 
+import sg.edu.nus.comp.cs4218.Environment;
 import sg.edu.nus.comp.cs4218.app.SplitInterface;
 import sg.edu.nus.comp.cs4218.exception.SplitException;
 
@@ -92,7 +93,8 @@ public class SplitApplication implements SplitInterface {
         for (int i = 0; i < lines.size(); i++) {
             if (i % linesPerFile == 0) {
                 if (writer != null) writer.close();
-                writer = new PrintWriter(prefix + topologicalPrefix(i) + toBijectiveBase26(i / linesPerFile + 1), "UTF-8");
+                writer = new PrintWriter(Environment.currentDirectory + File.separator +
+                        prefix + topologicalPrefix(i) + toBijectiveBase26(i / linesPerFile + 1), "UTF-8");
             }
             writer.println(lines.get(i));
         }
@@ -112,7 +114,7 @@ public class SplitApplication implements SplitInterface {
     }
 
     public void writeBytesToFile(byte[] byteArray, String filename) {
-        try (FileOutputStream fos = new FileOutputStream(filename)) {
+        try (FileOutputStream fos = new FileOutputStream(Environment.currentDirectory + File.separator + filename)) {
             fos.write(byteArray);
             fos.close();
         } catch (IOException ioe) {

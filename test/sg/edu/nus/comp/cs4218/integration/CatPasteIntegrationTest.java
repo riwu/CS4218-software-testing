@@ -13,17 +13,17 @@ import java.nio.file.Files;
 
 import static org.junit.Assert.assertEquals;
 
-public class CatCmpIntegrationTest {
+public class CatPasteIntegrationTest {
     private static ShellImpl shell;
+    private OutputStream stdout;
     private static final String ORIGINAL = "This\tis testtest" + System.lineSeparator() + "the\ttest text test" + System.lineSeparator();
     private static final String REPLACED_SECOND = "This\tis testt" + System.lineSeparator() + "the\ttest text t" + System.lineSeparator();
-    private static final String DIR_NAME = "catCmpTestDir";
-    private static final String FILENAME1 = "catCmpFile1";
-    private static final String FILENAME2 = "catCmpFile2";
+    private static final String DIR_NAME = "catPasteTestDir";
+    private static final String FILENAME1 = "catPasteFile1";
+    private static final String FILENAME2 = "catPasteFile2";
     private File dir;
     private File file1;
     private File file2;
-    private OutputStream stdout;
 
 
     @Before
@@ -37,6 +37,7 @@ public class CatCmpIntegrationTest {
         Files.write(file1.toPath(), ORIGINAL.getBytes());
         file2 = new File(currentDir + File.separator + DIR_NAME + File.separator + FILENAME2);
         Files.write(file2.toPath(), REPLACED_SECOND.getBytes());
+
         stdout = new ByteArrayOutputStream();
     }
 
@@ -49,20 +50,18 @@ public class CatCmpIntegrationTest {
     }
 
     @Test
-    public void whenCatAndCmpDiffFileExpectDiffer() throws Exception {
-        String expected = file2.toString() + " - differ: char 14, line 1" + System.lineSeparator();
-        String argument = "cat " + file1.toString() + " | cmp - " + file2.toString();
+    public void whenCatAndPasteExpectSameContent() throws Exception {
+        String argument = "cat " + file1.toString() + " | paste";
         shell.parseAndEvaluate(argument, stdout);
 
-        assertEquals(expected, stdout.toString());
+        assertEquals(ORIGINAL, stdout.toString());
     }
 
     @Test
-    public void whenCatAndCmpSameFileExpectEmptyOutput() throws Exception {
-        String expected = "";
-        String argument = "cat " + file1.toString() + " | cmp - " + file1.toString();
+    public void whenCatAndPasteWithFileExpectFile() throws Exception {
+        String argument = "cat " + file1.toString() + " | paste " + file2.toString();
         shell.parseAndEvaluate(argument, stdout);
 
-        assertEquals(expected, stdout.toString());
+        assertEquals(REPLACED_SECOND, stdout.toString());
     }
 }

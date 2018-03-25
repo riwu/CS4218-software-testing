@@ -2,13 +2,10 @@ package sg.edu.nus.comp.cs4218.integration;
 
 import org.junit.Before;
 import org.junit.Test;
-import sg.edu.nus.comp.cs4218.Environment;
 import sg.edu.nus.comp.cs4218.impl.ShellImpl;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.OutputStream;
-import java.nio.file.Files;
 
 import static org.junit.Assert.assertEquals;
 

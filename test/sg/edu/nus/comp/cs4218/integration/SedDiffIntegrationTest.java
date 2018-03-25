@@ -15,9 +15,9 @@ public class SedDiffIntegrationTest {
     private static ShellImpl shell;
     private static final String ORIGINAL = "This\tis testtest" + System.lineSeparator() + "the\ttest text test" + System.lineSeparator();
     private static final String REPLACED_SECOND = "This\tis testt" + System.lineSeparator() + "the\ttest text t" + System.lineSeparator();
-    private static final String DIR_NAME = "sedTestDir";
-    private static final String FILENAME1 = "sedFile1";
-    private static final String FILENAME2 = "sedFile2";
+    private static final String DIR_NAME = "sedDiffTestDir";
+    private static final String FILENAME1 = "sedDiffFile1";
+    private static final String FILENAME2 = "sedDiffFile2";
     private File dir;
     private File file1;
     private File file2;

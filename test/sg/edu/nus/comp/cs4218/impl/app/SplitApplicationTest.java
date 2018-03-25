@@ -76,7 +76,7 @@ public class SplitApplicationTest {
 
     @Test(expected = SplitException.class)
     public void shouldThrowSplitExceptionWhenNoInput() throws Exception {
-        splitApplication.run(null, null, null);
+        splitApplication.run(new String[]{}, null, null);
     }
 
     @Test(expected = SplitException.class)

@@ -17,7 +17,6 @@ public class echoCatIntegrationTest {
     private static ShellImpl shell;
     private OutputStream stdout;
     private static final String ORIGINAL = "This\tis testtest" + System.lineSeparator() + "the\ttest text test" + System.lineSeparator();
-    private static final String REPLACED_SECOND = "This\tis testt" + System.lineSeparator() + "the\ttest text t" + System.lineSeparator();
     private static final String DIR_NAME = "sedTestDir";
     private static final String FILENAME1 = "sedFile1";
     private File dir;

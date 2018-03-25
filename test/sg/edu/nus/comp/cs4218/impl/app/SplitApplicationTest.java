@@ -1,7 +1,6 @@
 package sg.edu.nus.comp.cs4218.impl.app;
 
 import org.junit.After;
-import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
 import sg.edu.nus.comp.cs4218.Environment;
@@ -15,9 +14,9 @@ import static org.junit.Assert.assertTrue;
 
 public class SplitApplicationTest {
     private static final String XAC = "xac";
-	private static final String XAB = "xab";
-	private static final String XAA = "xaa";
-	private SplitApplication splitApplication = new SplitApplication();
+    private static final String XAB = "xab";
+    private static final String XAA = "xaa";
+    private SplitApplication splitApplication = new SplitApplication();
     private static final String CURRENT_DIR = Environment.currentDirectory;
     private static final String RESOURCE_FOLDER = "testresource";
     private static final String FILENAME = CURRENT_DIR + File.separator + RESOURCE_FOLDER + File.separator + "newfile";
@@ -34,7 +33,7 @@ public class SplitApplicationTest {
 
     @After
     public void tearDown() throws Exception {
-       file.delete();
+        file.delete();
     }
 
     private void deleteDirectory(File directoryToBeDeleted) {
@@ -48,11 +47,10 @@ public class SplitApplicationTest {
     }
 
     private String generateString(int lines) {
-        Assume.assumeTrue(isImplemented);
         String str = "a" + System.lineSeparator();
         StringBuilder strBuilder = new StringBuilder();
 
-        for (int i=0; i<lines; i++) {
+        for (int i = 0; i < lines; i++) {
             strBuilder.append(str);
         }
 
@@ -60,11 +58,10 @@ public class SplitApplicationTest {
     }
 
     private String generateStringByte(int bytes) {
-        Assume.assumeTrue(isImplemented);
         String str = "a";
         StringBuilder strBuilder = new StringBuilder();
 
-        for (int i=0; i<bytes; i++) {
+        for (int i = 0; i < bytes; i++) {
             strBuilder.append(str);
         }
 
@@ -73,104 +70,89 @@ public class SplitApplicationTest {
 
     @Test(expected = SplitException.class)
     public void shouldThrowSplitExceptionWhenNoStdout() throws Exception {
-        Assume.assumeTrue(isImplemented);
         String[] args = {FILENAME};
         splitApplication.run(args, null, null);
     }
 
     @Test(expected = SplitException.class)
     public void shouldThrowSplitExceptionWhenNoInput() throws Exception {
-        Assume.assumeTrue(isImplemented);
-        splitApplication.run(null, null, null);
+        splitApplication.run(new String[]{}, null, null);
     }
 
     @Test(expected = SplitException.class)
     public void shouldThrowSplitExceptionWhenInputDir() throws Exception {
-        Assume.assumeTrue(isImplemented);
         String[] args = {RESOURCE_FOLDER};
         splitApplication.run(args, null, System.out);
     }
 
     @Test(expected = SplitException.class)
     public void shouldThrowSplitExceptionWhenCapitalLOption() throws Exception {
-        Assume.assumeTrue(isImplemented);
         String[] args = {"-L", "1", FILENAME};
         splitApplication.run(args, null, System.out);
     }
 
     @Test(expected = SplitException.class)
     public void shouldThrowSplitExceptionWhenCapitalBOption() throws Exception {
-        Assume.assumeTrue(isImplemented);
         String[] args = {"-B", "1", FILENAME};
         splitApplication.run(args, null, System.out);
     }
 
     @Test(expected = SplitException.class)
     public void shouldThrowSplitExceptionWhenlbOption() throws Exception {
-        Assume.assumeTrue(isImplemented);
         String[] args = {"-b", "1", "-l", "1", FILENAME};
         splitApplication.run(args, null, System.out);
     }
 
     @Test(expected = SplitException.class)
     public void shouldThrowSplitExceptionWhenEmptyLOption() throws Exception {
-        Assume.assumeTrue(isImplemented);
         String[] args = {"-l", FILENAME};
         splitApplication.run(args, null, System.out);
     }
 
     @Test(expected = SplitException.class)
     public void shouldThrowSplitExceptionWhenEmptyBOption() throws Exception {
-        Assume.assumeTrue(isImplemented);
         String[] args1 = {"-b", FILENAME};
         splitApplication.run(args1, null, System.out);
     }
 
     @Test(expected = SplitException.class)
     public void shouldThrowSplitExceptionWhenInvalidLOption() throws Exception {
-        Assume.assumeTrue(isImplemented);
         String[] args2 = {"-l", "x", FILENAME};
         splitApplication.run(args2, null, System.out);
     }
 
     @Test(expected = SplitException.class)
     public void shouldThrowSplitExceptionWhenInvalidBOption() throws Exception {
-        Assume.assumeTrue(isImplemented);
         String[] args3 = {"-b", "1g", FILENAME};
         splitApplication.run(args3, null, System.out);
     }
 
     @Test(expected = SplitException.class)
     public void shouldThrowSplitExceptionWhenZeroByteOption() throws Exception {
-        Assume.assumeTrue(isImplemented);
         String[] args = {"-b", "0", FILENAME};
         splitApplication.run(args, null, System.out);
     }
 
     @Test(expected = SplitException.class)
     public void shouldThrowSplitExceptionWhenZeroLineOption() throws Exception {
-        Assume.assumeTrue(isImplemented);
         String[] args = {"-l", "0", FILENAME};
         splitApplication.run(args, null, System.out);
     }
 
     @Test(expected = SplitException.class)
     public void shouldThrowSplitExceptionWhenNegativeByteOption() throws Exception {
-        Assume.assumeTrue(isImplemented);
         String[] args = {"-b", "-5", FILENAME};
         splitApplication.run(args, null, System.out);
     }
 
     @Test(expected = SplitException.class)
     public void shouldThrowSplitExceptionWhenNegativeLineOption() throws Exception {
-        Assume.assumeTrue(isImplemented);
         String[] args = {"-l", "-5", FILENAME};
         splitApplication.run(args, null, System.out);
     }
-    
+
     @Test
     public void shouldSplitInto1FilesWhenInputLineLessThan1001() throws Exception {
-        Assume.assumeTrue(isImplemented);
         String inputString = generateString(1);
         Files.write(file.toPath(), inputString.getBytes());
 
@@ -195,7 +177,6 @@ public class SplitApplicationTest {
 
     @Test
     public void shouldSplitInto2FilesWhenInputLineBetween1kAnd2k() throws Exception {
-        Assume.assumeTrue(isImplemented);
         String inputString = generateString(1001);
         Files.write(file.toPath(), inputString.getBytes());
 
@@ -224,7 +205,6 @@ public class SplitApplicationTest {
 
     @Test
     public void shouldSplitInto5FilesWhen10LineInput() throws Exception {
-        Assume.assumeTrue(isImplemented);
         String inputString = generateString(10);
         Files.write(file.toPath(), inputString.getBytes());
 
@@ -242,7 +222,6 @@ public class SplitApplicationTest {
 
     @Test
     public void shouldSplitInto4FilesWhen10LineInput() throws Exception {
-        Assume.assumeTrue(isImplemented);
         File firstFile = new File(CURRENT_DIR + File.separator + RESOURCE_FOLDER + File.separator + XAA);
         File lastFile = new File(CURRENT_DIR + File.separator + RESOURCE_FOLDER + File.separator + "xad");
         File nonExistantFile = new File(CURRENT_DIR + File.separator + RESOURCE_FOLDER + File.separator + "xae");
@@ -259,7 +238,6 @@ public class SplitApplicationTest {
 
     @Test
     public void shouldHavexbaNameWhenMoreThan26Line() throws Exception {
-        Assume.assumeTrue(isImplemented);
         File firstFile = new File(CURRENT_DIR + File.separator + RESOURCE_FOLDER + File.separator + XAA);
         File lastFile = new File(CURRENT_DIR + File.separator + RESOURCE_FOLDER + File.separator + "xba");
         File nonExistantFile = new File(CURRENT_DIR + File.separator + RESOURCE_FOLDER + File.separator + "xbb");
@@ -276,7 +254,6 @@ public class SplitApplicationTest {
 
     @Test
     public void shouldHavezaaNameWhenMoreThan676Line() throws Exception {
-        Assume.assumeTrue(isImplemented);
         File firstFile = new File(CURRENT_DIR + File.separator + RESOURCE_FOLDER + File.separator + XAA);
         File lastFile = new File(CURRENT_DIR + File.separator + RESOURCE_FOLDER + File.separator + "zaa");
         File nonExistantFile = new File(CURRENT_DIR + File.separator + RESOURCE_FOLDER + File.separator + "zab");
@@ -293,7 +270,6 @@ public class SplitApplicationTest {
 
     @Test
     public void shouldSplitInto2FilesWhen10ByteInput() throws Exception {
-        Assume.assumeTrue(isImplemented);
         String inputString = generateStringByte(10);
         Files.write(file.toPath(), inputString.getBytes());
 
@@ -310,7 +286,6 @@ public class SplitApplicationTest {
 
     @Test
     public void shouldSplitInto4FilesWhen10ByteInput() throws Exception {
-        Assume.assumeTrue(isImplemented);
         File firstFile = new File(CURRENT_DIR + File.separator + RESOURCE_FOLDER + File.separator + XAA);
         File lastFile = new File(CURRENT_DIR + File.separator + RESOURCE_FOLDER + File.separator + "xad");
         File nonExistantFile = new File(CURRENT_DIR + File.separator + RESOURCE_FOLDER + File.separator + "xae");
@@ -327,7 +302,6 @@ public class SplitApplicationTest {
 
     @Test
     public void shouldHavexbaNameWhenMoreThan26Byte() throws Exception {
-        Assume.assumeTrue(isImplemented);
         File firstFile = new File(CURRENT_DIR + File.separator + RESOURCE_FOLDER + File.separator + XAA);
         File lastFile = new File(CURRENT_DIR + File.separator + RESOURCE_FOLDER + File.separator + "xba");
         File nonExistantFile = new File(CURRENT_DIR + File.separator + RESOURCE_FOLDER + File.separator + "xbb");
@@ -344,7 +318,6 @@ public class SplitApplicationTest {
 
     @Test
     public void shouldHavezaaNameWhenMoreThan676Byte() throws Exception {
-        Assume.assumeTrue(isImplemented);
         File firstFile = new File(CURRENT_DIR + File.separator + RESOURCE_FOLDER + File.separator + XAA);
         File lastFile = new File(CURRENT_DIR + File.separator + RESOURCE_FOLDER + File.separator + "zaa");
         File nonExistantFile = new File(CURRENT_DIR + File.separator + RESOURCE_FOLDER + File.separator + "zab");
@@ -361,7 +334,6 @@ public class SplitApplicationTest {
 
     @Test
     public void shouldSplitInto2FilesWhen1bInput() throws Exception {
-        Assume.assumeTrue(isImplemented);
         String inputString = generateStringByte(1024);
         Files.write(file.toPath(), inputString.getBytes());
         String[] args = {"-b", "1b", FILENAME};
@@ -388,7 +360,6 @@ public class SplitApplicationTest {
 
     @Test
     public void shouldSplitInto2FilesWhen1kInput() throws Exception {
-        Assume.assumeTrue(isImplemented);
         File firstFile = new File(CURRENT_DIR + File.separator + RESOURCE_FOLDER + File.separator + XAA);
         File lastFile = new File(CURRENT_DIR + File.separator + RESOURCE_FOLDER + File.separator + XAB);
         File nonExistantFile = new File(CURRENT_DIR + File.separator + RESOURCE_FOLDER + File.separator + XAC);
@@ -414,7 +385,6 @@ public class SplitApplicationTest {
 
     @Test
     public void shouldSplitInto2FilesWhen1mInput() throws Exception {
-        Assume.assumeTrue(isImplemented);
         File firstFile = new File(CURRENT_DIR + File.separator + RESOURCE_FOLDER + File.separator + XAA);
         File lastFile = new File(CURRENT_DIR + File.separator + RESOURCE_FOLDER + File.separator + XAB);
         File nonExistantFile = new File(CURRENT_DIR + File.separator + RESOURCE_FOLDER + File.separator + XAC);

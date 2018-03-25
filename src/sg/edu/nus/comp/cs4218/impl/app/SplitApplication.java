@@ -19,6 +19,8 @@ import java.util.regex.Pattern;
  */
 public class SplitApplication implements SplitInterface {
 
+    private static final String PREFIX = "x";
+
     /**
      * Runs the cd application with the specified path.
      *
@@ -37,8 +39,8 @@ public class SplitApplication implements SplitInterface {
             throw new SplitException("Split option not specified");
         }
         try {
-            InputStream source = args.length == 2 ? stdin : new FileInputStream(args[2]);
-            String prefix = args.length == 4 ? args[3] : "x";
+            InputStream source = args.length > 2 ? new FileInputStream(args[2]) : stdin;
+            String prefix = args.length > 3 ? args[3] : PREFIX;
             switch (args[0]) {
                 case "-l":
                     splitFileByLines(source, prefix, Integer.parseInt(args[1]));

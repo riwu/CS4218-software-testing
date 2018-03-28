@@ -1,0 +1,6 @@
+a.txt
+b.txt
+diff1.txt
+diff2.txt
+s p a c e
+extra

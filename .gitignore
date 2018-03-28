@@ -60,6 +60,4 @@ local.properties
 .idea
 
 # extras
-*.iml
-
 *.class

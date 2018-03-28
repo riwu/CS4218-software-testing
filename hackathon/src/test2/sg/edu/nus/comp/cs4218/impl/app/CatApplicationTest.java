@@ -5,7 +5,6 @@ import org.junit.Before;
 import org.junit.Test;
 import sg.edu.nus.comp.cs4218.exception.CatException;
 import sg.edu.nus.comp.cs4218.exception.ShellException;
-import sg.edu.nus.comp.cs4218.impl.CommandTestUtil;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -55,20 +54,7 @@ public class CatApplicationTest {
         Files.delete(FILE_WITH_SPACE);
     }
 
-    @Test
-    public void shouldReturnEmptyStringWhenGivenEmptyFile() throws CatException {
-        assertEquals("", new String(catApplication.getContent(EMPTY_FILE)));
-    }
 
-    @Test
-    public void shouldReturnFileContentWhenGivenFileWithContent() throws CatException {
-        assertEquals(FILE_1_CONTENT, new String(catApplication.getContent(FILE_1)));
-    }
-
-    @Test(expected = CatException.class)
-    public void shouldThrowExceptionWhenGivenNonExistingFile() throws CatException {
-        catApplication.getContent(Paths.get("Non-existent"));
-    }
 
     @Test
     public void shouldReadFromStdinWhenNoFiles() throws CatException {
@@ -95,46 +81,5 @@ public class CatApplicationTest {
         assertEquals(CONTENT_SPACED + FILE_2_CONTENT, outputStream.toString());
     }
 
-    @Test
-    public void shouldReturnFileContentWhenRedirectedInput() throws Exception {
-        CommandTestUtil.testCommand(FILE_2_CONTENT, "cat < " + FILE_2.toString());
-    }
 
-    @Test(expected = ShellException.class)
-    public void shouldThrowExceptionWhenInputFileDoesNotExist() throws Exception {
-        CommandTestUtil.getCommandOutput("cat " + " < " + NON_EXISTENT_FILE.toString());
-    }
-
-    @Test
-    public void shouldOutputToFileWhenRedirectedOutput() throws Exception {
-        CommandTestUtil.getCommandOutput("cat " + FILE_2.toString() + " > " + FILE_1.toString());
-        assertEquals(FILE_2_CONTENT, new String(catApplication.getContent(FILE_1)));
-    }
-
-    @Test
-    public void shouldCreateAndOutputToFileWhenRedirectedOutputDoesNotExist() throws Exception {
-        CommandTestUtil.getCommandOutput("cat " + FILE_2.toString() + " > " + NON_EXISTENT_FILE.toString());
-        assertEquals(FILE_2_CONTENT, new String(catApplication.getContent(NON_EXISTENT_FILE)));
-        Files.delete(NON_EXISTENT_FILE);
-    }
-
-    @Test
-    public void shouldReturnEmptyResultWhenSpaceInFileName() throws Exception {
-        CommandTestUtil.testCommand("", "cat " + FILE_1.toString());
-    }
-
-    @Test
-    public void shouldReturnFileContentWhenDoubleQuotedFileNameWithSpace() throws Exception {
-        CommandTestUtil.testCommand(CONTENT_SPACED, "cat \"" + FILE_WITH_SPACE.toString() + "\"");
-    }
-
-    @Test
-    public void shouldReturnFileContentWhenSingleQuotedFileNameWithSpace() throws Exception {
-        CommandTestUtil.testCommand(CONTENT_SPACED, "cat '" + FILE_WITH_SPACE.toString() + "'");
-    }
-
-    @Test
-    public void shouldReturnFileContentWhenCommandSubstituted() throws Exception {
-        CommandTestUtil.testCommand(FILE_1_CONTENT, "cat `echo " + FILE_1.toString() + "`");
-    }
 }

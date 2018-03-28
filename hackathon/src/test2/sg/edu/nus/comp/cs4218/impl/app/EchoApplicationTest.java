@@ -20,15 +20,15 @@ public class EchoApplicationTest {
 
     @Test
     public void shouldPrintNewlineWhenNoArgGiven() throws EchoException{
-        String result = echoApplication.evaluate(new String[]{});
+        String result = echoApplication.constructResult(new String[]{});
 
         assertTrue(result.equals(System.lineSeparator()));
     }
 
     @Test
     public void whenPrintStringExpectNewlineCharacter() throws EchoException{
-        String singleArg = echoApplication.evaluate(new String[]{TEST_ONE});
-        String multipleArgs = echoApplication.evaluate(new String[]{TEST_ONE, TEST_TWO, TEST_THREE});
+        String singleArg = echoApplication.constructResult(new String[]{TEST_ONE});
+        String multipleArgs = echoApplication.constructResult(new String[]{TEST_ONE, TEST_TWO, TEST_THREE});
 
         assertTrue(singleArg.endsWith(""));
         assertTrue(multipleArgs.endsWith(""));
@@ -36,21 +36,21 @@ public class EchoApplicationTest {
 
     @Test
     public void shouldPrintStringWhenEvaluatingOneArg() throws EchoException {
-        String result = echoApplication.evaluate(new String[]{TEST_ONE});
+        String result = echoApplication.constructResult(new String[]{TEST_ONE});
 
         assertTrue(result.equals(TEST_ONE + System.lineSeparator()));
     }
 
     @Test
     public void shouldPrintStringWithSpaceBetweenWhenEvaluatingMultipleArgs() throws  EchoException {
-        String result = echoApplication.evaluate(new String[]{"test1", "test2", "test3"});
+        String result = echoApplication.constructResult(new String[]{"test1", "test2", "test3"});
 
         assertTrue(result.equals("test1 test2 test3" + System.lineSeparator()));
     }
 
     @Test
     public void shouldPrintUnicodeWhenEvaluatingUnicodeCharacter() throws EchoException {
-        String result = echoApplication.evaluate(new String[]{TEST_UNICODE});
+        String result = echoApplication.constructResult(new String[]{TEST_UNICODE});
 
         assertTrue(result.equals(TEST_UNICODE + System.lineSeparator()));
     }

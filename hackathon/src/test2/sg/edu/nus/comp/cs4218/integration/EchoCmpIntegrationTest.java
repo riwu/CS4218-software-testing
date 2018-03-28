@@ -12,7 +12,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import sg.edu.nus.comp.cs4218.exception.CmpException;
-import sg.edu.nus.comp.cs4218.impl.CmpApplicationUtil;
 import sg.edu.nus.comp.cs4218.impl.ShellImpl;
 
 @SuppressWarnings("PMD.AvoidDuplicateLiterals")
@@ -46,51 +45,6 @@ public class EchoCmpIntegrationTest {
 		fileC.toFile().deleteOnExit();
 	}
 
-	@Test
-	public void shouldShowFirstDiffWhenNoOptions() throws Exception {
-		String cmdline = "echo " + TEST_TEXT_A + " |" + "cmp " + " - " + fileB.toString();
-        String expected = CmpApplicationUtil.getNormalFormatString(fileB.toString(), "-", TEST_TEXT_B.getBytes(), TEST_TEXT_A.getBytes(), false) + System.lineSeparator();
-    	ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        shell.parseAndEvaluate(cmdline, baos);
-        assertEquals(expected, baos.toString());
-	}
-	
-	@Test
-	public void shouldShowCharDiffWhenCharDiffOption() throws Exception {
-		String cmdline = "echo " + TEST_TEXT_A + " |" + "cmp -c" + " - " + fileB.toString();
-        String expected = CmpApplicationUtil.getNormalFormatString(fileB.toString(), "-", TEST_TEXT_B.getBytes(), TEST_TEXT_A.getBytes(), true) + System.lineSeparator();
-    	ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        shell.parseAndEvaluate(cmdline, baos);
-        assertEquals(expected, baos.toString());
-	}
-	
-	@Test
-	public void shouldPrintEmptyStringWhenNoDifference() throws Exception {
-		String cmdline = "echo " + TEST_TEXT_A + " |" + "cmp -lsc " + " - " + fileA.toString();
-        String expected = CmpApplicationUtil.getNormalFormatString(fileA.toString(), "-", TEST_TEXT_A.getBytes(), TEST_TEXT_A.getBytes(), true);
-    	ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        shell.parseAndEvaluate(cmdline, baos);
-        assertEquals(expected, baos.toString());
-	}
-	
-	@Test
-	public void shouldPrintOctalDiffWhenOctalDiffOption() throws Exception {
-		String cmdline = "echo " + TEST_TEXT_A + "|" + "cmp -l" + " - " + fileB.toString();
-        String expected = CmpApplicationUtil.getLongFormatString(TEST_TEXT_B.getBytes(), TEST_TEXT_A.getBytes(), false) + System.lineSeparator();
-    	ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        shell.parseAndEvaluate(cmdline, baos);
-        assertEquals(expected, baos.toString());
-	}
-	
-	@Test
-	public void shouldPrintCharOctalDiffWhenCharOctalDiffOption() throws Exception {
-		String cmdline = "echo " + TEST_TEXT_A + "|" + "cmp -cl" + " - " + fileB.toString();
-        String expected = CmpApplicationUtil.getLongFormatString(TEST_TEXT_B.getBytes(), TEST_TEXT_A.getBytes(), true) + System.lineSeparator();
-    	ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        shell.parseAndEvaluate(cmdline, baos);
-        assertEquals(expected, baos.toString());
-	}
-	
 	@Test
 	public void shouldSimplifiedWhenSimplifyOption() throws Exception {
 		String cmdline = "echo " + TEST_TEXT_A + "|" + "cmp -scl" + " - " + fileB.toString();

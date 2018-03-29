@@ -13,7 +13,7 @@ import static org.junit.Assert.assertEquals;
 public class CdApplicationTest {
 
     private final CdApplication cdApplication = new CdApplication();
-    private static final String INITIAL_DIR = System.getProperty("user.dir");
+    private static final String INITIAL_DIR = Environment.currentDirectory;
     private static final String RESOURCE_FOLDER = "testCdDir";
     private File testDir = null;
     private String currentDir = "";

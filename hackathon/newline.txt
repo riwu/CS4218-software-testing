@@ -1,0 +1,1 @@
+omg.txt out.txt differ: char 4, line 1

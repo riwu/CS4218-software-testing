@@ -7,6 +7,7 @@ import java.io.OutputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import sg.edu.nus.comp.cs4218.Environment;
 import sg.edu.nus.comp.cs4218.app.LsInterface;
@@ -96,6 +97,7 @@ public class LsApplication implements LsInterface {
 			for(String name: folderName) {
 				File folder = currentDir.resolve(name).toFile();
 				folderContents = folder.listFiles(directoryFilter);
+				Arrays.sort(folderContents);
 				if(displayFolder) {
 					strBuilder.append(name).append(':').append(System.lineSeparator());
 				}
@@ -128,6 +130,7 @@ public class LsApplication implements LsInterface {
 		if(folder.isDirectory()) {
 			strBuilder.append(folderName).append(':').append(System.lineSeparator());
 			folderContents = folder.listFiles(directoryFilter);
+			Arrays.sort(folderContents);
 			if(folderContents.length > 0) {
 				strBuilder.append(listContents(folderContents));
 			}

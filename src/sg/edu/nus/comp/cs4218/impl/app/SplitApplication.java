@@ -106,6 +106,11 @@ public class SplitApplication implements SplitInterface {
     }
 
     @Override
+    public void splitFileByLines(String fileName, String prefix, int linesPerFile) throws Exception {
+        splitFileByLines(new FileInputStream(new File(fileName)), prefix, linesPerFile);
+    }
+
+    @Override
     public void splitFileByBytes(InputStream stdin, String prefix, String bytesPerFile) throws Exception {
         int bytes = bytes(bytesPerFile);
         byte[] data = new byte[bytes];
@@ -115,6 +120,11 @@ public class SplitApplication implements SplitInterface {
             writeBytesToFile(Arrays.copyOfRange(data, 0, nRead), prefix + getSuffix(i));
             i++;
         }
+    }
+
+    @Override
+    public void splitFileByBytes(String fileName, String prefix, String bytesPerFile) throws Exception {
+        splitFileByBytes(new FileInputStream(new File(fileName)), prefix, bytesPerFile);
     }
 
     public void writeBytesToFile(byte[] byteArray, String filename) {

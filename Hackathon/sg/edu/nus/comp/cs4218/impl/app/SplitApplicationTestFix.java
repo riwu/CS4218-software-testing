@@ -8,7 +8,7 @@ import sg.edu.nus.comp.cs4218.exception.SplitException;
 
 import java.io.File;
 
-public class SplitApplicationTest {
+public class SplitApplicationTestFix {
     private SplitApplication splitApplication = new SplitApplication();
     private static final String DEFAULT_DIR = Environment.currentDirectory;
     private static final String CURRENT_DIR = Environment.currentDirectory + File.separator + "SplitApplicationTest";
@@ -60,8 +60,20 @@ public class SplitApplicationTest {
     }
 
     @Test(expected = SplitException.class)
+    public void shouldThrowSplitExceptionWhenHighlyNegativeByteOption() throws Exception {
+        String[] args = {"-b", "-9999k", FILENAME};
+        splitApplication.run(args, null, System.out);
+    }
+
+    @Test(expected = SplitException.class)
     public void shouldThrowSplitExceptionWhenNegativeLineOption() throws Exception {
         String[] args = {"-l", "-1", FILENAME};
+        splitApplication.run(args, null, System.out);
+    }
+
+    @Test(expected = SplitException.class)
+    public void shouldThrowSplitExceptionWhenHighlyNegativeLineOption() throws Exception {
+        String[] args = {"-l", "-9999", FILENAME};
         splitApplication.run(args, null, System.out);
     }
 }

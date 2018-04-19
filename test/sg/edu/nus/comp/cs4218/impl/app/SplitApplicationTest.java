@@ -23,7 +23,6 @@ public class SplitApplicationTest {
     private static final String FILENAME = CURRENT_DIR + File.separator + "newfile";
     private File testDir;
     private File file;
-    boolean isImplemented = false;
 
     @Before
     public void setUp() throws Exception {
@@ -31,6 +30,7 @@ public class SplitApplicationTest {
         testDir = new File(CURRENT_DIR);
         testDir.mkdir();
         file = new File(FILENAME);
+        file.createNewFile();
     }
 
     @After
@@ -40,16 +40,6 @@ public class SplitApplicationTest {
         }
         testDir.delete();
         Environment.currentDirectory = DEFAULT_DIR;
-    }
-
-    private void deleteDirectory(File directoryToBeDeleted) {
-        File[] allContents = directoryToBeDeleted.listFiles();
-        if (allContents != null) {
-            for (File file : allContents) {
-                deleteDirectory(file);
-            }
-        }
-        directoryToBeDeleted.delete();
     }
 
     private String generateString(int lines) {
@@ -72,12 +62,6 @@ public class SplitApplicationTest {
         }
 
         return strBuilder.toString();
-    }
-
-    @Test(expected = SplitException.class)
-    public void shouldThrowSplitExceptionWhenNoStdout() throws Exception {
-        String[] args = {FILENAME};
-        splitApplication.run(args, null, null);
     }
 
     @Test(expected = SplitException.class)
@@ -140,6 +124,12 @@ public class SplitApplicationTest {
     }
 
     @Test(expected = SplitException.class)
+    public void shouldThrowSplitExceptionWhenZeroByteWithModifierOption() throws Exception {
+        String[] args = {"-b", "0b", FILENAME};
+        splitApplication.run(args, null, System.out);
+    }
+
+    @Test(expected = SplitException.class)
     public void shouldThrowSplitExceptionWhenZeroLineOption() throws Exception {
         String[] args = {"-l", "0", FILENAME};
         splitApplication.run(args, null, System.out);
@@ -147,13 +137,25 @@ public class SplitApplicationTest {
 
     @Test(expected = SplitException.class)
     public void shouldThrowSplitExceptionWhenNegativeByteOption() throws Exception {
-        String[] args = {"-b", "-5", FILENAME};
+        String[] args = {"-b", "-1", FILENAME};
+        splitApplication.run(args, null, System.out);
+    }
+
+    @Test(expected = SplitException.class)
+    public void shouldThrowSplitExceptionWhenHighlyNegativeByteOption() throws Exception {
+        String[] args = {"-b", "-9999k", FILENAME};
         splitApplication.run(args, null, System.out);
     }
 
     @Test(expected = SplitException.class)
     public void shouldThrowSplitExceptionWhenNegativeLineOption() throws Exception {
-        String[] args = {"-l", "-5", FILENAME};
+        String[] args = {"-l", "-1", FILENAME};
+        splitApplication.run(args, null, System.out);
+    }
+
+    @Test(expected = SplitException.class)
+    public void shouldThrowSplitExceptionWhenHighlyNegativeLineOption() throws Exception {
+        String[] args = {"-l", "-9999", FILENAME};
         splitApplication.run(args, null, System.out);
     }
 

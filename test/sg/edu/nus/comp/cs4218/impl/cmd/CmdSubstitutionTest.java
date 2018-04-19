@@ -11,7 +11,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public class CmdSubstitutionTest {
-	private boolean isImplemented = true;
     private static final String FILE_NAME = "CmdSubstitutionTestFile";
     private static final String FILE_CONTENT = FILE_NAME + System.lineSeparator() + "l 2" + System.lineSeparator() + "l3";
 

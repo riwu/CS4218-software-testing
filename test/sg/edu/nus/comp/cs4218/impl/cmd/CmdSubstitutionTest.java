@@ -1,7 +1,6 @@
 package sg.edu.nus.comp.cs4218.impl.cmd;
 
 import org.junit.AfterClass;
-import org.junit.Assume;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import sg.edu.nus.comp.cs4218.impl.CommandTestUtil;
@@ -9,6 +8,8 @@ import sg.edu.nus.comp.cs4218.impl.CommandTestUtil;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+
+import static org.junit.Assert.assertEquals;
 
 public class CmdSubstitutionTest {
     private static final String FILE_NAME = "CmdSubstitutionTestFile";
@@ -31,31 +32,34 @@ public class CmdSubstitutionTest {
 
     @Test
     public void shouldReturnFileContentWhenEchoFileName() throws Exception {
-        CommandTestUtil.testCommand(FILE_CONTENT, "cat `echo " + FILE_NAME + "`");
+        assertEquals(FILE_CONTENT, CommandTestUtil.getCommandOutput("cat `echo " + FILE_NAME + "`"));
     }
 
     @Test
     public void shouldReturnFileContentWhenDoubleQuotedEcho() throws Exception {
-        CommandTestUtil.testCommand(FILE_CONTENT, "cat \"`echo " + FILE_NAME + "`\"");
+        assertEquals(FILE_CONTENT, CommandTestUtil.getCommandOutput("cat \"`echo " + FILE_NAME + "`\""));
     }
 
     @Test
     public void shouldReturnStringWhenSingleQuotedEcho() throws Exception {
         String catCommand = "`cat " + FILE_NAME + "`";
-        CommandTestUtil.testCommand(catCommand + System.lineSeparator(), "echo '" + catCommand + "'");
+        assertEquals(catCommand + System.lineSeparator(), CommandTestUtil.getCommandOutput("echo '" + catCommand +
+                "'"));
     }
 
     @Test
     public void shouldReturnFileContentsWhenEchoMultipleTimes() throws Exception {
         String echoCommand = "`echo " + FILE_NAME + "`";
-        CommandTestUtil.testCommand(FILE_CONTENT + FILE_CONTENT, "cat " + echoCommand + " " + echoCommand + System.lineSeparator());
+        assertEquals(FILE_CONTENT + FILE_CONTENT, CommandTestUtil.getCommandOutput("cat " + echoCommand + " " +
+                echoCommand + System.lineSeparator()));
     }
 
 
     @Test
     public void shouldReplaceNewLinesWithSpacesWhenSubstituted() throws Exception {
         String catCommand = "`cat " + FILE_NAME + "`";
-        CommandTestUtil.testCommand("CmdSubstitutionTestFilel 2l3" + System.lineSeparator(), "echo " + catCommand);
+        assertEquals("CmdSubstitutionTestFilel 2l3" + System.lineSeparator(), CommandTestUtil.getCommandOutput("echo" +
+                " " + catCommand));
     }
 
 }

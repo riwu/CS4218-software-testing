@@ -1,11 +1,7 @@
 package sg.edu.nus.comp.cs4218.impl.cmd;
 
-import org.junit.Assume;
 import org.junit.Test;
 import sg.edu.nus.comp.cs4218.exception.ShellException;
-
-import java.io.ByteArrayOutputStream;
-
 import sg.edu.nus.comp.cs4218.impl.CommandTestUtil;
 
 import java.nio.file.Files;
@@ -17,7 +13,8 @@ import static org.junit.Assert.assertEquals;
 public class QuotingTest {
 
     private void testEchoCommand(String mark, String text, String expected) throws Exception {
-        CommandTestUtil.testCommand(expected + System.lineSeparator(), "echo " + mark + text + mark);
+        assertEquals(expected + System.lineSeparator(),
+                CommandTestUtil.getCommandOutput("echo " + mark + text + mark));
     }
 
     private void testEchoCommand(String mark, String text) throws Exception {
@@ -131,20 +128,6 @@ public class QuotingTest {
         testEchoCommand("\"", ";");
     }
 
-    @Test
-    public void shouldOutputSpaceWhenSingleQuote() throws Exception {
-        boolean willFix = true;
-        Assume.assumeTrue(willFix);
-        //testEchoCommand("'", " ");
-    }
-
-    @Test
-    public void shouldOutputSpaceWhenDoubleQuote() throws Exception {
-        boolean willFix = true;
-        Assume.assumeTrue(willFix);
-        //testEchoCommand("\"", " ");
-    }
-
     private void shouldOutputFileContentWhenFileNameWithSpaceSurroundedWithMark(String mark) throws Exception {
         Path file = Paths.get("QuotingTest File");
         String content = "* | < > content; ' ` \"";
@@ -155,7 +138,7 @@ public class QuotingTest {
         }
         Files.write(file, content.getBytes());
 
-        CommandTestUtil.testCommand(content, "cat " + mark + file.toString() + mark);
+        assertEquals(content, CommandTestUtil.getCommandOutput("cat " + mark + file.toString() + mark));
         Files.delete(file);
     }
 

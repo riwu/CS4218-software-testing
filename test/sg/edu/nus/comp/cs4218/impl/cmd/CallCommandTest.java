@@ -1,13 +1,12 @@
 package sg.edu.nus.comp.cs4218.impl.cmd;
 
-import org.junit.*;
+import org.junit.AfterClass;
+import org.junit.Assume;
+import org.junit.BeforeClass;
+import org.junit.Test;
 import sg.edu.nus.comp.cs4218.exception.ShellException;
+import sg.edu.nus.comp.cs4218.impl.CommandTestUtil;
 
-
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -52,22 +51,6 @@ public class CallCommandTest {
 
      */
 
-    private InputStream inputStream;
-    private OutputStream outputStream;
-
-    @Before
-    public void setUp() throws Exception {
-        this.inputStream = new ByteArrayInputStream("".getBytes());
-        this.outputStream = new ByteArrayOutputStream();
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        this.inputStream.close();
-        this.outputStream.close();
-    }
-
-
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {
         testFolder = Files.createTempDirectory(BASE_PATH, "CallCommandTest");
@@ -104,8 +87,8 @@ public class CallCommandTest {
     }
 
     @Test
-    public void Should_ExpandGlob_When_EvaluatingSingleLevel() throws Exception{
-    	Assume.assumeTrue(!IS_WINDOWS);
+    public void Should_ExpandGlob_When_EvaluatingSingleLevel() throws Exception {
+        Assume.assumeTrue(!IS_WINDOWS);
         CallCommand command = new CallCommand();
         String[] globbed = command.globFilesDirectories(testFolder.toAbsolutePath() + "/*");
 
@@ -124,8 +107,8 @@ public class CallCommandTest {
     }
 
     @Test
-    public void Should_ExpandGlobRecursively_When_EvaluatingMultilevel() throws Exception{
-    	Assume.assumeTrue(!IS_WINDOWS);
+    public void Should_ExpandGlobRecursively_When_EvaluatingMultilevel() throws Exception {
+        Assume.assumeTrue(!IS_WINDOWS);
         CallCommand command = new CallCommand();
         String[] globbed = command.globFilesDirectories(testFolder.toAbsolutePath() + "/**");
 
@@ -154,8 +137,8 @@ public class CallCommandTest {
     }
 
     @Test
-    public void Should_ExpandGlobForFiles_When_EvaluatingFileGlob() throws Exception{
-    	Assume.assumeTrue(!IS_WINDOWS);
+    public void Should_ExpandGlobForFiles_When_EvaluatingFileGlob() throws Exception {
+        Assume.assumeTrue(!IS_WINDOWS);
         CallCommand command = new CallCommand();
         String[] globbed = command.globFilesDirectories(testFolder.toAbsolutePath() + "/**/file_*");
 
@@ -177,27 +160,15 @@ public class CallCommandTest {
     }
 
     @Test
-    public void Should_DisableGlobing_When_SingleQuoting() throws Exception{
-        PipeCommand pipeCommand = new PipeCommand("echo '"+ testFolder.toAbsolutePath()+"/*'");
-        pipeCommand.parse();
-        pipeCommand.evaluate(inputStream, outputStream);
-
-        String expected = testFolder.toAbsolutePath()+"/*" + System.lineSeparator();
-        String actual = pipeCommand.getResultStream().toString();
-
-        assertEquals(expected, actual);
+    public void Should_DisableGlobing_When_SingleQuoting() throws Exception {
+        String expected = testFolder.toAbsolutePath() + "/*" + System.lineSeparator();
+        assertEquals(expected, CommandTestUtil.getCommandOutput("echo '" + testFolder.toAbsolutePath() + "/*'"));
     }
 
     @Test
-    public void Should_DisableGlobing_When_DoubleQuoting() throws Exception{
-        PipeCommand pipeCommand = new PipeCommand("echo \""+ testFolder.toAbsolutePath()+"/*\"");
-        pipeCommand.parse();
-        pipeCommand.evaluate(inputStream, outputStream);
-
-        String expected = testFolder.toAbsolutePath()+"/*" + System.lineSeparator();
-        String actual = pipeCommand.getResultStream().toString();
-
-        assertEquals(expected, actual);
+    public void Should_DisableGlobing_When_DoubleQuoting() throws Exception {
+        String expected = testFolder.toAbsolutePath() + "/*" + System.lineSeparator();
+        assertEquals(expected, CommandTestUtil.getCommandOutput("echo \"" + testFolder.toAbsolutePath() + "/*\""));
     }
 
 

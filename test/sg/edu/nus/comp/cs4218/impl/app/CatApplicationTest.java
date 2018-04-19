@@ -97,11 +97,11 @@ public class CatApplicationTest {
 
     @Test
     public void shouldReturnFileContentWhenRedirectedInput() throws Exception {
-        CommandTestUtil.testCommand(FILE_2_CONTENT, "cat < " + FILE_2.toString());
+        assertEquals(FILE_2_CONTENT, CommandTestUtil.getCommandOutput("cat < " + FILE_2.toString()));
     }
 
     @Test(expected = ShellException.class)
-	public void shouldThrowExceptionWhenInputFileDoesNotExist() throws Exception {
+    public void shouldThrowExceptionWhenInputFileDoesNotExist() throws Exception {
         CommandTestUtil.getCommandOutput("cat " + " < " + NON_EXISTENT_FILE.toString());
     }
 
@@ -120,21 +120,21 @@ public class CatApplicationTest {
 
     @Test
     public void shouldReturnEmptyResultWhenSpaceInFileName() throws Exception {
-        CommandTestUtil.testCommand("", "cat " + FILE_1.toString());
+        assertEquals("", CommandTestUtil.getCommandOutput("cat " + FILE_1.toString()));
     }
 
     @Test
     public void shouldReturnFileContentWhenDoubleQuotedFileNameWithSpace() throws Exception {
-        CommandTestUtil.testCommand(CONTENT_SPACED, "cat \"" + FILE_WITH_SPACE.toString() + "\"");
+        assertEquals(CONTENT_SPACED, CommandTestUtil.getCommandOutput("cat \"" + FILE_WITH_SPACE.toString() + "\""));
     }
 
     @Test
     public void shouldReturnFileContentWhenSingleQuotedFileNameWithSpace() throws Exception {
-        CommandTestUtil.testCommand(CONTENT_SPACED, "cat '" + FILE_WITH_SPACE.toString() + "'");
+        assertEquals(CONTENT_SPACED, CommandTestUtil.getCommandOutput("cat '" + FILE_WITH_SPACE.toString() + "'"));
     }
 
     @Test
     public void shouldReturnFileContentWhenCommandSubstituted() throws Exception {
-        CommandTestUtil.testCommand(FILE_1_CONTENT, "cat `echo " + FILE_1.toString() + "`");
+        assertEquals(FILE_1_CONTENT, CommandTestUtil.getCommandOutput("cat `echo " + FILE_1.toString() + "`"));
     }
 }

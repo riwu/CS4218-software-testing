@@ -288,7 +288,7 @@ public class ShellImpl implements Shell {
             try {
                 currentDir = Environment.currentDirectory;
                 System.out.print(currentDir + ">");
-                readLine = bReader.readLine();
+                readLine = bReader.readLine().trim();
                 if (readLine == null) {
                     break;
                 }

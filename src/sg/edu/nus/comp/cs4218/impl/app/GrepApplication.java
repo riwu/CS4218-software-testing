@@ -3,8 +3,12 @@ package sg.edu.nus.comp.cs4218.impl.app;
 import sg.edu.nus.comp.cs4218.Environment;
 import sg.edu.nus.comp.cs4218.app.GrepInterface;
 import sg.edu.nus.comp.cs4218.exception.AbstractApplicationException;
+import sg.edu.nus.comp.cs4218.exception.GrepException;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -57,7 +61,7 @@ public class GrepApplication implements GrepInterface {
     }
 
     @Override
-    public String grepFromMultipleFiles(String pattern, final Boolean isInvert, String... fileNames) throws Exception {
+    public String grepFromMultipleFiles(String pattern, final Boolean isInvert, String... fileNames) throws GrepException {
         final Pattern grepPattern = Pattern.compile(pattern);
 
         // transform each filenames into Stream of Path
@@ -67,7 +71,10 @@ public class GrepApplication implements GrepInterface {
         final StringBuilder result = new StringBuilder();
 
         // by default Stream runs in parallel. We want serial in this case.
-        paths.forEachOrdered(path -> {
+        for (Path path : paths.toArray(Path[]::new)) {
+            if (!Files.exists(path)) {
+                throw new GrepException(path.toString() + "No such file or directory");
+            }
             try {
                 Files.lines(path).forEachOrdered( line -> {
                     boolean hasFoundPattern = grepPattern.matcher(line).find();
@@ -80,7 +87,7 @@ public class GrepApplication implements GrepInterface {
             }catch (Exception ex){
                 ex.printStackTrace();
             }
-        });
+        }
 
         return result.toString().trim() + System.lineSeparator();
     }

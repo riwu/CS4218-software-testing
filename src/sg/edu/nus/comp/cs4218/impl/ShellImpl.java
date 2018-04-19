@@ -327,7 +327,7 @@ public class ShellImpl implements Shell {
 
     // TODO: Can consider extract to different class
     @SuppressWarnings("PMD.ExcessiveMethodLength")
-	public String[] extractSemicolon(String cmdline){
+	public String[] extractSemicolon(String cmdline) throws ShellException {
         // GUARDS:
         // does not contain semicolon, don't evaluate
         if (!cmdline.contains(";")) {
@@ -360,6 +360,9 @@ public class ShellImpl implements Shell {
 		int lastValidCommandStartIndex = 0;
         while (matcher.find()) {
             String validCommand = cmdline.substring(lastValidCommandStartIndex, matcher.start());
+            if (validCommand.trim().isEmpty()) {
+                throw new ShellException("Invalid syntax");
+            }
             validCommands.add(validCommand);
 
             lastValidCommandStartIndex = matcher.end();

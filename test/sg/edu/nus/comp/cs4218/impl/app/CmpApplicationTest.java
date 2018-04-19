@@ -216,13 +216,11 @@ public class CmpApplicationTest {
 		assertEquals("", baos.toString());
 	}
 	
-	@Test
-	public void shouldPrintSimplifyToBaosWhenTwoFilesRepeatedSimplify() throws Exception {
+	@Test(expected=CmpException.class)
+	public void shouldThrowExceptionWhenSimplifyWithOtherFlags() throws Exception {
 		String fileNameA = fileA.toString();
 		String fileNameB = fileB.toString();
-		String expected = CmpApplicationUtil.getSimpleString(bytesA, bytesB);
 		cmpApp.run(new String[] {fileNameB, fileNameA, "-lcs-s-s-s-s-s-s-s-s"}, null, baos);
-		assertEquals(expected + System.lineSeparator(), baos.toString());
 	}
 	
 	@Test

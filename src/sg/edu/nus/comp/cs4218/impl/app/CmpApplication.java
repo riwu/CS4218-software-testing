@@ -58,6 +58,9 @@ public class CmpApplication implements CmpInterface {
 		if(fileCount != 2) {
 			throw new CmpException("There must be two files to compare");
 		}
+		if(flags[SIMPLIFY_IDX] && (flags[CHAR_IDX] || flags[OCTAL_IDX])) {
+			throw new CmpException("-s cannot be used with other flags");
+		}
 		try {
 			byte[] output = compare(stdin, hasStdin, fileNames, flags);
 			stdout.write(output);

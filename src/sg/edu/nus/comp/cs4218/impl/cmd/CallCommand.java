@@ -464,7 +464,10 @@ public class CallCommand implements Command {
 		filesAndDirectory.sort(Comparator.naturalOrder());
 
 		return filesAndDirectory
-				.toArray(new String[]{});
+				.stream()
+				.map(a -> a.startsWith("./") ? a.substring(2) : a)
+				.toArray(String[]::new);
+
 	}
 
 }

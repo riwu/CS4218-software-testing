@@ -5,9 +5,12 @@ import org.junit.Before;
 import org.junit.Test;
 import sg.edu.nus.comp.cs4218.exception.ShellException;
 
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 public class PipeCommandTest {
 
@@ -26,154 +29,90 @@ public class PipeCommandTest {
         this.outputStream.close();
     }
 
-    @Test
-    public void shouldRunCorrectlyWhenValidCommandGiven() throws Exception{
-        PipeCommand pipeCommand = new PipeCommand("echo string_with_pipe | cat");
+    // Not using the one in CommandTestUtil as that might be changed to other commands in the future
+    // while this tests specifically PipeCommand
+    public String getCommandOutput(String command) throws Exception {
+        PipeCommand pipeCommand = new PipeCommand(command);
         pipeCommand.parse();
-        pipeCommand.evaluate(inputStream, outputStream);
+        pipeCommand.evaluate(System.in, new ByteArrayOutputStream());
+        return pipeCommand.getResultStream().toString();
+    }
 
-        String expected = "string_with_pipe"  + System.lineSeparator();
-        String evaluated = pipeCommand.getResultStream().toString();
-
-        assertEquals(expected, evaluated);
+    @Test
+    public void shouldRunCorrectlyWhenValidCommandGiven() throws Exception {
+        String expected = "string_with_pipe" + System.lineSeparator();
+        assertEquals(expected, getCommandOutput("echo string_with_pipe | cat"));
     }
 
     @Test(expected = ShellException.class)
-    public void shouldThrowShellExceptionWhenInvalidCommandGiven() throws Exception{
-        PipeCommand pipeCommand = new PipeCommand("echo string_with_pipe ||| cat");
-        pipeCommand.parse();
-        pipeCommand.evaluate(inputStream, outputStream);
+    public void shouldThrowShellExceptionWhenInvalidCommandGiven() throws Exception {
+        getCommandOutput("echo string_with_pipe ||| cat");
     }
 
     @Test
-    public void shouldRunCorrectlyWhenCommandHasLeadingAndTrailingSpaces() throws Exception{
-        PipeCommand pipeCommand = new PipeCommand("            echo string_with_pipe | cat                ");
-        pipeCommand.parse();
-        pipeCommand.evaluate(inputStream, outputStream);
-
-        String expected = "string_with_pipe"  + System.lineSeparator();
-        String evaluated = pipeCommand.getResultStream().toString();
-
-        assertEquals(expected, evaluated);
-    }
-
-    @Test
-    public void shouldRunCorrectlyWhenPipeBetweenCommandsHasNoSpaces() throws Exception{
-        PipeCommand pipeCommand = new PipeCommand("echo string_with_pipe|cat");
-        pipeCommand.parse();
-        pipeCommand.evaluate(inputStream, outputStream);
-
+    public void shouldRunCorrectlyWhenCommandHasLeadingAndTrailingSpaces() throws Exception {
         String expected = "string_with_pipe" + System.lineSeparator();
-        String evaluated = pipeCommand.getResultStream().toString();
-
-        assertEquals(expected, evaluated);
+        assertEquals(expected, getCommandOutput("            echo string_with_pipe | cat                "));
     }
 
     @Test
-    public void shouldRunCorrectlyWhenSingleQuoteCommandGiven() throws Exception{
-        PipeCommand pipeCommand = new PipeCommand("echo 'string_with_single_quote' | cat");
-        pipeCommand.parse();
-        pipeCommand.evaluate(inputStream, outputStream);
+    public void shouldRunCorrectlyWhenPipeBetweenCommandsHasNoSpaces() throws Exception {
+        String expected = "string_with_pipe" + System.lineSeparator();
+        assertEquals(expected, getCommandOutput("echo string_with_pipe|cat"));
+    }
 
+    @Test
+    public void shouldRunCorrectlyWhenSingleQuoteCommandGiven() throws Exception {
         String expected = "string_with_single_quote" + System.lineSeparator();
-        String evaluated = pipeCommand.getResultStream().toString();
-
-        assertEquals(expected, evaluated);
+        assertEquals(expected, getCommandOutput("echo 'string_with_single_quote' | cat"));
     }
 
     @Test
-    public void shouldRunCorrectlyWhenDoubleQuoteCommandGiven() throws Exception{
-        PipeCommand pipeCommand = new PipeCommand("echo \"string_with_double_quote\" | cat");
-        pipeCommand.parse();
-        pipeCommand.evaluate(inputStream, outputStream);
-
+    public void shouldRunCorrectlyWhenDoubleQuoteCommandGiven() throws Exception {
         String expected = "string_with_double_quote" + System.lineSeparator();
-        String evaluated = pipeCommand.getResultStream().toString();
-
-        assertEquals(expected, evaluated);
+        assertEquals(expected, getCommandOutput("echo \"string_with_double_quote\" | cat"));
     }
 
     @Test
-    public void shouldRunCorrectlyWhenBacktickCommandGiven() throws Exception{
-        PipeCommand pipeCommand = new PipeCommand("echo `echo string_with_backtick` | cat");
-        pipeCommand.parse();
-        pipeCommand.evaluate(inputStream, outputStream);
-
+    public void shouldRunCorrectlyWhenBacktickCommandGiven() throws Exception {
         String expected = "string_with_backtick" + System.lineSeparator();
-        String evaluated = pipeCommand.getResultStream().toString();
-
-        assertEquals(expected, evaluated);
+        assertEquals(expected, getCommandOutput("echo `echo string_with_backtick` | cat"));
     }
 
     @Test
-    public void shouldRunCorrectlyWhenPipingMultipleCommand() throws Exception{
-        PipeCommand pipeCommand = new PipeCommand("echo string_pass_through_multipipes | cat | cat | cat");
-        pipeCommand.parse();
-        pipeCommand.evaluate(inputStream, outputStream);
-
+    public void shouldRunCorrectlyWhenPipingMultipleCommand() throws Exception {
         String expected = "string_pass_through_multipipes" + System.lineSeparator();
-        String evaluated = pipeCommand.getResultStream().toString();
+        assertEquals(expected, getCommandOutput("echo string_pass_through_multipipes | cat | cat | cat"));
 
-        assertEquals(expected, evaluated);
     }
 
     @Test
-    public void shouldEvaluatePipesWhenPipingBacktickArgs() throws Exception{
-        PipeCommand pipeCommand = new PipeCommand("echo \"`echo the_string | cat`\"");
-        pipeCommand.parse();
-        pipeCommand.evaluate(inputStream, outputStream);
-
+    public void shouldEvaluatePipesWhenPipingBacktickArgs() throws Exception {
         String expected = "the_string" + System.lineSeparator();
-        String evaluated = pipeCommand.getResultStream().toString();
-
-        assertEquals(expected, evaluated);
+        assertEquals(expected, getCommandOutput("echo \"`echo the_string | cat`\""));
     }
 
     @Test
-    public void shouldNotEvaluatePipeLiterallyWhenPipingSingleQuoteArgs() throws Exception{
-        PipeCommand pipeCommand = new PipeCommand("echo 'echo the_string | cat'");
-        pipeCommand.parse();
-        pipeCommand.evaluate(inputStream, outputStream);
-
+    public void shouldNotEvaluatePipeLiterallyWhenPipingSingleQuoteArgs() throws Exception {
         String expected = "echo the_string | cat" + System.lineSeparator();
-        String evaluated = pipeCommand.getResultStream().toString();
-
-        assertEquals(expected, evaluated);
+        assertEquals(expected, getCommandOutput("echo 'echo the_string | cat'"));
     }
 
     @Test
-    public void shouldEvaluatePipeLiterallyWhenPipingDoubleQuoteArgs() throws Exception{
-        PipeCommand pipeCommand = new PipeCommand("echo \"echo the_string | cat\"");
-        pipeCommand.parse();
-        pipeCommand.evaluate(inputStream, outputStream);
-
+    public void shouldEvaluatePipeLiterallyWhenPipingDoubleQuoteArgs() throws Exception {
         String expected = "echo the_string | cat" + System.lineSeparator();
-        String evaluated = pipeCommand.getResultStream().toString();
-
-        assertEquals(expected, evaluated);
+        assertEquals(expected, getCommandOutput("echo \"echo the_string | cat\""));
     }
 
     @Test
-    public void shouldEvaluateSingleQuoteLiterallyWhenPipingDoubleQuoteArgs() throws Exception{
-        PipeCommand pipeCommand = new PipeCommand("echo \"echo the_string's | cat \"");
-        pipeCommand.parse();
-        pipeCommand.evaluate(inputStream, outputStream);
-
+    public void shouldEvaluateSingleQuoteLiterallyWhenPipingDoubleQuoteArgs() throws Exception {
         String expected = "echo the_string's | cat" + System.lineSeparator();
-        String evaluated = pipeCommand.getResultStream().toString();
-
-        assertEquals(expected, evaluated);
+        assertEquals(expected, getCommandOutput("echo \"echo the_string's | cat \""));
     }
 
     @Test
-    public void shouldEvaluateQuotesIndependentlyWhenParsing() throws Exception{
-        PipeCommand pipeCommand = new PipeCommand("echo `echo string1` 'string2' \"string3\"");
-        pipeCommand.parse();
-        pipeCommand.evaluate(inputStream, outputStream);
-
+    public void shouldEvaluateQuotesIndependentlyWhenParsing() throws Exception {
         String expected = "string1 string2 string3" + System.lineSeparator();
-        String evaluated = pipeCommand.getResultStream().toString();
-
-        assertEquals(expected, evaluated);
+        assertEquals(expected, getCommandOutput("echo `echo string1` 'string2' \"string3\""));
     }
 }

@@ -85,6 +85,10 @@ public class SplitApplication implements SplitInterface {
 
     @Override
     public void splitFileByLines(InputStream stdin, String prefix, int linesPerFile) throws Exception {
+        if (linesPerFile <= 0) {
+            throw new SplitException("Lines per file should be positive");
+        }
+
         BufferedReader reader = new BufferedReader(new InputStreamReader(stdin));
         List<String> lines = new ArrayList<>();
         reader.lines().forEach(lines::add);
@@ -152,7 +156,7 @@ public class SplitApplication implements SplitInterface {
 
     }
 
-    private int bytes(String bytesPerFile) {
+    private int bytes(String bytesPerFile) throws SplitException {
         // this regex matches any number of digits follow by exactly one of [b,k,m]
         Pattern pattern = Pattern.compile("^(\\d+)([b,k,m]?)$");
         Matcher matcher = pattern.matcher(bytesPerFile);
@@ -162,6 +166,10 @@ public class SplitApplication implements SplitInterface {
 
         // extract matched components
         int base = Integer.parseInt(matcher.group(1)); // guaranteed digits by regex
+        if (base <= 0) {
+            throw new SplitException("Bytes per file should be positive");
+        }
+
         String modifier = matcher.group(2);
         if (modifier.isEmpty()) {
             return base;

@@ -216,11 +216,13 @@ public class CmpApplicationTest {
 		assertEquals("", baos.toString());
 	}
 	
-	@Test(expected=CmpException.class)
-	public void shouldThrowExceptionWhenSimplifyWithOtherFlags() throws Exception {
+	@Test
+	public void shouldPrintSimplifyToBaosWhenTwoFilesRepeatedSimplify() throws Exception {
 		String fileNameA = fileA.toString();
 		String fileNameB = fileB.toString();
-		cmpApp.run(new String[] {fileNameB, fileNameA, "-lcs-s-s-s-s-s-s-s-s"}, null, baos);
+		String expected = CmpApplicationUtil.getSimpleString(bytesA, bytesB);
+		cmpApp.run(new String[] {fileNameB, fileNameA, "-ssssss-s-s-s-s"}, null, baos);
+		assertEquals(expected + System.lineSeparator(), baos.toString());
 	}
 	
 	@Test
@@ -287,5 +289,19 @@ public class CmpApplicationTest {
 		String fileNameA = fileA.toString();
 		String fileNameC = fileC.toString();
 		cmpApp.run(new String[] {fileNameC, fileNameA, "-s-s-s-s-s-s-s-s-s-"}, null, baos);
+	}
+	
+	@Test(expected=CmpException.class)
+	public void shouldThrowExceptionWhenSimplifyWithLongFormat() throws Exception {
+		String fileNameA = fileA.toString();
+		String fileNameB = fileB.toString();
+		cmpApp.run(new String[] {fileNameB, fileNameA, "-ls"}, null, baos);
+	}
+	
+	@Test(expected=CmpException.class)
+	public void shouldThrowExceptionWhenSimplifyWithCharFormat() throws Exception {
+		String fileNameA = fileA.toString();
+		String fileNameB = fileB.toString();
+		cmpApp.run(new String[] {fileNameB, fileNameA, "-cs"}, null, baos);
 	}
 }

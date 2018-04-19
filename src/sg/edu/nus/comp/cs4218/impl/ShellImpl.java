@@ -69,8 +69,10 @@ public class ShellImpl implements Shell {
                 // process back quote
                 // System.out.println("backquote" + bqStr);
                 OutputStream bqOutputStream = new ByteArrayOutputStream();
-                ShellImpl shell = new ShellImpl();
-                shell.parseAndEvaluate(bqStr, bqOutputStream);
+                if (!bqStr.trim().isEmpty()) {
+                    ShellImpl shell = new ShellImpl();
+                    shell.parseAndEvaluate(bqStr, bqOutputStream);
+                }
 
                 ByteArrayOutputStream outByte = (ByteArrayOutputStream) bqOutputStream;
                 byte[] byteArray = outByte.toByteArray();

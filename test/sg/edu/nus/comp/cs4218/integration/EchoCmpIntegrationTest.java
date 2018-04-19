@@ -66,7 +66,7 @@ public class EchoCmpIntegrationTest {
 	
 	@Test
 	public void shouldPrintEmptyStringWhenNoDifference() throws Exception {
-		String cmdline = "echo " + TEST_TEXT_A + " |" + "cmp -lsc " + " - " + fileA.toString();
+		String cmdline = "echo " + TEST_TEXT_A + " |" + "cmp " + " - " + fileA.toString();
         String expected = CmpApplicationUtil.getNormalFormatString(fileA.toString(), "-", TEST_TEXT_A.getBytes(), TEST_TEXT_A.getBytes(), true);
     	ByteArrayOutputStream baos = new ByteArrayOutputStream();
         shell.parseAndEvaluate(cmdline, baos);
@@ -93,7 +93,7 @@ public class EchoCmpIntegrationTest {
 	
 	@Test
 	public void shouldSimplifiedWhenSimplifyOption() throws Exception {
-		String cmdline = "echo " + TEST_TEXT_A + "|" + "cmp -scl" + " - " + fileB.toString();
+		String cmdline = "echo " + TEST_TEXT_A + "|" + "cmp -s" + " - " + fileB.toString();
         String expected = "Files differ" + System.lineSeparator();
     	ByteArrayOutputStream baos = new ByteArrayOutputStream();
         shell.parseAndEvaluate(cmdline, baos);
@@ -102,13 +102,27 @@ public class EchoCmpIntegrationTest {
 	
 	@Test(expected=CmpException.class)
 	public void shouldThrowExceptionWhenOverTwoComparisons() throws Exception {
-		String cmdline = "echo " + TEST_TEXT_A + "|" + "cmp -scl" + " - " + fileB.toString() + " " + fileB.toString();
+		String cmdline = "echo " + TEST_TEXT_A + "|" + "cmp " + " - " + fileB.toString() + " " + fileB.toString();
         shell.parseAndEvaluate(cmdline, System.out);
 	}
 	
 	@Test(expected=CmpException.class)
 	public void shouldThrowExceptionWhenUnderTwoComparisons() throws Exception {
-		String cmdline = "echo " + TEST_TEXT_A + "|" + "cmp -scl" + " - ";
+		String cmdline = "echo " + TEST_TEXT_A + "|" + "cmp " + " - ";
         shell.parseAndEvaluate(cmdline, System.out);
+	}
+	
+	@Test(expected=CmpException.class)
+	public void shouldThrowExceptionWhenSimplifyOctalDiffOption() throws Exception {
+		String cmdline = "echo " + TEST_TEXT_A + "|" + "cmp -sl" + " - " + fileB.toString();
+    	ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        shell.parseAndEvaluate(cmdline, baos);
+	}
+	
+	@Test(expected=CmpException.class)
+	public void shouldThrowExceptionWhenSimplifyCharDiffOption() throws Exception {
+		String cmdline = "echo " + TEST_TEXT_A + "|" + "cmp -cs" + " - " + fileB.toString();
+    	ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        shell.parseAndEvaluate(cmdline, baos);
 	}
 }

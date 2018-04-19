@@ -50,7 +50,7 @@ public final class CmpApplicationUtil {
 	}
 	
 	private static String getOctalCharString(byte single) {
-		return String.format(CHAR_FORMAT, toOctal(single), Byte.toString(single));
+		return String.format(CHAR_FORMAT, toOctal(single), (char)single);
 	}
 	
 	public static String getLongFormatString(byte[] fileA, byte[] fileB, boolean isCharDiff) throws Exception {

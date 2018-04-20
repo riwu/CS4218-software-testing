@@ -12,7 +12,6 @@ import org.junit.Test;
 
 import sg.edu.nus.comp.cs4218.Environment;
 import sg.edu.nus.comp.cs4218.exception.CmpException;
-import sg.edu.nus.comp.cs4218.impl.CmpApplicationUtil;
 import sg.edu.nus.comp.cs4218.impl.app.CmpApplication;
 
 public class CmpApplicationTestFix {

@@ -30,7 +30,7 @@ public class SedApplication implements SedInterface {
         // no input file, get from stdin
         if (parsedArg.size() == 3) {
             try {
-                if (stdin.available() == 0) {
+                if (stdin == null || stdin.available() == 0) {
                     throw new SedException("Input arg missing");
                 }
             } catch (IOException e) {

@@ -461,7 +461,13 @@ public class CallCommand implements Command {
 			e.printStackTrace();
 		}
 
-		return filesAndDirectory.toArray(new String[]{});
+		filesAndDirectory.sort(Comparator.naturalOrder());
+
+		return filesAndDirectory
+				.stream()
+				.map(a -> a.startsWith("./") ? a.substring(2) : a)
+				.toArray(String[]::new);
+
 	}
 
 }

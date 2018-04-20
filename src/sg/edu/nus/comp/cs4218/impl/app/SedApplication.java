@@ -29,8 +29,12 @@ public class SedApplication implements SedInterface {
 
         // no input file, get from stdin
         if (parsedArg.size() == 3) {
-            if (stdin == null) {
-                throw new SedException("Input arg missing");
+            try {
+                if (stdin == null || stdin.available() == 0) {
+                    throw new SedException("Input arg missing");
+                }
+            } catch (IOException e) {
+                throw new SedException(e.getMessage());
             }
             try {
                 result = replaceSubstringInStdin(parsedArg.get(0), parsedArg.get(1), Integer.parseInt(parsedArg.get(2)), stdin);

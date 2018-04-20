@@ -7,6 +7,7 @@ import java.io.FileFilter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -139,7 +140,7 @@ public class LsApplicationTest {
 	
 	private String getContentString(Path path, boolean isDirectoryOnly) {
 		FileFilter filter = generateFileFilter(isDirectoryOnly);
-		File[] contents = path.toFile().listFiles(filter);
+		File[] contents = Arrays.stream(path.toFile().listFiles(filter)).sorted().toArray(File[]::new);
 		String expected = "";
 		int limit = contents.length - 1;
 		for(int i=0; i<contents.length; i++) {

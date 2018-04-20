@@ -116,12 +116,6 @@ public class ShellImpl implements Shell {
             case "echo": // echo [args]...
                 absApp = new EchoApplication();
                 break;
-            case "head": // head [OPTIONS] [FILE]
-                absApp = new HeadApplication();
-                break;
-            case "tail": // tail [OPTIONS] [FILE]
-                absApp = new TailApplication();
-                break;
             case "ls":
                 absApp = new LsApplication();
                 break;
